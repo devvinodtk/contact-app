@@ -8,7 +8,7 @@ const SIDEBAR_ITEMS = [
   { name: "Add User", icon: BarChart2, color: "#6366F1", href: "/users" },
   { name: "Products", icon: Users, color: "#EC4899", href: "/products" },
   { name: "Settings", icon: Settings, color: "#6EE7B7", href: "/settings" },
-  { name: "Login", icon: LogIn, color: "#6EE7B7", href: "/login" },
+  { name: "Logout", icon: LogIn, color: "#6EE7B7", href: "/logout" },
 ];
 
 function Sidebar() {
