@@ -1,9 +1,12 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getStorage, ref } from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
+
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAzEyXJVHZxwefRdY1oDOJZFt7DoiaUF-g",
+  apiKey: "",
   authDomain: "kk-contact-app.firebaseapp.com",
   projectId: "kk-contact-app",
   storageBucket: "kk-contact-app.firebasestorage.app",
@@ -14,4 +17,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-export { app, auth}
+const storage = getStorage();
+const db = getFirestore(app);
+export { app, auth, storage, ref, db}

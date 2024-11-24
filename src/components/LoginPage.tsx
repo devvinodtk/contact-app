@@ -15,6 +15,7 @@ function LoginPage() {
   const [userName, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isSigningIn, setIsSigningIn] = useState<boolean>(false);
+  const [loginError, setLoginError] = useState(false);
 
   useEffect(() => {
     userNameRef.current?.focus();
@@ -31,7 +32,7 @@ function LoginPage() {
         }
       }
     } catch (err) {
-      console.log(err);
+      setLoginError(true);
     }
   };
 
@@ -44,10 +45,10 @@ function LoginPage() {
               <div className="flex flex-col items-center mb-6">
                 <div className="flex flex-col items-start justify-between py-3">
                   <label className="text-gray-300" htmlFor="username">
-                    User Name
+                    Email ID
                   </label>
                   <input
-                    type="text"
+                    type="email"
                     id="username"
                     autoComplete="off"
                     className="bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-4 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -84,6 +85,13 @@ function LoginPage() {
                     </a>
                   </div>
                 </div>
+                {loginError && (
+                  <div className="mt-5 flex justify-between items-start">
+                    <div className="text-red-800 font-semibold">
+                      Login failed. Wrong email or password.
+                    </div>
+                  </div>
+                )}
               </div>
             </SettingSection>
           </main>
