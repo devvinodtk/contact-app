@@ -14,7 +14,7 @@ function App() {
 
   return (
     <>
-      <div className="flex h-screen bg-gray-900 text-gray-100 overflow-hidden">
+      <div className="flex h-screen bg-white text-gray-100 overflow-hidden">
         {/** BG */}
         <div className="fixed insert-0 z-10">
           <div className="absolute insert-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-90 opacity-80" />
