@@ -4,10 +4,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const SIDEBAR_ITEMS = [
-  { name: "Overview", icon: BarChart2, color: "#6366F1", href: "/overview" },
+  { name: "Dashboard", icon: BarChart2, color: "#6366F1", href: "/overview" },
   { name: "Add User", icon: BarChart2, color: "#6366F1", href: "/users" },
-  { name: "Products", icon: Users, color: "#EC4899", href: "/products" },
-  { name: "Settings", icon: Settings, color: "#6EE7B7", href: "/settings" },
+  { name: "Adrress List", icon: Users, color: "#EC4899", href: "/products" },
+  { name: "Membership Card", icon: Settings, color: "#6EE7B7", href: "/settings" },
   { name: "Logout", icon: LogIn, color: "#6EE7B7", href: "/logout" },
 ];
 
@@ -20,12 +20,12 @@ function Sidebar() {
       }`}
       animate={{ width: isSideBarOpen ? 256 : 80 }}
     >
-      <div className="h-full bg-gray-800 bg-opacity-50 backdrop-blur-md p-4 flex flex-col border-r border-gray-700">
+      <div className="h-full bg-sky-700 backdrop-blur-md p-4 flex flex-col">
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => setIsSideBarOpen(!isSideBarOpen)}
-          className="p-2 rounded-full hover:bg-gray-700 transition-colors max-w-fit"
+          className="p-2 rounded-full hover:bg-white transition-colors max-w-fit"
         >
           <Menu size={24} />
         </motion.button>

@@ -39,32 +39,33 @@ function LoginPage() {
   return (
     <>
       {!userLoggedIn && (
-        <div className="flex-1 overflow-auto relative z-10 bg-gray-900">
+        <div className="flex-1 overflow-auto relative z-10 bg-white">
+          <h1 className="text-black text-center mt-10 text-lg text-2xl">Kalakairali Memmber Management System</h1>
           <main className="max-w-4xl mx-auto py-6 px-4 lg:px-8">
             <SettingSection icon={User} title={"Login"}>
               <div className="flex flex-col items-center mb-6">
                 <div className="flex flex-col items-start justify-between py-3">
-                  <label className="text-gray-300" htmlFor="username">
-                    Email ID
+                  <label className="text-black" htmlFor="username">
+                    Username
                   </label>
                   <input
                     type="email"
                     id="username"
                     autoComplete="off"
-                    className="bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-4 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="text-black placeholder-gray-400 rounded-lg pl-4 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     onChange={(e) => setUserName(e.target.value)}
                     value={userName}
                     required
                   />
                 </div>
                 <div className="flex flex-col items-start justify-between py-3">
-                  <label className="text-gray-300" htmlFor="password">
+                  <label className="text-black" htmlFor="password">
                     Password
                   </label>
                   <input
                     type="password"
                     id="password"
-                    className="bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-4 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="text-black placeholder-gray-400 rounded-lg pl-4 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     onChange={(e) => setPassword(e.target.value)}
                     value={password}
                     required
