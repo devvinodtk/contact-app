@@ -9,7 +9,7 @@ export type SettingsProp = {
 function SettingSection({ icon: Icon, title, children }: SettingsProp) {
   return (
     <motion.div
-      className="bg-white flex flex-col items-center p-6 bg-sky-50 shadow rounded"
+      className="bg-white flex flex-col items-center p-6 bg-blue-200 shadow rounded"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}

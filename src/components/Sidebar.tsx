@@ -1,14 +1,14 @@
-import { BarChart2, LogIn, Menu, Settings, Users } from "lucide-react";
+import { LayoutDashboard, UserPlus, NotebookTabs, LogIn, Menu, IdCard } from "lucide-react";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const SIDEBAR_ITEMS = [
-  { name: "Dashboard", icon: BarChart2, color: "#6366F1", href: "/overview" },
-  { name: "Add User", icon: BarChart2, color: "#6366F1", href: "/users" },
-  { name: "Adrress List", icon: Users, color: "#EC4899", href: "/products" },
-  { name: "Membership Card", icon: Settings, color: "#6EE7B7", href: "/settings" },
-  { name: "Logout", icon: LogIn, color: "#6EE7B7", href: "/logout" },
+  { name: "Dashboard", icon: LayoutDashboard, color: "#ff3aac", href: "/overview" },
+  { name: "Add Member", icon: UserPlus, color: "#f1bf00", href: "/users" },
+  { name: "Adrress List", icon: NotebookTabs, color: "#00ffff", href: "/products" },
+  { name: "Membership Card", icon: IdCard, color: "#6EE7B7", href: "/settings" },
+  { name: "Logout", icon: LogIn, color: "#ff7300", href: "/logout" },
 ];
 
 function Sidebar() {
@@ -33,7 +33,7 @@ function Sidebar() {
         <nav className="mt-8 flex-grow">
           {SIDEBAR_ITEMS.map((item) => (
             <Link key={item.href} to={item.href}>
-              <motion.div className="flex items-center p-4 text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors mb-2">
+              <motion.div className="flex items-center p-4 text-sm font-medium rounded-lg hover:bg-sky-600 transition-colors mb-2">
                 <item.icon
                   size={20}
                   style={{ color: item.color, minWidth: "20px" }}
