@@ -86,38 +86,70 @@ const UserProfileForm: React.FC = () => {
     <div className="flex-1 overflow-auto relative z-10">
       <Header title="Add Members" />
       <div className="p-4 w-full">
-        <label className="block text-sm font-medium mb-1 text-gray-600">
-          Name
-        </label>
-        <input
-          type="text"
-          placeholder="Name"
-          value={user.name}
-          onChange={(e) => setUser({ ...user, name: e.target.value })}
-          className="w-full p-2 border rounded mb-4 text-gray-600"
-        />
+        <div className="flex">
+          <div className="basis-3/4">
+            <label className="block text-sm font-medium mb-1 text-gray-600">
+              Name
+            </label>
+            <input
+              type="text"
+              placeholder="Name"
+              value={user.name}
+              onChange={(e) => setUser({ ...user, name: e.target.value })}
+              className="w-full p-2 border rounded mb-4 text-gray-600"
+            />
+            <label className="block text-sm font-medium mb-1 text-gray-600">
+              Mobile Number
+            </label>
+            <input
+              type="email"
+              placeholder="Mobile number"
+              value={user.email_id}
+              onChange={(e) => setUser({ ...user, email_id: e.target.value })}
+              className="w-full p-2 border rounded mb-4 text-gray-600"
+            />
+            <label className="block text-sm font-medium mb-1 text-gray-600">
+              Email ID
+            </label>
+            <input
+              type="email"
+              placeholder="Email ID"
+              value={user.email_id}
+              onChange={(e) => setUser({ ...user, email_id: e.target.value })}
+              className="w-full p-2 border rounded mb-4 text-gray-600"
+            />
 
-        <label className="block text-sm font-medium mb-1 text-gray-600">
-          Email ID
-        </label>
-        <input
-          type="email"
-          placeholder="Email ID"
-          value={user.email_id}
-          onChange={(e) => setUser({ ...user, email_id: e.target.value })}
-          className="w-full p-2 border rounded mb-4 text-gray-600"
-        />
+            <label className="block text-sm font-medium mb-1 text-gray-600">
+              Date of Birth
+            </label>
+            <input
+              type="date"
+              placeholder="Date of Birth"
+              value={user.date_of_birth}
+              onChange={(e) => setUser({ ...user, date_of_birth: e.target.value })}
+              className="w-full p-2 border rounded mb-4 text-gray-600"
+            />
+          </div>
 
-        <label className="block text-sm font-medium mb-1 text-gray-600">
-          Date of Birth
-        </label>
-        <input
-          type="date"
-          placeholder="Date of Birth"
-          value={user.date_of_birth}
-          onChange={(e) => setUser({ ...user, date_of_birth: e.target.value })}
-          className="w-full p-2 border rounded mb-4 text-gray-600"
-        />
+          <div className="basis-1/4">
+            <div className="bg-sky-500 h-60 flex justify-center mt-4 m-2 items-center rounded">
+              <img
+                src="https://via.placeholder.com/100"
+                alt="Profile"
+                className="w-100 h-100 rounded-full border-4 border-white shadow-md"
+              />
+            </div>
+            <div className="m-2">
+              <input
+                type="file"
+
+                className="w-full p-2 border rounded mb-4 text-gray-600"
+              />
+            </div>
+
+          </div>
+        </div>
+
 
         <DropdownSelect
           label="Gender"
@@ -191,7 +223,7 @@ const UserProfileForm: React.FC = () => {
         />
         <FamilyDetailsForm
           familyDetails={user.family_details}
-          onChange={() => {}}
+          onChange={() => { }}
         />
         <GeoLocationDisplay geoLocation={user.geo_location} />
         {/* Additional form fields here */}

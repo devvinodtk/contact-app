@@ -76,6 +76,7 @@ const MembershipForm: React.FC = () => {
             />
           </div>
         </div>
+        
 
         {/* Address */}
         <div className="mt-4">

@@ -60,7 +60,6 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
           value={familyDetails?.gender}
           onChange={(value) => handleChange("gender", value)}
         />
-        //
         <DropdownSelect
           label="Relationship"
           options={
