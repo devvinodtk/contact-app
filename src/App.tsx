@@ -4,6 +4,8 @@ import Sidebar from "./components/Sidebar";
 import UsersPage from "./components/UsersPage";
 import OverviewPage from "./components/OverviewPage";
 import LogoutPage from "./components/LogoutPage";
+import { useAuth, UserAuthValue } from "./context/AuthProvider";
+import UserProfileForm from "./components/UserProfileForm";
 
 function App() {
   const { userLoggedIn }: UserAuthValue = useAuth();
@@ -36,7 +38,8 @@ function App() {
             path="/users"
             element={
               <AuthenticateUser>
-                <UsersPage />
+                {/* <UsersPage /> */}
+                <UserProfileForm />
               </AuthenticateUser>
             }
           />
@@ -56,6 +59,5 @@ function App() {
     </>
   );
 }
-import { useAuth, UserAuthValue } from "./context/AuthProvider";
 
 export default App;
