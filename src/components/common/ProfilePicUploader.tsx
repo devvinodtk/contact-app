@@ -27,12 +27,11 @@ const ProfilePicUploader: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="w-full">
       {!croppedImage && image && (
         <Cropper
           src={image}
           ref={imageRef}
-          style={{ height: 100, width: 100 }}
           zoomTo={0.5}
           initialAspectRatio={1}
           aspectRatio={1}
@@ -51,17 +50,25 @@ const ProfilePicUploader: React.FC = () => {
         <img
           src="src/assets/place_holder_100.png"
           alt="Profile"
-          className="w-100 h-100 rounded-full border-4 border-white shadow-md"
+          className="h-[150px] w-[150px] mb-2 mx-auto rounded-full border-4 border-white shadow-md"
         />
       )}
       {croppedImage && <ProfilePicEditor imageSrc={croppedImage} />}
-      <div className="flex flex-row content-center">
-        <div {...getRootProps()}>
-          <input {...getInputProps()} />
-          <Upload className="cursor-pointer" />
+      <div className="flex justify-center mx-auto w-full">
+        <div className="bg-blue-500 text-white px-4 py-2 rounded">
+          <div {...getRootProps()}>
+            <input {...getInputProps()} />
+            <Upload className="cursor-pointer" />
+          </div>
         </div>
-        <Crop className={image ? "cursor-pointer" : ""} onClick={handleCrop} />
+        <div className="bg-blue-500 text-white ml-2 px-4 py-2 rounded">
+          <div {...getRootProps()}>
+            <input {...getInputProps()} />
+            <Crop className={image ? "cursor-pointer " : ""} onClick={handleCrop} />
+          </div>
+        </div>
       </div>
+
     </div>
   );
 };
