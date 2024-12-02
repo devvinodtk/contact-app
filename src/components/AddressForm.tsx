@@ -18,7 +18,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
     };
 
   return (
-    <div className="p-4 border rounded-lg bg-gray-50 mb-4">
+    <div className="p-4 border rounded-lg mb-4">
       <h2 className="text-lg font-semibold mb-4 text-gray-600">{label}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <input
