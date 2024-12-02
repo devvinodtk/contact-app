@@ -13,6 +13,7 @@ import DropdownSelect from "./DropdownSelect";
 import FamilyDetailsForm from "./FamilyDetailsForm";
 import GeoLocationDisplay from "./GeoLocationDisplay";
 import Header from "./common/Header";
+import ProfilePicUploader from "./common/ProfilePicUploader";
 
 const UserProfileForm: React.FC = () => {
   const [user, setUser] = useState<Users>({
@@ -126,30 +127,19 @@ const UserProfileForm: React.FC = () => {
               type="date"
               placeholder="Date of Birth"
               value={user.date_of_birth}
-              onChange={(e) => setUser({ ...user, date_of_birth: e.target.value })}
+              onChange={(e) =>
+                setUser({ ...user, date_of_birth: e.target.value })
+              }
               className="w-full p-2 border rounded mb-4 text-gray-600"
             />
           </div>
 
           <div className="basis-1/4">
-            <div className="bg-sky-500 h-60 flex justify-center mt-4 m-2 items-center rounded">
-              <img
-                src="https://via.placeholder.com/100"
-                alt="Profile"
-                className="w-100 h-100 rounded-full border-4 border-white shadow-md"
-              />
+            <div className="bg-sky-500 min-h-60 flex justify-center m-2 items-center rounded">
+              <ProfilePicUploader />
             </div>
-            <div className="m-2">
-              <input
-                type="file"
-
-                className="w-full p-2 border rounded mb-4 text-gray-600"
-              />
-            </div>
-
           </div>
         </div>
-
 
         <DropdownSelect
           label="Gender"
@@ -223,7 +213,7 @@ const UserProfileForm: React.FC = () => {
         />
         <FamilyDetailsForm
           familyDetails={user.family_details}
-          onChange={() => { }}
+          onChange={() => {}}
         />
         <GeoLocationDisplay geoLocation={user.geo_location} />
         {/* Additional form fields here */}

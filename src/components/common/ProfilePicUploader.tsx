@@ -3,6 +3,7 @@ import { useDropzone } from "react-dropzone";
 import Cropper, { ReactCropperElement } from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import ProfilePicEditor from "./ProfilePicEditor";
+import { Crop, Upload } from "lucide-react";
 
 const ProfilePicUploader: React.FC = () => {
   const [image, setImage] = useState(null);
@@ -27,18 +28,11 @@ const ProfilePicUploader: React.FC = () => {
 
   return (
     <div>
-      <div {...getRootProps()}>
-        <input {...getInputProps()} />
-        <p className="w-full p-2 border rounded mb-4 text-gray-600">
-          Drag & drop a file here, or click to select one
-        </p>
-      </div>
-      {croppedImage && <ProfilePicEditor imageSrc={croppedImage} />}
       {!croppedImage && image && (
         <Cropper
           src={image}
           ref={imageRef}
-          style={{ height: 200, width: 200 }}
+          style={{ height: 100, width: 100 }}
           zoomTo={0.5}
           initialAspectRatio={1}
           aspectRatio={1}
@@ -46,7 +40,6 @@ const ProfilePicUploader: React.FC = () => {
           viewMode={1}
           minCropBoxHeight={10}
           minCropBoxWidth={10}
-          max={100}
           background={false}
           responsive={true}
           checkOrientation={false}
@@ -54,12 +47,21 @@ const ProfilePicUploader: React.FC = () => {
           frameBorder={"20px"}
         />
       )}
-      <button
-        className="w-full p-2 border rounded mb-4 text-gray-600"
-        onClick={handleCrop}
-      >
-        Crop
-      </button>
+      {!croppedImage && !image && (
+        <img
+          src="src/assets/place_holder_100.png"
+          alt="Profile"
+          className="w-100 h-100 rounded-full border-4 border-white shadow-md"
+        />
+      )}
+      {croppedImage && <ProfilePicEditor imageSrc={croppedImage} />}
+      <div className="flex flex-row content-center">
+        <div {...getRootProps()}>
+          <input {...getInputProps()} />
+          <Upload className="cursor-pointer" />
+        </div>
+        <Crop className={image ? "cursor-pointer" : ""} onClick={handleCrop} />
+      </div>
     </div>
   );
 };

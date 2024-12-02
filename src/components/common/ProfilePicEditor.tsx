@@ -1,5 +1,7 @@
 import React, { useRef } from "react";
 import AvatarEditor from "react-avatar-editor";
+import { Save } from "lucide-react";
+
 export type ProfilePicEditorProps = {
   imageSrc: string;
 };
@@ -16,21 +18,13 @@ const ProfilePicEditor: React.FC<ProfilePicEditorProps> = ({
   };
 
   return (
-    <div>
+    <div className="flex flex-row">
       <AvatarEditor
+        className="rounded-full border-4 border-white shadow-md"
         ref={editorRef}
         image={imageSrc} // or file input
-        width={200}
-        height={200}
-        border={5}
-        scale={1.2}
       />
-      <button
-        className="w-full p-2 border rounded mb-4 text-gray-600"
-        onClick={handleSave}
-      >
-        Save
-      </button>
+      <Save className="cursor-pointer" onClick={handleSave} />
     </div>
   );
 };
