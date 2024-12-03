@@ -84,106 +84,115 @@ const UserProfileForm: React.FC = () => {
   };
 
   return (
+
     <div className="flex-1 overflow-auto relative z-10">
+
       <Header title="Add Members" />
       <div className="p-4 w-full">
-        <div className="flex">
-          <div className="basis-3/4">
-            <label className="block text-sm font-medium mb-1 text-gray-600">
-              Name
-            </label>
-            <input
-              type="text"
-              placeholder="Name"
-              value={user.name}
-              onChange={(e) => setUser({ ...user, name: e.target.value })}
-              className="w-full p-2 border rounded mb-4 text-gray-600"
-            />
-            <label className="block text-sm font-medium mb-1 text-gray-600">
-              Mobile Number
-            </label>
-            <input
-              type="email"
-              placeholder="Mobile number"
-              value={user.email_id}
-              onChange={(e) => setUser({ ...user, email_id: e.target.value })}
-              className="w-full p-2 border rounded mb-4 text-gray-600"
-            />
-            <label className="block text-sm font-medium mb-1 text-gray-600">
-              Email ID
-            </label>
-            <input
-              type="email"
-              placeholder="Email ID"
-              value={user.email_id}
-              onChange={(e) => setUser({ ...user, email_id: e.target.value })}
-              className="w-full p-2 border rounded mb-4 text-gray-600"
-            />
-
-            <label className="block text-sm font-medium mb-1 text-gray-600">
-              Date of Birth
-            </label>
-            <input
-              type="date"
-              placeholder="Date of Birth"
-              value={user.date_of_birth}
-              onChange={(e) =>
-                setUser({ ...user, date_of_birth: e.target.value })
-              }
-              className="w-full p-2 border rounded mb-4 text-gray-600"
-            />
-          </div>
-
-          <div className="basis-1/4">
-            <div className="bg-sky-500 min-h-60 flex justify-center m-2 items-center rounded">
-              <ProfilePicUploader />
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white">
+              <div className="bg-gray-50 min-h-56 flex w-full mt-1 border items-center rounded">
+                <ProfilePicUploader />
+              </div>
             </div>
+            <div className="bg-white">
+              <label className="block text-sm font-medium mb-1 text-gray-600">
+                Name
+              </label>
+              <input
+                type="text"
+                placeholder="Name"
+                value={user.name}
+                onChange={(e) => setUser({ ...user, name: e.target.value })}
+                className="w-full p-2 border rounded mb-4 text-gray-600"
+              />
+              <label className="block text-sm font-medium mb-1 text-gray-600">
+                Date of Birth
+              </label>
+              <input
+                type="date"
+                placeholder="Date of Birth"
+                value={user.date_of_birth}
+                onChange={(e) =>
+                  setUser({ ...user, date_of_birth: e.target.value })
+                }
+                className="w-full p-2 border rounded mb-4 text-gray-600"
+              />
+              <DropdownSelect
+                label="Educational Qualification"
+                options={[
+                  "High School",
+                  "Higher Secondary",
+                  "Bachelors Degree",
+                  "Masters Degree",
+                  "PhD",
+                ]}
+                value={user.educational_qualification.education_level}
+                onChange={(value) =>
+                  setUser({
+                    ...user,
+                    educational_qualification: { education_level: value },
+                  })
+                }
+              />
+            </div>
+            <div className="bg-white">
+              <label className="block text-sm font-medium mb-1 text-gray-600">
+                Mobile Number
+              </label>
+              <input
+                type="email"
+                placeholder="Mobile number"
+                value={user.email_id}
+                onChange={(e) => setUser({ ...user, email_id: e.target.value })}
+                className="w-full p-2 border rounded mb-4 text-gray-600"
+              />
+              
+              <DropdownSelect 
+                label="Gender"
+                options={["Male", "Female", "Other", "Prefer not to say"] as Gender[]}
+                value={user.gender}
+                onChange={(value) => setUser({ ...user, gender: value })}
+              />
+              
+              <span className="pt-3 float-left">
+              <input
+                type="text"
+                placeholder="Specialization"
+                value={user.educational_qualification.specialization}
+                onChange={(e) =>
+                  setUser({
+                    ...user,
+                    educational_qualification: { specialization: e.target.value },
+                  })
+                }
+                className="w-full p-2 border rounded mb-4 text-gray-600"
+              />
+              </span>
+            </div>
+            <div className="bg-white">
+              <label className="block text-sm font-medium mb-1 text-gray-600">
+                Email ID
+              </label>
+              <input
+                type="email"
+                placeholder="Email ID"
+                value={user.email_id}
+                onChange={(e) => setUser({ ...user, email_id: e.target.value })}
+                className="w-full p-2 border rounded mb-4 text-gray-600"
+              />
+              <DropdownSelect
+                label="Blood Group"
+                options={Object.values(BloodGroup)}
+                value={user.blood_group}
+                onChange={(value) => setUser({ ...user, blood_group: value })}
+              />
+            </div>
+            
           </div>
         </div>
 
-        <DropdownSelect
-          label="Gender"
-          options={["Male", "Female", "Other", "Prefer not to say"] as Gender[]}
-          value={user.gender}
-          onChange={(value) => setUser({ ...user, gender: value })}
-        />
-
-        <DropdownSelect
-          label="Blood Group"
-          options={Object.values(BloodGroup)}
-          value={user.blood_group}
-          onChange={(value) => setUser({ ...user, blood_group: value })}
-        />
-
-        <DropdownSelect
-          label="Educational Qualification"
-          options={[
-            "High School",
-            "Higher Secondary",
-            "Bachelors Degree",
-            "Masters Degree",
-            "PhD",
-          ]}
-          value={user.educational_qualification.education_level}
-          onChange={(value) =>
-            setUser({
-              ...user,
-              educational_qualification: { education_level: value },
-            })
-          }
-        />
-        <input
-          type="text"
-          placeholder="Specialization"
-          value={user.educational_qualification.specialization}
-          onChange={(e) =>
-            setUser({
-              ...user,
-              educational_qualification: { specialization: e.target.value },
-            })
-          }
-          className="w-full p-2 border rounded mb-4 text-gray-600"
-        />
 
         {/* Present Address Form */}
         <AddressForm
@@ -213,7 +222,7 @@ const UserProfileForm: React.FC = () => {
         />
         <FamilyDetailsForm
           familyDetails={user.family_details}
-          onChange={() => {}}
+          onChange={() => { }}
         />
         <GeoLocationDisplay geoLocation={user.geo_location} />
         {/* Additional form fields here */}
