@@ -5,6 +5,7 @@ import { doSignInWithEmailAndPassword } from "../firebase/auth";
 import { useAuth, UserAuthValue } from "../context/AuthProvider";
 import { UserCredential } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@material-tailwind/react";
 
 function LoginPage() {
   const { userLoggedIn }: UserAuthValue = useAuth();
@@ -16,6 +17,7 @@ function LoginPage() {
   const [password, setPassword] = useState<string>("");
   const [isSigningIn, setIsSigningIn] = useState<boolean>(false);
   const [loginError, setLoginError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     userNameRef.current?.focus();
@@ -31,13 +33,16 @@ function LoginPage() {
     try {
       if (!isSigningIn) {
         setIsSigningIn(true);
+        setLoading(true);
         const userCredentials: UserCredential =
           await doSignInWithEmailAndPassword(userName, password);
         if (userCredentials?.user?.email) {
           navigate("/overview");
+          setIsSigningIn(false);
         }
       }
     } catch (err) {
+      setLoading(false);
       setLoginError(true);
       setIsSigningIn(false);
     }
@@ -108,13 +113,14 @@ function LoginPage() {
                         Forgot password?
                       </a>
                     </div>
-                    <button
+                    <Button
                       onClick={handleLoginClick}
-                      type="button"
-                      className="w-full text-white bg-sky-500 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                      loading={loading}
+                      color="blue"
+                      className="w-full cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                     >
                       Sign in
-                    </button>
+                    </Button>
                     {loginError && (
                       <div className="mt-5 flex justify-between items-start">
                         <div className="text-red-600 font-semibold">

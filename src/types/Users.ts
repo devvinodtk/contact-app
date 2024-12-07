@@ -21,6 +21,16 @@ export type Users = {
     geo_location?: GeoLocation
 }
 
+export type Personal_Details = {
+    name : string,
+    profile_photo_url?: string,
+    mobile_number: string,
+    email_id?: string,
+    date_of_birth: string,
+    blood_group: BloodGroup,
+    gender: Gender,
+}
+
 export enum BloodGroup {
     APositive = "A+",
     ANegative = "A-",

@@ -10,10 +10,11 @@ import {
 } from "../types/Users";
 import AddressForm from "./AddressForm";
 import DropdownSelect from "./DropdownSelect";
-import FamilyDetailsForm from "./FamilyDetailsForm";
 import GeoLocationDisplay from "./GeoLocationDisplay";
 import Header from "./common/Header";
 import ProfilePicUploader from "./common/ProfilePicUploader";
+import FamilyDetailsDialog from "./common/FamilyDetailsDialog";
+import FamilyDetailsTable from "./common/FamilyDetailsTable";
 
 const UserProfileForm: React.FC = () => {
   const [user, setUser] = useState<Users>({
@@ -69,6 +70,11 @@ const UserProfileForm: React.FC = () => {
     geo_location: { latitude: 12.9716, longitude: 77.5946 }, // Example coordinates (Bangalore)
   });
 
+  const [open, setOpen] = useState(false);
+
+  const handleClose = () => setOpen(false);
+  const handleAddMember = () => setOpen(true);
+
   const handleAddressChange = (
     addressType: "present_address" | "permanent_address" | "office_address",
     field: keyof Address,
@@ -84,14 +90,12 @@ const UserProfileForm: React.FC = () => {
   };
 
   return (
-
     <div className="flex-1 overflow-auto relative z-10">
-
       <Header title="Add Members" />
       <div className="p-4 w-full">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white">
+            <div className="bg-white">
               <div className="bg-gray-50 min-h-56 flex w-full mt-1 border items-center rounded">
                 <ProfilePicUploader />
               </div>
@@ -148,27 +152,31 @@ const UserProfileForm: React.FC = () => {
                 onChange={(e) => setUser({ ...user, email_id: e.target.value })}
                 className="w-full p-2 border rounded mb-4 text-gray-600"
               />
-              
-              <DropdownSelect 
+
+              <DropdownSelect
                 label="Gender"
-                options={["Male", "Female", "Other", "Prefer not to say"] as Gender[]}
+                options={
+                  ["Male", "Female", "Other", "Prefer not to say"] as Gender[]
+                }
                 value={user.gender}
                 onChange={(value) => setUser({ ...user, gender: value })}
               />
-              
+
               <span className="pt-3 float-left">
-              <input
-                type="text"
-                placeholder="Specialization"
-                value={user.educational_qualification.specialization}
-                onChange={(e) =>
-                  setUser({
-                    ...user,
-                    educational_qualification: { specialization: e.target.value },
-                  })
-                }
-                className="w-full p-2 border rounded mb-4 text-gray-600"
-              />
+                <input
+                  type="text"
+                  placeholder="Specialization"
+                  value={user.educational_qualification.specialization}
+                  onChange={(e) =>
+                    setUser({
+                      ...user,
+                      educational_qualification: {
+                        specialization: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-full p-2 border rounded mb-4 text-gray-600"
+                />
               </span>
             </div>
             <div className="bg-white">
@@ -189,11 +197,8 @@ const UserProfileForm: React.FC = () => {
                 onChange={(value) => setUser({ ...user, blood_group: value })}
               />
             </div>
-            
           </div>
         </div>
-
-
         {/* Present Address Form */}
         <AddressForm
           label="Present Address"
@@ -202,7 +207,6 @@ const UserProfileForm: React.FC = () => {
             handleAddressChange("present_address", field, value)
           }
         />
-
         {/* Permanent Address Form */}
         <AddressForm
           label="Permanent Address"
@@ -211,7 +215,6 @@ const UserProfileForm: React.FC = () => {
             handleAddressChange("permanent_address", field, value)
           }
         />
-
         {/* Office Address Form */}
         <AddressForm
           label="Office Address"
@@ -220,13 +223,16 @@ const UserProfileForm: React.FC = () => {
             handleAddressChange("office_address", field, value)
           }
         />
-        <FamilyDetailsForm
-          familyDetails={user.family_details}
-          onChange={() => { }}
-        />
+        <button
+          onClick={handleAddMember}
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Add Family Member
+        </button>
+        <FamilyDetailsDialog open={open} onClose={handleClose} />;
+        <FamilyDetailsTable />
         <GeoLocationDisplay geoLocation={user.geo_location} />
         {/* Additional form fields here */}
-
         <DropdownSelect
           label="Communication Preference"
           options={["In Person", "Postal"] as CommunicationPreference[]}
