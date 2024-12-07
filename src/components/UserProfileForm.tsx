@@ -1,11 +1,8 @@
 import React, { useState } from "react";
 import {
-  PersonalDetails,
   Members,
   BloodGroup,
-  AreaCode,
   CommunicationPreference,
-  GeoLocation,
   Address,
   Gender,
 } from "../types/Users";

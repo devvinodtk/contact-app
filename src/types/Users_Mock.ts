@@ -42,7 +42,7 @@ export const Member_Details: Members = {
     present_address: Member_Address,
     permanent_address: Member_Address,
     office_address: Member_Address,
-    family_details: Family_Details,
+    family_details: [Family_Details],
     proposed_by: "",
     seconded_by: "",
     communication_preference: "In Person",

@@ -1,14 +1,22 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import LoginPage from "./components/LoginPage";
 import Sidebar from "./components/Sidebar";
-import UsersPage from "./components/UsersPage";
 import OverviewPage from "./components/OverviewPage";
 import LogoutPage from "./components/LogoutPage";
 import { useAuth, UserAuthValue } from "./context/AuthProvider";
 import UserProfileForm from "./components/UserProfileForm";
+import { Provider } from "react-redux";
+import store from "./store/store";
+import { useEffect, useState } from "react";
 
 function App() {
   const { userLoggedIn }: UserAuthValue = useAuth();
+
+  const [isAuthenticated, setIsAuthenticated] = useState(userLoggedIn);
+
+  useEffect(() => {
+    setIsAuthenticated(userLoggedIn);
+  }, [userLoggedIn]);
 
   const AuthenticateUser = ({ children }: any) => {
     return userLoggedIn ? children : <Navigate to="/login" />;
@@ -16,46 +24,50 @@ function App() {
 
   return (
     <>
-      <div className="flex h-screen bg-white text-gray-100 overflow-hidden">
-        {/** BG */}
-        <div className="fixed insert-0 z-10">
-          <div className="absolute insert-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-90 opacity-80" />
-          <div className="absolute inset-0 backdrop-blur-sm" />
-        </div>
-        <AuthenticateUser>
-          <Sidebar />
-        </AuthenticateUser>
-        <Routes>
-          <Route
-            path="/overview"
-            element={
-              <AuthenticateUser>
-                <OverviewPage />
-              </AuthenticateUser>
-            }
-          />
-          <Route
-            path="/users"
-            element={
-              <AuthenticateUser>
-                {/* <UsersPage /> */}
-                <UserProfileForm />
-              </AuthenticateUser>
-            }
-          />
-          <Route
-            path="/logout"
-            element={
-              <AuthenticateUser>
-                <LogoutPage />
-              </AuthenticateUser>
-            }
-          />
-
-          <Route path="/" element={!userLoggedIn && <LoginPage />} />
-          <Route path="/login" element={!userLoggedIn && <LoginPage />} />
-        </Routes>
-      </div>
+      {" "}
+      {isAuthenticated ? (
+        <Provider store={store}>
+          <div className="flex h-screen bg-white text-gray-100 overflow-hidden">
+            {/** BG */}
+            <div className="fixed insert-0 z-10">
+              <div className="absolute insert-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-90 opacity-80" />
+              <div className="absolute inset-0 backdrop-blur-sm" />
+            </div>
+            <AuthenticateUser>
+              <Sidebar />
+            </AuthenticateUser>
+            <Routes>
+              <Route
+                path="/overview"
+                element={
+                  <AuthenticateUser>
+                    <OverviewPage />
+                  </AuthenticateUser>
+                }
+              />
+              <Route
+                path="/users"
+                element={
+                  <AuthenticateUser>
+                    {/* <UsersPage /> */}
+                    <UserProfileForm />
+                  </AuthenticateUser>
+                }
+              />
+              <Route
+                path="/logout"
+                element={
+                  <AuthenticateUser>
+                    <LogoutPage />
+                  </AuthenticateUser>
+                }
+              />
+            </Routes>
+          </div>
+        </Provider>
+      ) : (
+        <LoginPage />
+      )}
     </>
   );
 }

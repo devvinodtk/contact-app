@@ -4,7 +4,7 @@ export type Members = {
     present_address: Address,
     permanent_address: Address,
     office_address?: Address,
-    family_details?: FamilyDetails,
+    family_details?: [FamilyDetails],
     proposed_by: string,
     seconded_by: string,
     communication_preference: CommunicationPreference,
