@@ -20,7 +20,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
   return (
     <div className="p-4 border rounded-lg mb-4">
       <h2 className="text-lg font-semibold mb-4 text-gray-600">{label}</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <input
           type="text"
           placeholder="Flat Number/Name"
@@ -72,7 +72,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
         />
         <input
           type="text"
-          placeholder="Contact Number"
+          placeholder="Land Phone"
           value={address?.contact_number}
           onChange={handleChange("contact_number")}
           className="p-2 border rounded w-full text-gray-600"

@@ -242,6 +242,22 @@ const UserProfileForm: React.FC = () => {
           }
         />
       </div>
+      <div className="container mx-auto p-4 w-full bg-gray-50 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+          <button
+            type="reset"
+            className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600"
+          >
+            Reset
+          </button>
+          <button
+            type="submit"
+            className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
+          >
+            Submit
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
