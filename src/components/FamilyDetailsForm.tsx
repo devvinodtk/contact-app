@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import {
+  PersonalDetails,
   FamilyDetails,
   BloodGroup,
   Gender,
@@ -18,7 +19,10 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
   onChange,
 }) => {
   const handleChange = (
-    field: keyof FamilyDetails | keyof EducationalQualification,
+    field:
+      | keyof FamilyDetails
+      | keyof EducationalQualification
+      | keyof PersonalDetails,
     value: any
   ) => {};
 
@@ -36,7 +40,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
           <input
             type="text"
             placeholder="Name"
-            value={familyDetails?.name}
+            value={familyDetails?.member_personal_details?.name}
             onChange={(e) => handleChange("name", e.target.value)}
             className="w-full p-2 border rounded text-gray-600"
           />
@@ -45,7 +49,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
             options={
               ["Male", "Female", "Other", "Prefer not to say"] as Gender[]
             }
-            value={familyDetails?.gender}
+            value={familyDetails?.member_personal_details?.gender}
             onChange={(value) => handleChange("gender", value)}
           />
           <DropdownSelect
@@ -66,8 +70,8 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
           <DropdownSelect
             label="Blood Group"
             options={Object.values(BloodGroup)}
-            value={familyDetails?.blood_group}
-            onChange={(value) => handleChange("relationship", value)}
+            value={familyDetails?.member_personal_details?.blood_group}
+            onChange={(value) => handleChange("blood_group", value)}
           />
           {/* Additional fields for family details */}
           <DropdownSelect
@@ -79,20 +83,26 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
               "Masters Degree",
               "PhD",
             ]}
-            value={familyDetails?.educational_qualification.education_level}
+            value={
+              familyDetails?.member_personal_details?.educational_qualification
+                .education_level
+            }
             onChange={(value) => handleChange("education_level", value)}
           />
           <input
             type="text"
             placeholder="Specialization"
-            value={familyDetails?.educational_qualification.specialization}
+            value={
+              familyDetails?.member_personal_details?.educational_qualification
+                .specialization
+            }
             onChange={(e) => handleChange("specialization", e.target.value)}
             className="w-full p-2 border rounded text-gray-600"
           />
           <input
             type="text"
             placeholder="Job Title"
-            value={familyDetails?.job_title}
+            value={familyDetails?.member_personal_details?.job_title}
             onChange={(e) => handleChange("job_title", e.target.value)}
             className="w-full p-2 border rounded text-gray-600"
           />
@@ -102,7 +112,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
           <input
             type="date"
             placeholder="Date of Birth"
-            value={familyDetails?.date_of_birth}
+            value={familyDetails?.member_personal_details?.date_of_birth}
             onChange={(e) => handleChange("date_of_birth", e.target.value)}
             className="w-full p-2 border rounded text-gray-600"
           />

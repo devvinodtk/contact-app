@@ -1,16 +1,9 @@
-export type Users = {
-    name : string,
-    profile_photo_url?: string,
-    mobile_number: string,
-    email_id?: string,
-    date_of_birth: string,
-    blood_group: BloodGroup,
-    gender: Gender,
+export type Members = {
+    personal_details : PersonalDetails,
+    job_title?: string,
     present_address: Address,
     permanent_address: Address,
     office_address?: Address,
-    educational_qualification: EducationalQualification,
-    job_title?: string,
     family_details?: FamilyDetails,
     proposed_by: string,
     seconded_by: string,
@@ -21,14 +14,21 @@ export type Users = {
     geo_location?: GeoLocation
 }
 
-export type Personal_Details = {
+export type PersonalDetails = {
     name : string,
     profile_photo_url?: string,
-    mobile_number: string,
+    mobile_number?: string,
     email_id?: string,
     date_of_birth: string,
     blood_group: BloodGroup,
     gender: Gender,
+    educational_qualification: EducationalQualification,
+    job_title?: string,
+}
+
+export type FamilyDetails = {
+    member_personal_details?: PersonalDetails,
+    relationship: RelationshipType,
 }
 
 export enum BloodGroup {
@@ -51,16 +51,6 @@ export type Address = {
     country: string,
     pin_code: string,
     contact_number: string
-}
-
-export type FamilyDetails = {
-    name: string,
-    relationship: RelationshipType,
-    blood_group: BloodGroup,
-    gender: Gender,
-    educational_qualification: EducationalQualification,
-    job_title: string,
-    date_of_birth: string
 }
 
 export type EducationalQualification = {
