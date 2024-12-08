@@ -1,17 +1,10 @@
-export type Users = {
-    name : string,
-    profile_photo_url?: string,
-    mobile_number: string,
-    email_id?: string,
-    date_of_birth: string,
-    blood_group: BloodGroup,
-    gender: Gender,
+export type Members = {
+    personal_details : PersonalDetails,
+    job_title?: string,
     present_address: Address,
     permanent_address: Address,
     office_address?: Address,
-    educational_qualification: EducationalQualification,
-    job_title?: string,
-    family_details?: FamilyDetails,
+    family_details?: [FamilyDetails],
     proposed_by: string,
     seconded_by: string,
     communication_preference: CommunicationPreference,
@@ -19,6 +12,23 @@ export type Users = {
     area_code: AreaCode,
     is_inactive: boolean,
     geo_location?: GeoLocation
+}
+
+export type PersonalDetails = {
+    name : string,
+    profile_photo_url?: string,
+    mobile_number?: string,
+    email_id?: string,
+    date_of_birth: string,
+    blood_group: BloodGroup,
+    gender: Gender,
+    educational_qualification: EducationalQualification,
+    job_title?: string,
+}
+
+export type FamilyDetails = {
+    member_personal_details: PersonalDetails,
+    relationship: RelationshipType,
 }
 
 export enum BloodGroup {
@@ -43,16 +53,6 @@ export type Address = {
     contact_number: string
 }
 
-export type FamilyDetails = {
-    name: string,
-    relationship: RelationshipType,
-    blood_group: BloodGroup,
-    gender: Gender,
-    educational_qualification: EducationalQualification,
-    job_title: string,
-    date_of_birth: string
-}
-
 export type EducationalQualification = {
     education_level?: EducationLevel,
     specialization?: string
@@ -64,7 +64,7 @@ export type GeoLocation = {
   };
 
 export type Gender = "Male" | "Female" | "Other" | "Prefer Not To Say";
-export type EducationLevel = "High School" | "Higher Secondary" | "Bachelors Degree" | "Masters Degree" | "PhD"
+export type EducationLevel = "Nursery" | "Kindergarten" | "Primary School" | "High School" | "Higher Secondary" | "Bachelors Degree" | "Masters Degree" | "PhD"
 export type RelationshipType = "Spouse" | "Kid" | "Father" | "Mother" | "Father In Law" | "Mother In Law"
 export type CommunicationPreference = "In Person" | "Postal"
 export enum AreaCode {
