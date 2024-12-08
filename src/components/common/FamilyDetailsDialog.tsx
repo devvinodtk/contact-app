@@ -1,19 +1,18 @@
-import React from "react";
 import {
   Dialog,
   DialogBody,
   DialogHeader,
   DialogFooter,
-  Button,
-  IconButton,
 } from "@material-tailwind/react";
 import FamilyDetailsForm from "../FamilyDetailsForm";
 import { X } from "lucide-react";
+import { FamilyDetails } from "../../types/Users";
 
 const FamilyDetailsDialog = ({ open, onClose }: any) => {
-  const handleOnSave = () => {
-    console.log("Saved the family Details");
+  const handleOnFormChange = (familyDetails: FamilyDetails) => {
+    console.log("Updated family Details : ", familyDetails);
   };
+
   return (
     <Dialog
       size="lg"
@@ -30,15 +29,10 @@ const FamilyDetailsDialog = ({ open, onClose }: any) => {
         />
       </DialogHeader>
       <DialogBody>
-        <FamilyDetailsForm onChange={handleOnSave} />
+        <FamilyDetailsForm onChange={handleOnFormChange} />
       </DialogBody>
       <DialogFooter className="w-full">
-        <Button
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-          type="button"
-        >
-          Save Details
-        </Button>
+        <p></p>
       </DialogFooter>
     </Dialog>
   );

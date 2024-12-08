@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import membersReducer from './membersSlice';
+import membersReducer from './MembersSlice';
+import familyMembersReducer from './FamilyMembersSlice'
 
 const store =configureStore({
     reducer: {
-        members: membersReducer
+        members: membersReducer,
+        fmaily_members: familyMembersReducer
     }
 })
 

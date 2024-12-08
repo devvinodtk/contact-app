@@ -27,7 +27,7 @@ export type PersonalDetails = {
 }
 
 export type FamilyDetails = {
-    member_personal_details?: PersonalDetails,
+    member_personal_details: PersonalDetails,
     relationship: RelationshipType,
 }
 

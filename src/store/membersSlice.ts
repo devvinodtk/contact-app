@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Member_Details } from "../types/Users_Mock";
+import { Members } from "../types/Users";
 
-const initialState = [Member_Details];
+const initialState: Members = [];
 
 const membersSlice = createSlice({
     name: 'members',

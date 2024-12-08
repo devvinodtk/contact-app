@@ -1,5 +1,7 @@
 import React from "react";
 import { Card, Typography } from "@material-tailwind/react";
+import { useSelector } from "react-redux";
+import { FamilyDetails } from "../../types/Users";
 
 const TABLE_HEADER = [
   "Name",
@@ -12,20 +14,11 @@ const TABLE_HEADER = [
   "Date of Birth",
 ];
 
-const TABLE_ROWS = [
-  {
-    name: "John Michael",
-    gender: "Male",
-    relationship: "Son",
-    blood_group: "B +ve",
-    education: "Masters Degree",
-    specialization: "MBA",
-    job_title: "Software Professional",
-    dob: "12/12/1991",
-  },
-];
-
 const FamilyDetailsTable = () => {
+  const fmaily_members: [FamilyDetails] = useSelector(
+    (state) => state.fmaily_members
+  );
+
   return (
     <Card className="h-full w-full overflow-scroll" placeholder={undefined}>
       <table className="w-full min-w-max table-auto text-left">
@@ -49,27 +42,16 @@ const FamilyDetailsTable = () => {
           </tr>
         </thead>
         <tbody>
-          {TABLE_ROWS.map(
-            (
-              {
-                name,
-                gender,
-                relationship,
-                blood_group,
-                education,
-                specialization,
-                job_title,
-                dob,
-              },
-              index
-            ) => {
-              const isLast = index === TABLE_ROWS.length - 1;
+          {fmaily_members &&
+            fmaily_members.length > 0 &&
+            fmaily_members.map((member: FamilyDetails, index: number) => {
+              const isLast = index === fmaily_members.length - 1;
               const classes = isLast
                 ? "p-4"
                 : "p-4 border-b border-blue-gray-50";
 
               return (
-                <tr key={name}>
+                <tr key={index}>
                   <td className={classes}>
                     <Typography
                       variant="small"
@@ -77,7 +59,7 @@ const FamilyDetailsTable = () => {
                       className="font-normal"
                       placeholder={undefined}
                     >
-                      {name}
+                      {member.member_personal_details.name}
                     </Typography>
                   </td>
                   <td className={classes}>
@@ -87,7 +69,7 @@ const FamilyDetailsTable = () => {
                       className="font-normal"
                       placeholder={undefined}
                     >
-                      {gender}
+                      {member.member_personal_details.gender}
                     </Typography>
                   </td>
                   <td className={classes}>
@@ -97,7 +79,7 @@ const FamilyDetailsTable = () => {
                       className="font-normal"
                       placeholder={undefined}
                     >
-                      {relationship}
+                      {member.relationship}
                     </Typography>
                   </td>
                   <td className={classes}>
@@ -109,7 +91,7 @@ const FamilyDetailsTable = () => {
                       className="font-medium"
                       placeholder={undefined}
                     >
-                      {blood_group}
+                      {member.member_personal_details.blood_group}
                     </Typography>
                   </td>
                   <td className={classes}>
@@ -119,7 +101,10 @@ const FamilyDetailsTable = () => {
                       className="font-normal"
                       placeholder={undefined}
                     >
-                      {education}
+                      {
+                        member.member_personal_details.educational_qualification
+                          .education_level
+                      }
                     </Typography>
                   </td>
                   <td className={classes}>
@@ -129,7 +114,10 @@ const FamilyDetailsTable = () => {
                       className="font-normal"
                       placeholder={undefined}
                     >
-                      {specialization}
+                      {
+                        member.member_personal_details.educational_qualification
+                          .specialization
+                      }
                     </Typography>
                   </td>
                   <td className={classes}>
@@ -141,7 +129,7 @@ const FamilyDetailsTable = () => {
                       className="font-medium"
                       placeholder={undefined}
                     >
-                      {job_title}
+                      {member.member_personal_details.job_title}
                     </Typography>
                   </td>
                   <td className={classes}>
@@ -153,13 +141,12 @@ const FamilyDetailsTable = () => {
                       className="font-medium"
                       placeholder={undefined}
                     >
-                      {dob}
+                      {member.member_personal_details.date_of_birth}
                     </Typography>
                   </td>
                 </tr>
               );
-            }
-          )}
+            })}
         </tbody>
       </table>
     </Card>
