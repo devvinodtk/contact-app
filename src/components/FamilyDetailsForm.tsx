@@ -16,12 +16,12 @@ import { useDispatch } from "react-redux";
 
 interface FamilyDetailsFormProps {
   familyDetails: FamilyDetails;
-  onChange: (details: FamilyDetails) => void;
+  onSaveDetails: (details: FamilyDetails) => void;
 }
 
 const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
   familyDetails,
-  onChange,
+  onSaveDetails,
 }) => {
   const dispatch = useDispatch();
 
@@ -30,7 +30,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
 
   const handleSaveFormClick = () => {
     dispatch(addFamilyMember(memberFamilyDetails));
-    // onChange(memberFamilyDetails);
+    onSaveDetails(memberFamilyDetails);
   };
 
   const debouncedHandleChange = useCallback(
@@ -176,6 +176,9 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
           <DropdownSelect
             label="Educational Qualification"
             options={[
+              "Nursery",
+              "Kindergarten",
+              "Primary School",
               "High School",
               "Higher Secondary",
               "Bachelors Degree",

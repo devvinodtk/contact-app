@@ -15,15 +15,21 @@ import ProfilePicUploader from "./common/ProfilePicUploader";
 import FamilyDetailsDialog from "./common/FamilyDetailsDialog";
 import FamilyDetailsTable from "./common/FamilyDetailsTable";
 import { Member_Details } from "../types/Users_Mock";
+import { useDispatch } from "react-redux";
+import { addMember } from "../store/MembersSlice";
 
 const UserProfileForm: React.FC = () => {
   const [user, setUser] = useState<Members>(Member_Details);
-
   const [open, setOpen] = useState(false);
 
-  const handleClose = () => setOpen(false);
-  const handleAddMember = () => setOpen(true);
+  const handleClose = () => setOpen(false); // Callback function to close the Family Details Popup
+  const handleAddMember = () => setOpen(true); // Callback function to open the Family Details Popup
 
+  const dispatch = useDispatch();
+
+  const handleSaveMembersForm = () => {
+    dispatch(addMember(user));
+  };
   const handleAddressChange = (
     addressType: "present_address" | "permanent_address" | "office_address",
     field: keyof Address,
@@ -258,10 +264,11 @@ const UserProfileForm: React.FC = () => {
             Reset
           </button>
           <button
-            type="submit"
+            onClick={handleSaveMembersForm}
+            type="button"
             className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
           >
-            Submit
+            Save Member Details
           </button>
         </div>
       </div>

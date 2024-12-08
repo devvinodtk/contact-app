@@ -64,7 +64,7 @@ export type GeoLocation = {
   };
 
 export type Gender = "Male" | "Female" | "Other" | "Prefer Not To Say";
-export type EducationLevel = "High School" | "Higher Secondary" | "Bachelors Degree" | "Masters Degree" | "PhD"
+export type EducationLevel = "Nursery" | "Kindergarten" | "Primary School" | "High School" | "Higher Secondary" | "Bachelors Degree" | "Masters Degree" | "PhD"
 export type RelationshipType = "Spouse" | "Kid" | "Father" | "Mother" | "Father In Law" | "Mother In Law"
 export type CommunicationPreference = "In Person" | "Postal"
 export enum AreaCode {

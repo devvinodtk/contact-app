@@ -9,8 +9,8 @@ import { X } from "lucide-react";
 import { FamilyDetails } from "../../types/Users";
 
 const FamilyDetailsDialog = ({ open, onClose }: any) => {
-  const handleOnFormChange = (familyDetails: FamilyDetails) => {
-    console.log("Updated family Details : ", familyDetails);
+  const handleOnFormSave = (familyDetails: FamilyDetails) => {
+    onClose();
   };
 
   return (
@@ -29,7 +29,7 @@ const FamilyDetailsDialog = ({ open, onClose }: any) => {
         />
       </DialogHeader>
       <DialogBody>
-        <FamilyDetailsForm onChange={handleOnFormChange} />
+        <FamilyDetailsForm onSaveDetails={handleOnFormSave} />
       </DialogBody>
       <DialogFooter className="w-full">
         <p></p>
