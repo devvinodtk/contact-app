@@ -20,8 +20,9 @@ const FamilyDetailsTable = () => {
   );
 
   return (
-    <Card className="h-full w-full overflow-scroll" placeholder={undefined}>
-      <table className="w-full min-w-max table-auto text-left">
+    <Card className="h-full w-full" placeholder={undefined}>
+      <div className="overflow-x-auto">
+      <table className="w-full min-w-max border rounded-lg table-auto text-left">
         <thead>
           <tr>
             {TABLE_HEADER.map((head) => (
@@ -32,7 +33,7 @@ const FamilyDetailsTable = () => {
                 <Typography
                   variant="small"
                   color="blue-gray"
-                  className="font-normal leading-none opacity-70"
+                  className="font-bold leading-none"
                   placeholder={undefined}
                 >
                   {head}
@@ -149,6 +150,7 @@ const FamilyDetailsTable = () => {
             })}
         </tbody>
       </table>
+      </div>
     </Card>
   );
 };
