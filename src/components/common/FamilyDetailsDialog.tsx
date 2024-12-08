@@ -18,7 +18,7 @@ const FamilyDetailsDialog = ({ open, onClose }: any) => {
       size="lg"
       open={open}
       handler={onClose}
-      className="flex flex-col items-center justify-center scroll-auto"
+      className="flex flex-col items-center justify-center mx-auto scroll-auto"
       dismiss={{ outside: false }}
     >
       <DialogHeader className="w-full justify-between">
