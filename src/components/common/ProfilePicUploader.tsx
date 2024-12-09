@@ -62,13 +62,14 @@ const ProfilePicUploader: React.FC = () => {
           </div>
         </div>
         <div className="bg-blue-500 text-white ml-2 px-4 py-2 rounded">
-          <div {...getRootProps()}>
-            <input {...getInputProps()} />
-            <Crop className={image ? "cursor-pointer " : ""} onClick={handleCrop} />
+          <div>
+            <Crop
+              className={image ? "cursor-pointer " : ""}
+              onClick={handleCrop}
+            />
           </div>
         </div>
       </div>
-
     </div>
   );
 };

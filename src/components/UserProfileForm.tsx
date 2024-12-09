@@ -20,7 +20,7 @@ import { addMember } from "../store/MembersSlice";
 
 const UserProfileForm: React.FC = () => {
   const [user, setUser] = useState<Members>(Member_Details);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // Maintains open/close state of Family Details Popup
 
   const handleClose = () => setOpen(false); // Callback function to close the Family Details Popup
   const handleAddMember = () => setOpen(true); // Callback function to open the Family Details Popup

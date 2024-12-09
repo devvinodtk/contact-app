@@ -1,13 +1,41 @@
-import { LayoutDashboard, UserPlus, NotebookTabs, LogIn, Menu, IdCard } from "lucide-react";
+import {
+  LayoutDashboard,
+  UserPlus,
+  NotebookTabs,
+  LogIn,
+  Menu,
+  IdCard,
+} from "lucide-react";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const SIDEBAR_ITEMS = [
-  { name: "Dashboard", icon: LayoutDashboard, color: "#ff3aac", href: "/overview" },
+  {
+    name: "Overview",
+    icon: LayoutDashboard,
+    color: "#ff3aac",
+    href: "/overview",
+  },
+  {
+    name: "Dashboard",
+    icon: LayoutDashboard,
+    color: "#ff3aac",
+    href: "/dashboard",
+  },
   { name: "Add Member", icon: UserPlus, color: "#f1bf00", href: "/users" },
-  { name: "Adrress List", icon: NotebookTabs, color: "#00ffff", href: "/products" },
-  { name: "Membership Card", icon: IdCard, color: "#6EE7B7", href: "/settings" },
+  {
+    name: "Adrress List",
+    icon: NotebookTabs,
+    color: "#00ffff",
+    href: "/products",
+  },
+  {
+    name: "Membership Card",
+    icon: IdCard,
+    color: "#6EE7B7",
+    href: "/settings",
+  },
   { name: "Logout", icon: LogIn, color: "#ff7300", href: "/logout" },
 ];
 
