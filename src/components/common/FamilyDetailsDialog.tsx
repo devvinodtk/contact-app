@@ -15,14 +15,14 @@ const FamilyDetailsDialog = ({ open, onClose }: any) => {
 
   return (
     <Dialog
-      size="lg"
+      size="sm"
       open={open}
       handler={onClose}
-      className="flex flex-col items-center justify-center mx-auto scroll-auto"
+      className="flex flex-col items-center justify-center"
       dismiss={{ outside: false }}
     >
       <DialogHeader className="w-full justify-between">
-        <h2>Add a family member</h2>
+        <h2 className="text-center w-full ml-[10%]">Add a family member</h2>
         <X
           onClick={onClose}
           className="cursor-pointer text-lg font-semibold w-[10%] mb-4 text-gray-600"
