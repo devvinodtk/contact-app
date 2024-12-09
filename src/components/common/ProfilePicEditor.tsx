@@ -24,7 +24,11 @@ const ProfilePicEditor: React.FC<ProfilePicEditorProps> = ({
         ref={editorRef}
         image={imageSrc} // or file input
       />
-      <Save className="cursor-pointer" onClick={handleSave} />
+      <div className="bg-blue-500 text-white ml-2 px-4 py-2 rounded">
+        <div>
+          <Save className="cursor-pointer" onClick={handleSave} />
+        </div>
+      </div>
     </div>
   );
 };
