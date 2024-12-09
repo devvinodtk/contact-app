@@ -8,6 +8,7 @@ import UserProfileForm from "./components/UserProfileForm";
 import { Provider } from "react-redux";
 import store from "./store/store";
 import { useEffect, useState } from "react";
+import Dashboard from "./components/Dashboard";
 
 function App() {
   const { userLoggedIn }: UserAuthValue = useAuth();
@@ -38,6 +39,14 @@ function App() {
             </AuthenticateUser>
             <Routes>
               <Route
+                path="/"
+                element={
+                  <AuthenticateUser>
+                    <OverviewPage />
+                  </AuthenticateUser>
+                }
+              />
+              <Route
                 path="/overview"
                 element={
                   <AuthenticateUser>
@@ -46,10 +55,17 @@ function App() {
                 }
               />
               <Route
+                path="/dashboard"
+                element={
+                  <AuthenticateUser>
+                    <Dashboard />
+                  </AuthenticateUser>
+                }
+              />
+              <Route
                 path="/users"
                 element={
                   <AuthenticateUser>
-                    {/* <UsersPage /> */}
                     <UserProfileForm />
                   </AuthenticateUser>
                 }
