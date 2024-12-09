@@ -48,7 +48,6 @@ const UserProfileForm: React.FC = () => {
     <div className="flex-1 overflow-auto relative z-10">
       <Header title="Add Members" />
       <div className="p-4 w-full">
-        <div className="container mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-white">
               <div className="bg-gray-50 min-h-56 flex w-full mt-1 border items-center rounded">
@@ -211,7 +210,6 @@ const UserProfileForm: React.FC = () => {
               />
             </div>
           </div>
-        </div>
         {/* Present Address Form */}
         <AddressForm
           label="Present Address"
@@ -238,7 +236,7 @@ const UserProfileForm: React.FC = () => {
         />
         <button
           onClick={handleAddMember}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="bg-blue-600 text-white px-4 py-2 mb-2 rounded"
         >
           Add Family Member
         </button>
@@ -246,6 +244,8 @@ const UserProfileForm: React.FC = () => {
         <FamilyDetailsTable />
         <GeoLocationDisplay geoLocation={user.geo_location} />
         {/* Additional form fields here */}
+        <div className="p-4 border rounded-lg mt-6">
+        <h2 className="text-lg font-semibold mb-4 text-gray-600">Office Use</h2>
         <DropdownSelect
           label="Communication Preference"
           options={["In Person", "Postal"] as CommunicationPreference[]}
@@ -253,9 +253,11 @@ const UserProfileForm: React.FC = () => {
           onChange={(value) =>
             setUser({ ...user, communication_preference: value })
           }
+
         />
+        </div>
       </div>
-      <div className="container mx-auto p-4 w-full bg-gray-50 shadow-sm">
+      <div className="p-4 w-full bg-gray-50 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
           <button
             type="reset"
