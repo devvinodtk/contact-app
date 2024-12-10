@@ -11,6 +11,7 @@ import {
 } from "@material-tailwind/react";
 import Header from "./common/Header";
 import { PencilIcon, Search, ChevronsUpDown } from "lucide-react";
+import GoogleDriveUploader from "./GoogleDriveUploader";
 
 const Dashboard = () => {
   const TABLE_HEAD = ["Member", "Function", "Status", "Employed", ""];
@@ -209,6 +210,7 @@ const Dashboard = () => {
       <div className="max-w-80 mr-1 w-full text-gray-700 bg-white rounded-lg shadow-md overflow-hidden">
         Hello
       </div>
+      <GoogleDriveUploader />
     </>
   );
 };
