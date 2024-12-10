@@ -68,7 +68,7 @@ const Dashboard = () => {
       <div className="flex-1 overflow-auto relative z-10">
         <Header title="Dashboard" />
         <div className="m-5">
-          <div className="container mx-auto">
+          <div className="w-full mx-auto">
             <div className="overflow-x-auto bg-white text-gray-700  rounded-lg">
               <Card className="h-full w-full">
                 <CardHeader
@@ -85,9 +85,9 @@ const Dashboard = () => {
                     </div>
                   </div>
                 </CardHeader>
-                <CardBody className="overflow-scroll px-0">
-                  <table className="mt-4 w-full min-w-max table-auto text-left">
-                    <thead>
+                <CardBody className="p-4 overflow-auto px-0">
+                  <table className="w-full min-w-max table-auto text-left border rounded border-collapse border border-gray-200">
+                    <thead className="bg-sky-50 text-gray-700">
                       <tr>
                         {TABLE_HEAD.map((head, index) => (
                           <th
@@ -120,10 +120,10 @@ const Dashboard = () => {
                           const isLast = index === TABLE_ROWS.length - 1;
                           const classes = isLast
                             ? "p-4"
-                            : "p-4 border-b border-blue-gray-50";
+                            : "p-4 border-b border-blue-gray-100";
 
                           return (
-                            <tr key={name}>
+                            <tr key={name} className="hover:bg-sky-50">
                               <td className={classes}>
                                 <div className="flex items-center gap-3">
                                   <Avatar
@@ -192,7 +192,9 @@ const Dashboard = () => {
                                   <IconButton variant="text">
                                     <PencilIcon className="h-4 w-4" />
                                   </IconButton>
+                                  
                                 </Tooltip>
+                                
                               </td>
                             </tr>
                           );
@@ -206,9 +208,9 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      <div className="max-w-80 mr-1 w-full text-gray-700 bg-white rounded-lg shadow-md overflow-hidden">
+      {/* <div className="max-w-80 mr-1 w-full text-gray-700 bg-white rounded-lg shadow-md overflow-hidden">
         Hello
-      </div>
+      </div> */}
     </>
   );
 };
