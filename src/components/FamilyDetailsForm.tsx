@@ -127,21 +127,15 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
 
   return (
     <>
-      <div className="mt-6">
-        <div className="border p-4 mb-4 rounded-lg">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 mb-5">
-            <div>
-              <h2 className="text-lg font-semibold w-full mb-4 text-gray-600">
-                Family Details
-              </h2>
-            </div>
-          </div>
+      <div className="w-full">
+        <div className="">          
+          <label className="block text-sm font-medium text-gray-600">Name</label>
           <input
             type="text"
             placeholder="Name"
             value={familyDetails?.member_personal_details?.name}
             onChange={(e) => handleChange("name", e.target.value)}
-            className="w-full p-2 border rounded text-gray-600"
+            className="w-full p-2 mb-4 border rounded text-gray-600"
           />
           <DropdownSelect
             label="Gender"
@@ -206,9 +200,9 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
             placeholder="Job Title"
             value={familyDetails?.member_personal_details?.job_title}
             onChange={(e) => handleChange("job_title", e.target.value)}
-            className="w-full p-2 border rounded text-gray-600"
+            className="w-full p-2 mt-6 border rounded text-gray-600"
           />
-          <label className="block text-sm font-medium mb-1 text-gray-600">
+          <label className="block text-sm font-medium mt-6 mb-1 text-gray-600">
             Date of Birth
           </label>
           <input
@@ -222,7 +216,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
         <Button
           onClick={handleSaveFormClick}
           color="blue"
-          className="w-full cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+          className="w-full cursor-pointer text-white mt-6 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
         >
           Save Details
         </Button>

@@ -23,6 +23,7 @@ const ProfilePicEditor: React.FC<ProfilePicEditorProps> = ({
         className="rounded-full border-4 border-white shadow-md"
         ref={editorRef}
         image={imageSrc} // or file input
+        variant="rounded"
       />
       <div className="bg-blue-500 text-white ml-2 px-4 py-2 rounded">
         <div>
