@@ -252,11 +252,12 @@ const UserProfileForm: React.FC = () => {
           <FamilyDetailsDialog open={open} onClose={handleClose} />
           <FamilyDetailsTable />
         </div>
-        <div className="flex flex-wrap md:flex-nowrap gap-4 mt-8 border rounded">
-          <div className="flex-1 sm-w-full p-4 text-left">
+
+        <div className="flex flex-wrap gap-4 border rounded p-4  mt-6">
+          <div className="flex-1 min-w-[200px]">
             <GeoLocationDisplay geoLocation={user.geo_location} />
           </div>
-          <div className="flex-1 sm-w-full p-4 text-left">
+          <div className="flex-1 min-w-[200px]">
             <h2 className="text-lg font-semibold mb-4 text-gray-600">Office Use</h2>
             <label className="text-gray-600 text-sm font-medium">Proposed by</label>
             <input type="text" className="p-2 border mb-3 rounded w-full text-gray-600" />
@@ -267,9 +268,10 @@ const UserProfileForm: React.FC = () => {
               onChange={(value) =>
                 setUser({ ...user, communication_preference: value })
               }
-
             />
-          </div>
+        </div>
+
+
         </div>
 
       </div>

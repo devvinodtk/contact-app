@@ -43,7 +43,7 @@ function Sidebar() {
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
   return (
     <motion.div
-      className={`relative z-10 duration-300 transition-all ease-in-out flex-shrink-0 ${
+      className={`relative z-10 duration-300 transition-all ease-in-out flex-shrink-0 mobileMenu${
         isSideBarOpen ? "w-64" : "w-20"
       }`}
       animate={{ width: isSideBarOpen ? 256 : 80 }}

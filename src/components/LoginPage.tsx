@@ -122,8 +122,8 @@ function LoginPage() {
                       Sign in
                     </Button>
                     {loginError && (
-                      <div className="mt-5 flex justify-between items-start">
-                        <div className="text-red-600 font-semibold">
+                      <div className="mt-5 flex justify-between items-start w-full">
+                        <div className="text-red-600 font-semibold text-center w-full">
                           Login failed. Wrong email or password.
                         </div>
                       </div>
