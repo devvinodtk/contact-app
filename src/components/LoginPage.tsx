@@ -1,6 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import SettingSection from "./SettingSection";
-import { User, LayoutDashboard } from "lucide-react";
 import { doSignInWithEmailAndPassword } from "../firebase/auth";
 import { useAuth, UserAuthValue } from "../context/AuthProvider";
 import { UserCredential } from "firebase/auth";
@@ -114,6 +112,7 @@ function LoginPage() {
                       </a>
                     </div>
                     <Button
+                      {...({} as React.ComponentProps<typeof Button>)}
                       onClick={handleLoginClick}
                       loading={loading}
                       color="blue"

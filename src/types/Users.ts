@@ -4,11 +4,11 @@ export type Members = {
     present_address: Address,
     permanent_address: Address,
     office_address?: Address,
-    family_details?: [FamilyDetails],
+    family_details?: FamilyDetails[],
     proposed_by: string,
     seconded_by: string,
     communication_preference: CommunicationPreference,
-    date_of_joining: Date,
+    date_of_joining: string,
     area_code: AreaCode,
     is_inactive: boolean,
     geo_location?: GeoLocation
@@ -40,6 +40,12 @@ export enum BloodGroup {
     ABNegative = "AB-",
     OPositive = "O+",
     ONegative = "O-"
+}
+
+export enum AddressType {
+    PresentAddress = "Present Address",
+    PermanentAddress = "Permanent Address",
+    OfficeAddress = "Office Address"
 }
 
 export type Address = {
