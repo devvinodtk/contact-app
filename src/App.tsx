@@ -12,7 +12,6 @@ import Dashboard from "./components/Dashboard";
 
 function App() {
   const { userLoggedIn }: UserAuthValue = useAuth();
-
   const [isAuthenticated, setIsAuthenticated] = useState(userLoggedIn);
 
   useEffect(() => {

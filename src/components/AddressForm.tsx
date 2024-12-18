@@ -1,22 +1,17 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Address, AddressType } from "../types/Users";
+import React, { useEffect, useState } from "react";
+import { Address, PostalInfo } from "../types/Users";
 import { Switch } from "@material-tailwind/react";
 import type { SwitchProps } from "@material-tailwind/react";
-import debounce from "lodash/debounce";
 import { Member_Address } from "../types/Users_Mock";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  addAddress,
-  AddressState,
-  updateAddress,
-} from "../store/AddressDetailsSlice";
+// @ts-ignore
+import pincodeDirectory from "india-pincode-lookup";
 
 interface AddressFormProps {
   label: string;
   copyAddress?: boolean;
   addressInfo?: Address;
-
   onAddressChange: (value: Address) => void;
+  onCopyPresentAddress?: (status: boolean) => void;
 }
 
 const AddressForm: React.FC<AddressFormProps> = ({
@@ -24,14 +19,18 @@ const AddressForm: React.FC<AddressFormProps> = ({
   copyAddress,
   addressInfo,
   onAddressChange,
+  onCopyPresentAddress,
 }) => {
-  const member_address: [AddressState] = useSelector(
-    (state: any) => state.address_details
+  const [addressDetails, setAddressDetails] = useState<Address>(
+    addressInfo ?? Member_Address
   );
-  const [addressDetails, setAddressDetails] = useState<Address>(Member_Address);
-  const dispatch = useDispatch();
+  const [fetchDetailsByPIN, setFetchDetailsByPIN] = useState<boolean>(false);
+
   const handleChange = (field: keyof Address, value: any) => {
-    debouncedHandleChange(field, value);
+    setAddressDetails((prevState: Address) => ({
+      ...prevState,
+      [field]: value,
+    }));
   };
 
   const isAddressComplete = () => {
@@ -48,57 +47,37 @@ const AddressForm: React.FC<AddressFormProps> = ({
   };
 
   useEffect(() => {
+    if (addressInfo) {
+      setAddressDetails(addressInfo);
+    }
+  }, [addressInfo]);
+
+  useEffect(() => {
+    if (
+      fetchDetailsByPIN &&
+      addressDetails &&
+      addressDetails.pin_code.length === 6
+    ) {
+      let postalInfo: PostalInfo[] = pincodeDirectory.lookup(
+        addressDetails.pin_code
+      );
+
+      if (postalInfo && postalInfo.length) {
+        const postalInfoByPIN = postalInfo[0];
+        setFetchDetailsByPIN(false);
+        setAddressDetails((prevAddress: Address) => ({
+          ...prevAddress,
+          city: postalInfoByPIN.districtName,
+          state: postalInfoByPIN.stateName,
+        }));
+      }
+    } else if (addressDetails.pin_code.length === 5) {
+      setFetchDetailsByPIN(true);
+    }
     if (isAddressComplete()) {
       onAddressChange(addressDetails);
     }
   }, [addressDetails]);
-
-  const debouncedHandleChange = useCallback(
-    debounce((field: keyof Address, value: any) => {
-      if (field === "flat_number_name") {
-        setAddressDetails((prevState: Address) => ({
-          ...prevState,
-          flat_number_name: value,
-        }));
-      } else if (field === "address_line_1") {
-        setAddressDetails((prevState: Address) => ({
-          ...prevState,
-          address_line_1: value,
-        }));
-      } else if (field === "address_line_2") {
-        setAddressDetails((prevState: Address) => ({
-          ...prevState,
-          address_line_2: value,
-        }));
-      } else if (field === "city") {
-        setAddressDetails((prevState: Address) => ({
-          ...prevState,
-          city: value,
-        }));
-      } else if (field === "state") {
-        setAddressDetails((prevState: Address) => ({
-          ...prevState,
-          state: value,
-        }));
-      } else if (field === "country") {
-        setAddressDetails((prevState: Address) => ({
-          ...prevState,
-          country: value,
-        }));
-      } else if (field === "pin_code") {
-        setAddressDetails((prevState: Address) => ({
-          ...prevState,
-          pin_code: value,
-        }));
-      } else if (field === "contact_number") {
-        setAddressDetails((prevState: Address) => ({
-          ...prevState,
-          contact_number: value,
-        }));
-      }
-    }, 500),
-    []
-  );
 
   const [isCopyAddressChecked, setIsCopyAddressChecked] = useState(false);
 
@@ -107,28 +86,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
   };
 
   useEffect(() => {
-    if (isCopyAddressChecked) {
-      if (member_address && member_address.length > 0) {
-        const presentAddress: AddressState | undefined = member_address.find(
-          (address) => address.address_type === AddressType.PresentAddress
-        );
-        if (presentAddress) {
-          dispatch(
-            addAddress({
-              address_type: AddressType.PermanentAddress,
-              address: presentAddress.address,
-            })
-          );
-        }
-      }
-    } else {
-      dispatch(
-        updateAddress({
-          address_type: AddressType.PermanentAddress,
-          address: Member_Address,
-        })
-      );
-    }
+    onCopyPresentAddress && onCopyPresentAddress(isCopyAddressChecked);
   }, [isCopyAddressChecked]);
 
   return (
@@ -152,56 +110,57 @@ const AddressForm: React.FC<AddressFormProps> = ({
         <input
           type="text"
           placeholder="Flat Number/Name"
-          value={addressInfo?.flat_number_name}
+          value={addressDetails?.flat_number_name}
           onChange={(e) => handleChange("flat_number_name", e.target.value)}
           className="p-2 border rounded w-full text-gray-600"
         />
         <input
           type="text"
           placeholder="Address Line 1"
-          value={addressInfo?.address_line_1}
+          value={addressDetails?.address_line_1}
           onChange={(e) => handleChange("address_line_1", e.target.value)}
           className="p-2 border rounded w-full text-gray-600"
         />
         <input
           type="text"
           placeholder="Address Line 2"
-          value={addressInfo?.address_line_2}
+          value={addressDetails?.address_line_2}
           onChange={(e) => handleChange("address_line_2", e.target.value)}
           className="p-2 border rounded w-full text-gray-600"
         />
         <input
           type="text"
+          placeholder="Pin Code"
+          value={addressDetails?.pin_code}
+          onChange={(e) => handleChange("pin_code", e.target.value)}
+          className="p-2 border rounded w-full text-gray-600"
+        />
+        <input
+          type="text"
           placeholder="City"
-          value={addressInfo?.city}
+          value={addressDetails?.city}
           onChange={(e) => handleChange("city", e.target.value)}
           className="p-2 border rounded w-full text-gray-600"
         />
         <input
           type="text"
           placeholder="State"
-          value={addressInfo?.state}
+          value={addressDetails?.state}
           onChange={(e) => handleChange("state", e.target.value)}
           className="p-2 border rounded w-full text-gray-600"
         />
         <input
           type="text"
+          disabled={true}
           placeholder="Country"
-          value={addressInfo?.country}
+          value={addressDetails?.country}
           onChange={(e) => handleChange("country", e.target.value)}
           className="p-2 border rounded w-full text-gray-600"
         />
         <input
           type="text"
-          placeholder="Pin Code"
-          value={addressInfo?.pin_code}
-          onChange={(e) => handleChange("pin_code", e.target.value)}
-          className="p-2 border rounded w-full text-gray-600"
-        />
-        <input
-          type="text"
           placeholder="Land Phone"
-          value={addressInfo?.contact_number}
+          value={addressDetails?.contact_number}
           onChange={(e) => handleChange("contact_number", e.target.value)}
           className="p-2 border rounded w-full text-gray-600"
         />

@@ -10,7 +10,7 @@ export const Member_Address: Address = {
     address_line_2: "",
     city: "",
     state: "",
-    country: "",
+    country: "INDIA",
     pin_code: "",
     contact_number: "",
 }

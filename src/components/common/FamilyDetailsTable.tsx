@@ -1,6 +1,5 @@
 import React from "react";
 import { Card, Typography } from "@material-tailwind/react";
-import { useSelector } from "react-redux";
 import { FamilyDetails } from "../../types/Users";
 
 const TABLE_HEADER = [
@@ -14,11 +13,13 @@ const TABLE_HEADER = [
   "Date of Birth",
 ];
 
-const FamilyDetailsTable = () => {
-  const fmaily_members: FamilyDetails[] = useSelector(
-    (state: any) => state.fmaily_members.familyDetails
-  );
+interface FamilyDetailsTableProps {
+  fmaily_members: FamilyDetails[];
+}
 
+const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
+  fmaily_members,
+}) => {
   const typographyProps = {
     variant: "small",
     color: "blue-gray",

@@ -1,9 +1,9 @@
 export type Members = {
     personal_details : PersonalDetails,
     job_title?: string,
-    present_address: Address,
-    permanent_address: Address,
-    office_address?: Address,
+    present_address: Address | null,
+    permanent_address: Address | null,
+    office_address?: Address | null,
     family_details?: FamilyDetails[],
     proposed_by: string,
     seconded_by: string,
@@ -12,6 +12,14 @@ export type Members = {
     area_code: AreaCode,
     is_inactive: boolean,
     geo_location?: GeoLocation
+}
+
+export type PostalInfo = {
+    districtName: string
+    officeName : string
+    pincode: number
+    stateName: string
+    taluk: string
 }
 
 export type PersonalDetails = {

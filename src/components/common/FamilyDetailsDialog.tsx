@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Dialog,
   DialogBody,
@@ -6,10 +7,21 @@ import {
 } from "@material-tailwind/react";
 import FamilyDetailsForm from "../FamilyDetailsForm";
 import { X } from "lucide-react";
+import { FamilyDetails } from "../../types/Users";
 
-const FamilyDetailsDialog = ({ open, onClose }: any) => {
-  const handleOnFormSave = () => {
-    onClose();
+interface FamilyDetailsDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onSaveFamilyDetails: (memberFamilyDetails: FamilyDetails) => void;
+}
+
+const FamilyDetailsDialog: React.FC<FamilyDetailsDialogProps> = ({
+  open,
+  onClose,
+  onSaveFamilyDetails,
+}: any) => {
+  const handleOnFormSave = (memberFamilyDetails: FamilyDetails) => {
+    onSaveFamilyDetails(memberFamilyDetails);
   };
 
   return (

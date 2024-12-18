@@ -11,8 +11,7 @@ import DropdownSelect from "./DropdownSelect";
 import { Family_Details } from "../types/Users_Mock";
 import debounce from "lodash/debounce";
 import { Button } from "@material-tailwind/react";
-import { addFamilyMember } from "../store/FamilyMembersSlice";
-import { useDispatch } from "react-redux";
+import { formatDate } from "../utils/Utility_Functions";
 
 interface FamilyDetailsFormProps {
   familyDetails?: FamilyDetails;
@@ -23,13 +22,10 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
   familyDetails,
   onSaveDetails,
 }) => {
-  const dispatch = useDispatch();
-
   const [memberFamilyDetails, setMemberFamilyDetails] =
     useState<FamilyDetails>(Family_Details);
 
   const handleSaveFormClick = () => {
-    dispatch(addFamilyMember(memberFamilyDetails));
     onSaveDetails(memberFamilyDetails);
   };
 
@@ -106,7 +102,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
             ...prevState,
             member_personal_details: {
               ...prevState.member_personal_details,
-              date_of_birth: value,
+              date_of_birth: formatDate(value),
             },
           }));
         }

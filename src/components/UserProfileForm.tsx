@@ -16,18 +16,17 @@ import Header from "./common/Header";
 import ProfilePicUploader from "./common/ProfilePicUploader";
 import FamilyDetailsDialog from "./common/FamilyDetailsDialog";
 import FamilyDetailsTable from "./common/FamilyDetailsTable";
-import { Member_Details } from "../types/Users_Mock";
-import { useDispatch, useSelector } from "react-redux";
+import { Member_Address, Member_Details } from "../types/Users_Mock";
+import { useDispatch } from "react-redux";
 import { addMember } from "../store/MembersSlice";
-import {
-  addAddress,
-  AddressState,
-  updateAddress,
-} from "../store/AddressDetailsSlice";
 
 const UserProfileForm: React.FC = () => {
   const [user, setUser] = useState<Members>(Member_Details);
   const [open, setOpen] = useState(false); // Maintains open/close state of Family Details Popup
+  const [familyDetails, setFamilyDetails] = useState<FamilyDetails[]>([]);
+  const [presentAddress, setPresentAddress] = useState<Address>();
+  const [permanentAddress, setPermanentAddress] = useState<Address>();
+  const [officeAddress, setOfficeAddress] = useState<Address>();
   const [today, setToday] = useState("");
 
   const handleClose = () => setOpen(false); // Callback function to close the Family Details Popup
@@ -35,53 +34,71 @@ const UserProfileForm: React.FC = () => {
 
   const dispatch = useDispatch();
 
-  const address_state: AddressState[] = useSelector(
-    (state: any) => state.address_details
-  );
+  const handleResetForm = () => {
+    setUser(Member_Details);
+    setFamilyDetails([]);
+    setPresentAddress(Member_Address);
+    setPermanentAddress(Member_Address);
+    setOfficeAddress(Member_Address);
+  };
 
-  const family_details_state: FamilyDetails[] = useSelector(
-    (state: any) => state.fmaily_members
-  );
+  // const members_state: Members = useSelector((state: any) => state.members);
+
+  const handleCopyPresentAddressChange = (value: boolean) => {
+    if (value && presentAddress && presentAddress.flat_number_name) {
+      setPermanentAddress(presentAddress);
+    } else {
+      setPermanentAddress(Member_Address);
+    }
+  };
+
+  const handlSaveFamilyDetails = (family_details: FamilyDetails) => {
+    setFamilyDetails((prevFamilyMembers) => [
+      ...prevFamilyMembers,
+      family_details,
+    ]);
+    setOpen(false);
+  };
 
   const handleSaveMembersForm = () => {
-    const present_address = address_state.find(
-      (address) => address.address_type === AddressType.PresentAddress
-    )?.address;
+    const present_address =
+      presentAddress && presentAddress.flat_number_name ? presentAddress : null;
 
-    const permanent_address = address_state.find(
-      (address) => address.address_type === AddressType.PermanentAddress
-    )?.address;
+    const permanent_address =
+      permanentAddress && permanentAddress.flat_number_name
+        ? permanentAddress
+        : null;
 
-    const office_address = address_state.find(
-      (address) => address.address_type === AddressType.OfficeAddress
-    )?.address;
-    if (present_address && permanent_address) {
-      setUser({
-        ...user,
-        present_address,
-        permanent_address,
-        office_address,
-      });
+    const office_address =
+      officeAddress && officeAddress.flat_number_name ? officeAddress : null;
+
+    const userObj = {
+      ...user,
+      present_address,
+      permanent_address,
+      family_details:
+        familyDetails && familyDetails.length ? familyDetails : [],
+      office_address,
+    };
+
+    setUser(userObj);
+
+    if (
+      present_address?.flat_number_name &&
+      permanent_address?.flat_number_name
+    ) {
+      dispatch(addMember(userObj));
+      handleResetForm();
     }
-
-    if (family_details_state && family_details_state.length) {
-      setUser({
-        ...user,
-        family_details: family_details_state,
-      });
-    }
-    dispatch(addMember(user));
   };
 
   const handleAddressChange = (addressType: AddressType, value: Address) => {
-    const addressTypeFromState: AddressType[] = address_state.map(
-      (address: AddressState) => address.address_type
-    );
-
-    if (addressTypeFromState.includes(addressType)) {
-      dispatch(updateAddress({ address_type: addressType, address: value }));
-    } else {
-      dispatch(addAddress({ address_type: addressType, address: value }));
+    if (addressType === AddressType.PresentAddress) {
+      setPresentAddress(value);
+    } else if (addressType === AddressType.PermanentAddress) {
+      setPermanentAddress(value);
+    } else if (addressType === AddressType.OfficeAddress) {
+      setOfficeAddress(value);
     }
   };
 
@@ -261,6 +278,7 @@ const UserProfileForm: React.FC = () => {
         {/* Present Address Form */}
         <AddressForm
           label="Present Address"
+          addressInfo={presentAddress}
           onAddressChange={(value) =>
             handleAddressChange(AddressType.PresentAddress, value)
           }
@@ -269,18 +287,16 @@ const UserProfileForm: React.FC = () => {
         <AddressForm
           label="Permanent Address"
           copyAddress={true}
-          addressInfo={
-            address_state.find(
-              (address) => address.address_type === AddressType.PermanentAddress
-            )?.address
-          }
+          addressInfo={permanentAddress}
           onAddressChange={(value) =>
             handleAddressChange(AddressType.PermanentAddress, value)
           }
+          onCopyPresentAddress={handleCopyPresentAddressChange}
         />
         {/* Office Address Form */}
         <AddressForm
           label="Office Address"
+          addressInfo={officeAddress}
           onAddressChange={(value) =>
             handleAddressChange(AddressType.OfficeAddress, value)
           }
@@ -302,8 +318,12 @@ const UserProfileForm: React.FC = () => {
             </div>
           </div>
 
-          <FamilyDetailsDialog open={open} onClose={handleClose} />
-          <FamilyDetailsTable />
+          <FamilyDetailsDialog
+            open={open}
+            onClose={handleClose}
+            onSaveFamilyDetails={handlSaveFamilyDetails}
+          />
+          <FamilyDetailsTable fmaily_members={familyDetails} />
         </div>
 
         <div className="flex flex-wrap gap-4 border rounded p-4  mt-6">
@@ -318,6 +338,10 @@ const UserProfileForm: React.FC = () => {
               Proposed by
             </label>
             <input
+              value={user.proposed_by}
+              onChange={(e) =>
+                setUser({ ...user, proposed_by: e.target.value })
+              }
               type="text"
               className="p-2 border mb-3 rounded w-full text-gray-600"
             />
@@ -335,7 +359,8 @@ const UserProfileForm: React.FC = () => {
       <div className="p-4 w-full bg-gray-50 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
           <button
-            type="reset"
+            type="button"
+            onClick={handleResetForm}
             className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600"
           >
             Reset
