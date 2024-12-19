@@ -12,9 +12,11 @@ const ProfilePicEditor: React.FC<ProfilePicEditorProps> = ({
   const editorRef = useRef<AvatarEditor>(null);
 
   const handleSave = () => {
-    const canvas = editorRef.current.getImage();
-    const image = canvas.toDataURL(); // Get base64 of the cropped image
-    console.log(image);
+    if (editorRef.current) {
+      const canvas = editorRef.current.getImage();
+      const image = canvas.toDataURL(); // Get base64 of the cropped image
+      console.log(image);
+    }
   };
 
   return (
@@ -23,7 +25,6 @@ const ProfilePicEditor: React.FC<ProfilePicEditorProps> = ({
         className="rounded-full border-4 border-white shadow-md"
         ref={editorRef}
         image={imageSrc} // or file input
-        variant="rounded"
       />
       <div className="bg-blue-500 text-white ml-2 px-4 py-2 rounded">
         <div>

@@ -21,7 +21,7 @@ function DropdownSelect<T extends React.ReactNode>({
       <select
         value={value as unknown as string}
         onChange={(e) => onChange(e.target.value as T)}
-        className="w-full p-2 border rounded bg-white text-gray-600 mb-4"
+        className="w-full p-2 border rounded bg-white text-gray-600"
       >
         {options.map((option, idx) => (
           <option key={idx} value={option as unknown as string}>

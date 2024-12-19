@@ -12,6 +12,11 @@ import {
 import Header from "./common/Header";
 import { PencilIcon, Search, ChevronsUpDown } from "lucide-react";
 
+const typographyProps = {
+  variant: "small",
+  color: "blue-gray",
+};
+
 const Dashboard = () => {
   const TABLE_HEAD = ["Member", "Function", "Status", "Employed", ""];
 
@@ -70,22 +75,30 @@ const Dashboard = () => {
         <div className="m-5">
           <div className="w-full mx-auto">
             <div className="overflow-x-auto bg-white text-gray-700  rounded-lg">
-              <Card className="h-full w-full">
+              <Card
+                className="h-full w-full"
+                {...({} as React.ComponentProps<typeof Card>)}
+              >
                 <CardHeader
                   floated={false}
                   shadow={false}
                   className="rounded-none"
+                  {...({} as React.ComponentProps<typeof CardHeader>)}
                 >
                   <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
                     <div className="w-full md:w-72">
                       <Input
+                        {...({} as React.ComponentProps<typeof Input>)}
                         label="Search"
                         icon={<Search className="h-5 w-5" />}
                       />
                     </div>
                   </div>
                 </CardHeader>
-                <CardBody className="p-4 overflow-auto px-0">
+                <CardBody
+                  className="p-4 overflow-auto px-0"
+                  {...({} as React.ComponentProps<typeof CardBody>)}
+                >
                   <table className="w-full min-w-max table-auto text-left border rounded border-collapse border border-gray-200">
                     <thead className="bg-sky-50 text-gray-700">
                       <tr>
@@ -95,6 +108,9 @@ const Dashboard = () => {
                             className="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50"
                           >
                             <Typography
+                              {...(typographyProps as React.ComponentProps<
+                                typeof Typography
+                              >)}
                               variant="small"
                               color="blue-gray"
                               className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
@@ -127,13 +143,19 @@ const Dashboard = () => {
                               <td className={classes}>
                                 <div className="flex items-center gap-3">
                                   <Avatar
+                                    {...({} as React.ComponentProps<
+                                      typeof Avatar
+                                    >)}
                                     src={img}
                                     alt={name}
                                     size="sm"
-                                    variant="rounded"
+                                    withBorder={true}
                                   />
                                   <div className="flex flex-col">
                                     <Typography
+                                      {...(typographyProps as React.ComponentProps<
+                                        typeof Typography
+                                      >)}
                                       variant="small"
                                       color="blue-gray"
                                       className="font-normal"
@@ -141,6 +163,9 @@ const Dashboard = () => {
                                       {name}
                                     </Typography>
                                     <Typography
+                                      {...(typographyProps as React.ComponentProps<
+                                        typeof Typography
+                                      >)}
                                       variant="small"
                                       color="blue-gray"
                                       className="font-normal opacity-70"
@@ -153,6 +178,9 @@ const Dashboard = () => {
                               <td className={classes}>
                                 <div className="flex flex-col">
                                   <Typography
+                                    {...(typographyProps as React.ComponentProps<
+                                      typeof Typography
+                                    >)}
                                     variant="small"
                                     color="blue-gray"
                                     className="font-normal"
@@ -160,6 +188,9 @@ const Dashboard = () => {
                                     {job}
                                   </Typography>
                                   <Typography
+                                    {...(typographyProps as React.ComponentProps<
+                                      typeof Typography
+                                    >)}
                                     variant="small"
                                     color="blue-gray"
                                     className="font-normal opacity-70"
@@ -180,6 +211,9 @@ const Dashboard = () => {
                               </td>
                               <td className={classes}>
                                 <Typography
+                                  {...(typographyProps as React.ComponentProps<
+                                    typeof Typography
+                                  >)}
                                   variant="small"
                                   color="blue-gray"
                                   className="font-normal"
@@ -189,7 +223,14 @@ const Dashboard = () => {
                               </td>
                               <td className={classes}>
                                 <Tooltip content="Edit User">
-                                  <IconButton variant="text">
+                                  <IconButton
+                                    variant="text"
+                                    {...({
+                                      variant: "text",
+                                    } as React.ComponentProps<
+                                      typeof IconButton
+                                    >)}
+                                  >
                                     <PencilIcon className="h-4 w-4" />
                                   </IconButton>
                                   

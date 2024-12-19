@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Dialog,
   DialogBody,
@@ -8,30 +9,45 @@ import FamilyDetailsForm from "../FamilyDetailsForm";
 import { X } from "lucide-react";
 import { FamilyDetails } from "../../types/Users";
 
-const FamilyDetailsDialog = ({ open, onClose }: any) => {
-  const handleOnFormSave = (familyDetails: FamilyDetails) => {
-    onClose();
+interface FamilyDetailsDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onSaveFamilyDetails: (memberFamilyDetails: FamilyDetails) => void;
+}
+
+const FamilyDetailsDialog: React.FC<FamilyDetailsDialogProps> = ({
+  open,
+  onClose,
+  onSaveFamilyDetails,
+}: any) => {
+  const handleOnFormSave = (memberFamilyDetails: FamilyDetails) => {
+    onSaveFamilyDetails(memberFamilyDetails);
   };
 
   return (
     <Dialog
       size="sm"
-      open={open}
-      handler={onClose}
       className="flex flex-col items-center justify-center"
-      dismiss={{ outside: false }}
+      dismiss={{ outsidePress: false }}
+      {...({ open, handler: onClose } as React.ComponentProps<typeof Dialog>)}
     >
-      <DialogHeader className="w-full justify-between">
+      <DialogHeader
+        className="w-full justify-between"
+        {...({} as React.ComponentProps<typeof DialogHeader>)}
+      >
         <h2 className="text-center w-full ml-[10%]">Add a family member</h2>
         <X
           onClick={onClose}
           className="cursor-pointer text-lg font-semibold w-[10%] mb-4 text-gray-600"
         />
       </DialogHeader>
-      <DialogBody>
+      <DialogBody {...({} as React.ComponentProps<typeof DialogHeader>)}>
         <FamilyDetailsForm onSaveDetails={handleOnFormSave} />
       </DialogBody>
-      <DialogFooter className="w-full">
+      <DialogFooter
+        className="w-full"
+        {...({} as React.ComponentProps<typeof DialogHeader>)}
+      >
         <p></p>
       </DialogFooter>
     </Dialog>

@@ -10,7 +10,7 @@ export const Member_Address: Address = {
     address_line_2: "",
     city: "",
     state: "",
-    country: "",
+    country: "INDIA",
     pin_code: "",
     contact_number: "",
 }
@@ -46,7 +46,7 @@ export const Member_Details: Members = {
     proposed_by: "",
     seconded_by: "",
     communication_preference: "In Person",
-    date_of_joining: new Date(),
+    date_of_joining: new Date().toISOString().split("T")[0],
     area_code: AreaCode.SNPS,
     is_inactive: false,
     geo_location: Geo_Location,

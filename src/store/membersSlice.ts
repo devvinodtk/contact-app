@@ -1,24 +1,22 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { Member_Details } from "../types/Users_Mock";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Members } from "../types/Users";
 
-const initialState: Members = [];
+interface MembersState {
+    members: Members[]
+}
+const initialState: MembersState = {
+    members: []
+};
 
 const membersSlice = createSlice({
     name: 'members',
     initialState,
     reducers: {
-        addMember: (state, action) =>{
-            state.push(action.payload);
-        },
-        updateMember: (state, action) => {
-
-        },
-        deleteMember: (state, action) => {
-
+        addMember: (state, action: PayloadAction<Members>) =>{
+            state.members.push(action.payload);
         }
     }
 });
 
-export const { addMember, updateMember, deleteMember } = membersSlice.actions;
+export const { addMember } = membersSlice.actions;
 export default membersSlice.reducer;

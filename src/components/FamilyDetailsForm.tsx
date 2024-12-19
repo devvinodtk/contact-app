@@ -11,11 +11,10 @@ import DropdownSelect from "./DropdownSelect";
 import { Family_Details } from "../types/Users_Mock";
 import debounce from "lodash/debounce";
 import { Button } from "@material-tailwind/react";
-import { addFamilyMember } from "../store/FamilyMembersSlice";
-import { useDispatch } from "react-redux";
+import { formatDate } from "../utils/Utility_Functions";
 
 interface FamilyDetailsFormProps {
-  familyDetails: FamilyDetails;
+  familyDetails?: FamilyDetails;
   onSaveDetails: (details: FamilyDetails) => void;
 }
 
@@ -23,13 +22,10 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
   familyDetails,
   onSaveDetails,
 }) => {
-  const dispatch = useDispatch();
-
   const [memberFamilyDetails, setMemberFamilyDetails] =
     useState<FamilyDetails>(Family_Details);
 
   const handleSaveFormClick = () => {
-    dispatch(addFamilyMember(memberFamilyDetails));
     onSaveDetails(memberFamilyDetails);
   };
 
@@ -106,7 +102,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
             ...prevState,
             member_personal_details: {
               ...prevState.member_personal_details,
-              date_of_birth: value,
+              date_of_birth: formatDate(value),
             },
           }));
         }
@@ -128,8 +124,10 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
   return (
     <>
       <div className="w-full">
-        <div className="">          
-          <label className="block text-sm font-medium text-gray-600">Name</label>
+        <div className="">
+          <label className="block text-sm font-medium text-gray-600">
+            Name
+          </label>
           <input
             type="text"
             placeholder="Name"
@@ -217,6 +215,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
           onClick={handleSaveFormClick}
           color="blue"
           className="w-full cursor-pointer text-white mt-6 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+          {...({} as React.ComponentProps<typeof Button>)}
         >
           Save Details
         </Button>
