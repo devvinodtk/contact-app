@@ -112,169 +112,202 @@ const UserProfileForm: React.FC = () => {
   return (
     <div className="flex-1 overflow-auto relative z-10">
       <Header title="Add Members" />
-      <div className="p-4 w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white">
-            <div className="bg-gray-50 min-h-56 flex w-full mt-1 border items-center rounded">
-              <ProfilePicUploader />
+      <div className="p-4 w-full mt-16 sm:mt-0">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="w-full sm:w-1/4">
+            <div className="bg-white">
+              <div className="bg-gray-50 min-h-56 flex w-full mt-1 border items-center rounded">
+                <ProfilePicUploader />
+              </div>
             </div>
           </div>
-          <div className="bg-white">
-            <label className="block text-sm font-medium mb-1 text-gray-600">
-              Name
-            </label>
-            <input
-              type="text"
-              placeholder="Name"
-              value={user.personal_details.name}
-              onChange={(e) =>
-                setUser({
-                  ...user,
-                  personal_details: {
-                    ...user.personal_details,
-                    name: e.target.value,
-                  },
-                })
-              }
-              className="w-full p-2 border rounded mb-4 text-gray-600"
-            />
-            <label className="block text-sm font-medium mb-1 text-gray-600">
-              Date of Birth
-            </label>
-            <input
-              type="date"
-              max={today}
-              placeholder="Date of Birth"
-              value={user.personal_details.date_of_birth}
-              onChange={(e) =>
-                setUser({
-                  ...user,
-                  personal_details: {
-                    ...user.personal_details,
-                    date_of_birth: e.target.value,
-                  },
-                })
-              }
-              className="w-full p-2 border rounded mb-4 text-gray-600"
-            />
-            <DropdownSelect
-              label="Educational Qualification"
-              options={[
-                "High School",
-                "Higher Secondary",
-                "Bachelors Degree",
-                "Masters Degree",
-                "PhD",
-              ]}
-              value={
-                user.personal_details?.educational_qualification.education_level
-              }
-              onChange={(value) =>
-                setUser({
-                  ...user,
-                  personal_details: {
-                    ...user.personal_details,
-                    educational_qualification: { education_level: value },
-                  },
-                })
-              }
-            />
-          </div>
-          <div className="bg-white">
-            <label className="block text-sm font-medium mb-1 text-gray-600">
-              Mobile Number
-            </label>
-            <input
-              type="email"
-              placeholder="Mobile number"
-              value={user.personal_details?.mobile_number}
-              onChange={(e) =>
-                setUser({
-                  ...user,
-                  personal_details: {
-                    ...user.personal_details,
-                    mobile_number: e.target.value,
-                  },
-                })
-              }
-              className="w-full p-2 border rounded mb-4 text-gray-600"
-            />
-
-            <DropdownSelect
-              label="Gender"
-              options={
-                ["Male", "Female", "Other", "Prefer not to say"] as Gender[]
-              }
-              value={user.personal_details?.gender}
-              onChange={(value) =>
-                setUser({
-                  ...user,
-                  personal_details: {
-                    ...user.personal_details,
-                    gender: value,
-                  },
-                })
-              }
-            />
-
-            <span className="pt-3 float-left">
-              <input
-                type="text"
-                placeholder="Specialization"
-                value={
-                  user.personal_details?.educational_qualification
-                    .specialization
-                }
-                onChange={(e) =>
-                  setUser({
-                    ...user,
-                    personal_details: {
-                      ...user.personal_details,
-                      educational_qualification: {
-                        specialization: e.target.value,
+          <div className="w-full sm:w-3/4 ">
+            <div className="flex flex-wrap">
+              <div className="w-full sm:w-1/3">
+                <label className="block text-sm font-medium mb-1 text-gray-600">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Name"
+                  value={user.personal_details.name}
+                  onChange={(e) =>
+                    setUser({
+                      ...user,
+                      personal_details: {
+                        ...user.personal_details,
+                        name: e.target.value,
                       },
-                    },
-                  })
-                }
-                className="w-full p-2 border rounded mb-4 text-gray-600"
-              />
-            </span>
-          </div>
-          <div className="bg-white">
-            <label className="block text-sm font-medium mb-1 text-gray-600">
-              Email ID
-            </label>
-            <input
-              type="email"
-              placeholder="Email ID"
-              value={user.personal_details?.email_id}
-              onChange={(e) =>
-                setUser({
-                  ...user,
-                  personal_details: {
-                    ...user.personal_details,
-                    email_id: e.target.value,
-                  },
-                })
-              }
-              className="w-full p-2 border rounded mb-4 text-gray-600"
-            />
-            <DropdownSelect
-              label="Blood Group"
-              options={Object.values(BloodGroup)}
-              value={user.personal_details?.blood_group}
-              onChange={(value) =>
-                setUser({
-                  ...user,
-                  personal_details: {
-                    ...user.personal_details,
-                    blood_group: value,
-                  },
-                })
-              }
-            />
+                    })
+                  }
+                  className="w-full p-2 border rounded mb-4 text-gray-600"
+                />
+              </div>
+              <div className="w-full sm:w-1/3 sm:pl-4">
+                <label className="block text-sm font-medium mb-1 text-gray-600">
+                  Mobile Number
+                </label>
+                <input
+                  type="email"
+                  placeholder="Mobile number"
+                  value={user.personal_details?.mobile_number}
+                  onChange={(e) =>
+                    setUser({
+                      ...user,
+                      personal_details: {
+                        ...user.personal_details,
+                        mobile_number: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-full p-2 border rounded mb-4 text-gray-600"
+                />
+              </div>
+              <div className="w-full sm:w-1/3 sm:pl-4">
+                <label className="block text-sm font-medium mb-1 text-gray-600">
+                  Email ID
+                </label>
+                <input
+                  type="email"
+                  placeholder="Email ID"
+                  value={user.personal_details?.email_id}
+                  onChange={(e) =>
+                    setUser({
+                      ...user,
+                      personal_details: {
+                        ...user.personal_details,
+                        email_id: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-full p-2 border rounded mb-4 text-gray-600"
+                />
+              </div>
+              <div className="w-full sm:w-1/3">
+                <label className="block text-sm font-medium mb-1 text-gray-600">
+                  Date of Birth
+                </label>
+                <input
+                  type="date"
+                  max={today}
+                  placeholder="Date of Birth"
+                  value={user.personal_details.date_of_birth}
+                  onChange={(e) =>
+                    setUser({
+                      ...user,
+                      personal_details: {
+                        ...user.personal_details,
+                        date_of_birth: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-full p-2 border rounded mb-4 text-gray-600"
+                />
+              </div>
+              <div className="w-full sm:w-1/3 sm:pl-4">
+                <DropdownSelect
+                  label="Gender"
+                  options={
+                    ["Male", "Female", "Other", "Prefer not to say"] as Gender[]
+                  }
+                  value={user.personal_details?.gender}
+                  onChange={(value) =>
+                    setUser({
+                      ...user,
+                      personal_details: {
+                        ...user.personal_details,
+                        gender: value,
+                      },
+                    })
+                  }
+                />
+              </div>
+              <div className="w-full sm:w-1/3 sm:pl-4">
+                <DropdownSelect
+                  label="Blood Group"
+                  options={Object.values(BloodGroup)}
+                  value={user.personal_details?.blood_group}
+                  onChange={(value) =>
+                    setUser({
+                      ...user,
+                      personal_details: {
+                        ...user.personal_details,
+                        blood_group: value,
+                      },
+                    })
+                  }
+                />
+              </div>
+              <div className="w-full sm:w-1/3" >
+                <label className="block text-sm font-medium mb-1 text-gray-600">
+                  Occupation
+                </label>
+                <input
+                  type="text"
+                  placeholder="Name"
+                  value={user.personal_details.name}
+                  onChange={(e) =>
+                    setUser({
+                      ...user,
+                      personal_details: {
+                        ...user.personal_details,
+                        name: e.target.value,
+                      },
+                    })
+                  }
+                  className="w-full p-2 border rounded mb-4 text-gray-600"
+                />
+              </div>
+              <div className="w-full sm:w-1/3 sm:pl-4">
+                <DropdownSelect
+                  label="Educational Qualification"
+                  options={[
+                    "High School",
+                    "Higher Secondary",
+                    "Bachelors Degree",
+                    "Masters Degree",
+                    "PhD",
+                  ]}
+                  value={
+                    user.personal_details?.educational_qualification.education_level
+                  }
+                  onChange={(value) =>
+                    setUser({
+                      ...user,
+                      personal_details: {
+                        ...user.personal_details,
+                        educational_qualification: { education_level: value },
+                      },
+                    })
+                  }
+                />
+              </div>
+              <div className="w-full sm:w-1/3 sm:pl-4 sm:pt-6">
+                <input
+                  type="text"
+                  placeholder="Specialization"
+                  value={
+                    user.personal_details?.educational_qualification
+                      .specialization
+                  }
+                  onChange={(e) =>
+                    setUser({
+                      ...user,
+                      personal_details: {
+                        ...user.personal_details,
+                        educational_qualification: {
+                          specialization: e.target.value,
+                        },
+                      },
+                    })
+                  }
+                  className="w-full p-2 border rounded mb-4 text-gray-600"
+                />
+              </div>
+            </div>
           </div>
         </div>
+
         {/* Present Address Form */}
         <AddressForm
           label="Present Address"
@@ -353,11 +386,22 @@ const UserProfileForm: React.FC = () => {
                 setUser({ ...user, communication_preference: value })
               }
             />
-            </div>
+            <label className="text-gray-600 text-sm font-medium">
+              Comments
+            </label>
+            <input
+              value={user.proposed_by}
+              onChange={(e) =>
+                setUser({ ...user, proposed_by: e.target.value })
+              }
+              type="text"
+              className="p-2 border mb-3 rounded w-full text-gray-600"
+            />
           </div>
+        </div>
 
 
-        
+
       </div>
       <div className="p-4 w-full bg-gray-50 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
