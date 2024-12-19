@@ -17,7 +17,7 @@ import ProfilePicUploader from "./common/ProfilePicUploader";
 import FamilyDetailsDialog from "./common/FamilyDetailsDialog";
 import FamilyDetailsTable from "./common/FamilyDetailsTable";
 import { Member_Address, Member_Details } from "../types/Users_Mock";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addMember } from "../store/MembersSlice";
 
 const UserProfileForm: React.FC = () => {
@@ -326,11 +326,11 @@ const UserProfileForm: React.FC = () => {
           <FamilyDetailsTable fmaily_members={familyDetails} />
         </div>
 
-        <div className="flex flex-wrap gap-4 border rounded p-4  mt-6">
-          <div className="flex-1 min-w-[200px]">
+        <div className="flex flex-col mt-6 gap-4 md:flex-row">
+          <div className="flex-1 p-4 border rounded">
             <GeoLocationDisplay geoLocation={user.geo_location} />
           </div>
-          <div className="flex-1 min-w-[200px]">
+          <div className="flex-1 p-4 border rounded">
             <h2 className="text-lg font-semibold mb-4 text-gray-600">
               Office Use
             </h2>
@@ -353,8 +353,11 @@ const UserProfileForm: React.FC = () => {
                 setUser({ ...user, communication_preference: value })
               }
             />
+            </div>
           </div>
-        </div>
+
+
+        
       </div>
       <div className="p-4 w-full bg-gray-50 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
