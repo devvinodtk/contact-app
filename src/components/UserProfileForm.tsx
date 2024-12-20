@@ -244,8 +244,8 @@ const UserProfileForm: React.FC = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder="Name"
-                  value={user.personal_details.name}
+                  placeholder="Occupation"
+                  value={user.personal_details.job_title}
                   onChange={(e) =>
                     setUser({
                       ...user,
@@ -283,7 +283,10 @@ const UserProfileForm: React.FC = () => {
                   }
                 />
               </div>
-              <div className="w-full sm:w-1/3 sm:pl-4 sm:pt-6">
+              <div className="w-full sm:w-1/3 sm:pl-4">
+                <label className="block text-sm font-medium mb-1 text-gray-600">
+                  Specialization
+                </label>
                 <input
                   type="text"
                   placeholder="Specialization"

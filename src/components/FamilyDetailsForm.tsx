@@ -105,7 +105,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
         <div className="">
           <label
             htmlFor="family.member_personal_details.name"
-            className="block text-sm font-medium text-gray-600"
+            className="text-sm font-medium text-gray-600"
           >
             Name *
           </label>
@@ -176,6 +176,13 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
             }
             onChange={(value) => handleChange("education_level", value)}
           />
+          <label
+            htmlFor="family.member_personal_details.educational_qualification
+                .specialization"
+            className="text-sm font-medium text-gray-600"
+          >
+            Specialization
+          </label>
           <input
             type="text"
             placeholder="Specialization"
@@ -184,14 +191,20 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
                 .specialization
             }
             onChange={(e) => handleChange("specialization", e.target.value)}
-            className="w-full p-2 border rounded text-gray-600"
+            className="w-full p-2 mb-4 border rounded text-gray-600"
           />
+          <label
+            htmlFor="family.member_personal_details.job_title"
+            className="w-full text-sm font-medium text-gray-600"
+          >
+            Occupation
+          </label>
           <input
             type="text"
-            placeholder="Job Title"
+            placeholder="Occupation"
             value={familyDetails?.member_personal_details?.job_title}
             onChange={(e) => handleChange("job_title", e.target.value)}
-            className="w-full p-2 mt-6 border rounded text-gray-600"
+            className="w-full p-2 border rounded text-gray-600"
           />
           <label className="block text-sm font-medium mt-6 mb-1 text-gray-600">
             Date of Birth
