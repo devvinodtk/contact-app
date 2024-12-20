@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { FormEvent, useCallback, useState } from "react";
 import {
   PersonalDetails,
   FamilyDetails,
@@ -12,6 +12,7 @@ import { Family_Details } from "../types/Users_Mock";
 import debounce from "lodash/debounce";
 import { Button } from "@material-tailwind/react";
 import { formatDate } from "../utils/Utility_Functions";
+import { useForm, SubmitHandler } from "react-hook-form";
 
 interface FamilyDetailsFormProps {
   familyDetails?: FamilyDetails;
@@ -22,6 +23,16 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
   familyDetails,
   onSaveDetails,
 }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<{ family: FamilyDetails }>({
+    defaultValues: {
+      family: Family_Details,
+    },
+  });
+
   const [memberFamilyDetails, setMemberFamilyDetails] =
     useState<FamilyDetails>(Family_Details);
 
@@ -41,68 +52,31 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
         if (field === "relationship") {
           setMemberFamilyDetails((prevState: FamilyDetails) => ({
             ...prevState,
-            relationship: value,
+            [field]: value,
           }));
-        } else if (field === "name") {
+        } else if (
+          field === "name" ||
+          field === "gender" ||
+          field === "blood_group" ||
+          field === "job_title" ||
+          field === "date_of_birth"
+        ) {
           setMemberFamilyDetails((prevState: FamilyDetails) => ({
             ...prevState,
             member_personal_details: {
               ...prevState.member_personal_details,
-              name: value,
+              [field]: field === "date_of_birth" ? formatDate(value) : value,
             },
           }));
-        } else if (field === "gender") {
-          setMemberFamilyDetails((prevState: FamilyDetails) => ({
-            ...prevState,
-            member_personal_details: {
-              ...prevState.member_personal_details,
-              gender: value,
-            },
-          }));
-        } else if (field === "blood_group") {
-          setMemberFamilyDetails((prevState: FamilyDetails) => ({
-            ...prevState,
-            member_personal_details: {
-              ...prevState.member_personal_details,
-              blood_group: value,
-            },
-          }));
-        } else if (field === "education_level") {
+        } else if (field === "education_level" || field === "specialization") {
           setMemberFamilyDetails((prevState: FamilyDetails) => ({
             ...prevState,
             member_personal_details: {
               ...prevState.member_personal_details,
               educational_qualification: {
                 ...prevState.member_personal_details.educational_qualification,
-                education_level: value,
+                [field]: value,
               },
-            },
-          }));
-        } else if (field === "specialization") {
-          setMemberFamilyDetails((prevState: FamilyDetails) => ({
-            ...prevState,
-            member_personal_details: {
-              ...prevState.member_personal_details,
-              educational_qualification: {
-                ...prevState.member_personal_details.educational_qualification,
-                specialization: value,
-              },
-            },
-          }));
-        } else if (field === "job_title") {
-          setMemberFamilyDetails((prevState: FamilyDetails) => ({
-            ...prevState,
-            member_personal_details: {
-              ...prevState.member_personal_details,
-              job_title: value,
-            },
-          }));
-        } else if (field === "date_of_birth") {
-          setMemberFamilyDetails((prevState: FamilyDetails) => ({
-            ...prevState,
-            member_personal_details: {
-              ...prevState.member_personal_details,
-              date_of_birth: formatDate(value),
             },
           }));
         }
@@ -121,20 +95,39 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
     debouncedHandleChange(field, value);
   };
 
+  const onSubmitHandler: SubmitHandler<{ family: FamilyDetails }> = () => {
+    handleSaveFormClick();
+  };
+
   return (
-    <>
+    <form onSubmit={handleSubmit(onSubmitHandler)}>
       <div className="w-full">
         <div className="">
-          <label className="block text-sm font-medium text-gray-600">
-            Name
+          <label
+            htmlFor="family.member_personal_details.name"
+            className="block text-sm font-medium text-gray-600"
+          >
+            Name *
           </label>
           <input
             type="text"
+            {...register(`family.member_personal_details.name`, {
+              required: "Name is required",
+            })}
             placeholder="Name"
             value={familyDetails?.member_personal_details?.name}
             onChange={(e) => handleChange("name", e.target.value)}
-            className="w-full p-2 mb-4 border rounded text-gray-600"
+            className={`w-full p-2 mb-4 border rounded text-gray-600 ${
+              errors.family?.member_personal_details?.name
+                ? "border-red-500"
+                : ""
+            }`}
           />
+          {errors.family?.member_personal_details?.name && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.family.member_personal_details.name?.message}
+            </p>
+          )}
           <DropdownSelect
             label="Gender"
             options={
@@ -212,7 +205,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
           />
         </div>
         <Button
-          onClick={handleSaveFormClick}
+          type="submit"
           color="blue"
           className="w-full cursor-pointer text-white mt-6 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
           {...({} as React.ComponentProps<typeof Button>)}
@@ -220,7 +213,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
           Save Details
         </Button>
       </div>
-    </>
+    </form>
   );
 };
 
