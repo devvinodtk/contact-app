@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import Header from "./common/Header";
-import { PencilIcon, Search, ChevronsUpDown } from "lucide-react";
+import { PencilIcon, Search, ChevronsUpDown, Phone, Eye, EyeClosed, ArrowBigRight, Scale3D, Scale, Scale3dIcon } from "lucide-react";
 
 const typographyProps = {
   variant: "small",
@@ -18,7 +18,7 @@ const typographyProps = {
 };
 
 const Dashboard = () => {
-  const TABLE_HEAD = ["Member", "Function", "Status", "Employed", ""];
+  const TABLE_HEAD = ["Member", "Gender", "Age", "Blood Group", "Occupation", "Area", ""];
 
   const TABLE_ROWS = [
     {
@@ -29,6 +29,13 @@ const Dashboard = () => {
       org: "Organization",
       online: true,
       date: "23/04/18",
+      phone: "8792527628",
+      age: "39", 
+      area: "Sanjayngar", 
+      bloodgroup: "O+", 
+      occupation: "Software Engineer",
+      education: "MBA",
+      gender: "Male"
     },
     {
       img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-2.jpg",
@@ -38,6 +45,13 @@ const Dashboard = () => {
       org: "Developer",
       online: false,
       date: "23/04/18",
+      phone: "8792527628",
+      age: "39", 
+      area: "Sanjayngar", 
+      bloodgroup: "O+", 
+      occupation: "Software Engineer",
+      education: "MBA",
+      gender: "Male"
     },
     {
       img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-1.jpg",
@@ -47,6 +61,13 @@ const Dashboard = () => {
       org: "Projects",
       online: false,
       date: "19/09/17",
+      phone: "8792527628",
+      age: "39", 
+      area: "Sanjayngar", 
+      bloodgroup: "O+", 
+      occupation: "Software Engineer",
+      education: "MBA",
+      gender: "Male"
     },
     {
       img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-4.jpg",
@@ -56,6 +77,13 @@ const Dashboard = () => {
       org: "Developer",
       online: true,
       date: "24/12/08",
+      phone: "8792527628",
+      age: "39", 
+      area: "Sanjayngar", 
+      bloodgroup: "O+", 
+      occupation: "Software Engineer",
+      education: "MBA",
+      gender: "Male"
     },
     {
       img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-5.jpg",
@@ -65,6 +93,13 @@ const Dashboard = () => {
       org: "Executive",
       online: false,
       date: "04/10/21",
+      phone: "8792527628",
+      age: "39", 
+      area: "Sanjayngar", 
+      bloodgroup: "O+", 
+      occupation: "Software Engineer",
+      education: "MBA",
+      gender: "Male"
     },
   ];
 
@@ -130,7 +165,7 @@ const Dashboard = () => {
                     <tbody>
                       {TABLE_ROWS.map(
                         (
-                          { img, name, email, job, org, online, date },
+                          { img, name, email, job, org, online, date, gender, phone, area, bloodgroup, age, occupation },
                           index
                         ) => {
                           const isLast = index === TABLE_ROWS.length - 1;
@@ -170,43 +205,10 @@ const Dashboard = () => {
                                       color="blue-gray"
                                       className="font-normal opacity-70"
                                     >
-                                      {email}
-                                    </Typography>
+                                      {email} | {phone}
+                                    </Typography> 
+                                    
                                   </div>
-                                </div>
-                              </td>
-                              <td className={classes}>
-                                <div className="flex flex-col">
-                                  <Typography
-                                    {...(typographyProps as React.ComponentProps<
-                                      typeof Typography
-                                    >)}
-                                    variant="small"
-                                    color="blue-gray"
-                                    className="font-normal"
-                                  >
-                                    {job}
-                                  </Typography>
-                                  <Typography
-                                    {...(typographyProps as React.ComponentProps<
-                                      typeof Typography
-                                    >)}
-                                    variant="small"
-                                    color="blue-gray"
-                                    className="font-normal opacity-70"
-                                  >
-                                    {org}
-                                  </Typography>
-                                </div>
-                              </td>
-                              <td className={classes}>
-                                <div className="w-max">
-                                  <Chip
-                                    variant="ghost"
-                                    size="sm"
-                                    value={online ? "online" : "offline"}
-                                    color={online ? "green" : "blue-gray"}
-                                  />
                                 </div>
                               </td>
                               <td className={classes}>
@@ -218,9 +220,73 @@ const Dashboard = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {date}
+                                  {gender}
                                 </Typography>
                               </td>
+                              <td className={classes}>
+                                <div className="flex flex-col">
+                                  <Typography
+                                    {...(typographyProps as React.ComponentProps<
+                                      typeof Typography
+                                    >)}
+                                    variant="small"
+                                    color="blue-gray"
+                                    className="font-normal"
+                                  >
+                                    {age} Years
+                                  </Typography>
+                                  <Typography
+                                    {...(typographyProps as React.ComponentProps<
+                                      typeof Typography
+                                    >)}
+                                    variant="small"
+                                    color="blue-gray"
+                                    className="font-normal opacity-70"
+                                  >
+                                    {date}
+                                  </Typography>
+                                </div>
+                              </td>
+                              
+                              <td className={classes}>
+                                <Typography
+                                  {...(typographyProps as React.ComponentProps<
+                                    typeof Typography
+                                  >)}
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {bloodgroup}
+                                </Typography>
+                              </td>
+                              
+                              <td className={classes}>
+                                <Typography
+                                  {...(typographyProps as React.ComponentProps<
+                                    typeof Typography
+                                  >)}
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {occupation}
+                                </Typography>
+                              </td>
+                              
+                              <td className={classes}>
+                                <Typography
+                                  {...(typographyProps as React.ComponentProps<
+                                    typeof Typography
+                                  >)}
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {area}
+                                </Typography>
+                              </td>
+                              
                               <td className={classes}>
                                 <Tooltip content="Edit User">
                                   <IconButton
@@ -232,6 +298,32 @@ const Dashboard = () => {
                                     >)}
                                   >
                                     <PencilIcon className="h-4 w-4" />
+                                  </IconButton>
+                                  
+                                </Tooltip> 
+                                <Tooltip content="Edit User">
+                                  <IconButton
+                                    variant="text"
+                                    {...({
+                                      variant: "text",
+                                    } as React.ComponentProps<
+                                      typeof IconButton
+                                    >)}
+                                  >
+                                    <Eye className="h-4 w-4" />
+                                  </IconButton>
+                                  
+                                </Tooltip>
+                                <Tooltip content="Edit User">
+                                  <IconButton
+                                    variant="text"
+                                    {...({
+                                      variant: "text",
+                                    } as React.ComponentProps<
+                                      typeof IconButton
+                                    >)}
+                                  >
+                                    <Scale3dIcon className="h-4 w-4" />
                                   </IconButton>
                                   
                                 </Tooltip>

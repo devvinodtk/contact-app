@@ -123,8 +123,8 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
 
   return (
     <>
-      <div className="w-full">
-        <div className="">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div className="p-1">
           <label className="block text-sm font-medium text-gray-600">
             Name
           </label>
@@ -133,8 +133,10 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
             placeholder="Name"
             value={familyDetails?.member_personal_details?.name}
             onChange={(e) => handleChange("name", e.target.value)}
-            className="w-full p-2 mb-4 border rounded text-gray-600"
+            className="w-full p-2 border rounded text-gray-600"
           />
+        </div>
+        <div className="p-1">
           <DropdownSelect
             label="Gender"
             options={
@@ -143,6 +145,10 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
             value={familyDetails?.member_personal_details?.gender}
             onChange={(value) => handleChange("gender", value)}
           />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div className="p-1">
           <DropdownSelect
             label="Relationship"
             options={
@@ -158,13 +164,18 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
             value={familyDetails?.relationship}
             onChange={(value) => handleChange("relationship", value)}
           />
+        </div>
+        <div className="p-1">
           <DropdownSelect
             label="Blood Group"
             options={Object.values(BloodGroup)}
             value={familyDetails?.member_personal_details?.blood_group}
             onChange={(value) => handleChange("blood_group", value)}
           />
-          {/* Additional fields for family details */}
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div className="p-1">
           <DropdownSelect
             label="Educational Qualification"
             options={[
@@ -183,6 +194,8 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
             }
             onChange={(value) => handleChange("education_level", value)}
           />
+        </div>
+        <div className="p-1">
           <input
             type="text"
             placeholder="Specialization"
@@ -191,16 +204,25 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
                 .specialization
             }
             onChange={(e) => handleChange("specialization", e.target.value)}
-            className="w-full p-2 border rounded text-gray-600"
+            className="w-full p-2 border md:mt-6 rounded text-gray-600"
           />
-          <input
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div className="p-1">
+        <label className="block text-sm font-medium  mb-1 text-gray-600">
+          Occupation
+          </label>
+        <input
             type="text"
             placeholder="Job Title"
             value={familyDetails?.member_personal_details?.job_title}
             onChange={(e) => handleChange("job_title", e.target.value)}
-            className="w-full p-2 mt-6 border rounded text-gray-600"
+            className="w-full p-2  border rounded text-gray-600"
           />
-          <label className="block text-sm font-medium mt-6 mb-1 text-gray-600">
+        </div>
+        <div className="p-1">
+        <label className="block text-sm font-medium  mb-1 text-gray-600">
             Date of Birth
           </label>
           <input
@@ -211,6 +233,8 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
             className="w-full p-2 border rounded text-gray-600"
           />
         </div>
+      </div>
+      <div className="w-full">
         <Button
           onClick={handleSaveFormClick}
           color="blue"
