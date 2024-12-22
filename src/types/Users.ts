@@ -12,6 +12,7 @@ export type Members = {
     area_code: AreaCode,
     is_inactive: boolean,
     geo_location?: GeoLocation
+    comments?: string
 }
 
 export type PostalInfo = {
@@ -40,6 +41,7 @@ export type FamilyDetails = {
 }
 
 export enum BloodGroup {
+    SelectBloodGroup = "Select Blood Group",
     APositive = "A+",
     ANegative = "A-",
     BPositive = "B+",
@@ -77,10 +79,10 @@ export type GeoLocation = {
     longitude: number;
   };
 
-export type Gender = "Male" | "Female" | "Other" | "Prefer Not To Say";
-export type EducationLevel = "Nursery" | "Kindergarten" | "Primary School" | "High School" | "Higher Secondary" | "Bachelors Degree" | "Masters Degree" | "PhD"
-export type RelationshipType = "Spouse" | "Kid" | "Father" | "Mother" | "Father In Law" | "Mother In Law"
-export type CommunicationPreference = "In Person" | "Postal"
+export type Gender = "Male" | "Female" | "Other" | "Prefer Not To Say" | "Select Gender";
+export type EducationLevel = "Select Education" | "Nursery" | "Kindergarten" | "Primary School" | "High School" | "Higher Secondary" | "Bachelors Degree" | "Masters Degree" | "PhD"
+export type RelationshipType = "Select Relationship" | "Spouse" | "Kid" | "Father" | "Mother" | "Father In Law" | "Mother In Law"
+export type CommunicationPreference = "Select Your Preference" | "In Person" | "Postal"
 export enum AreaCode {
     SNPS = "Sanjay Nagar Police Station",
     SNPO = "Sanjay nagar Post Office",

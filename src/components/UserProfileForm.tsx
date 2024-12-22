@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   Members,
   BloodGroup,
-  CommunicationPreference,
   Address,
-  Gender,
   AddressType,
   FamilyDetails,
 } from "../types/Users";
@@ -17,10 +15,28 @@ import ProfilePicUploader from "./common/ProfilePicUploader";
 import FamilyDetailsDialog from "./common/FamilyDetailsDialog";
 import FamilyDetailsTable from "./common/FamilyDetailsTable";
 import { Member_Address, Member_Details } from "../types/Users_Mock";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addMember } from "../store/MembersSlice";
+import {
+  communicationPreferenceOptions,
+  educationLevelOptions,
+  genderOptions,
+} from "../utils/Utility_Functions";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { Button } from "@material-tailwind/react";
+import { Plus } from "lucide-react";
 
 const UserProfileForm: React.FC = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<{ user: Members }>({
+    mode: "all",
+    defaultValues: {
+      user: Member_Details,
+    },
+  });
   const [user, setUser] = useState<Members>(Member_Details);
   const [open, setOpen] = useState(false); // Maintains open/close state of Family Details Popup
   const [familyDetails, setFamilyDetails] = useState<FamilyDetails[]>([]);
@@ -109,8 +125,15 @@ const UserProfileForm: React.FC = () => {
     setToday(formattedDate);
   }, []);
 
+  const onHandleSaveMembersForm: SubmitHandler<{ user: Members }> = () => {
+    handleSaveMembersForm();
+  };
+
   return (
-    <div className="flex-1 overflow-auto relative z-10">
+    <form
+      className="flex-1 overflow-auto relative z-10"
+      onSubmit={handleSubmit(onHandleSaveMembersForm)}
+    >
       <Header title="Add Members" />
       <div className="p-4 w-full mt-16 sm:mt-0">
         <div className="flex flex-col sm:flex-row gap-4">
@@ -130,6 +153,9 @@ const UserProfileForm: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Name"
+                  {...register(`user.personal_details.name`, {
+                    required: "Name is required",
+                  })}
                   value={user.personal_details.name}
                   onChange={(e) =>
                     setUser({
@@ -140,7 +166,11 @@ const UserProfileForm: React.FC = () => {
                       },
                     })
                   }
-                  className="w-full p-2 border rounded mb-4 text-gray-600"
+                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                    errors.user?.personal_details?.name
+                      ? "focus:outline-none border-red-500 bg-red-50"
+                      : ""
+                  }`}
                 />
               </div>
               <div className="w-full sm:w-1/3 sm:pl-4">
@@ -148,8 +178,11 @@ const UserProfileForm: React.FC = () => {
                   Mobile Number
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   placeholder="Mobile number"
+                  {...register(`user.personal_details.mobile_number`, {
+                    required: "Mobile number is required",
+                  })}
                   value={user.personal_details?.mobile_number}
                   onChange={(e) =>
                     setUser({
@@ -160,7 +193,11 @@ const UserProfileForm: React.FC = () => {
                       },
                     })
                   }
-                  className="w-full p-2 border rounded mb-4 text-gray-600"
+                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                    errors.user?.personal_details?.mobile_number
+                      ? "focus:outline-none border-red-500 bg-red-50"
+                      : ""
+                  }`}
                 />
               </div>
               <div className="w-full sm:w-1/3 sm:pl-4">
@@ -169,6 +206,9 @@ const UserProfileForm: React.FC = () => {
                 </label>
                 <input
                   type="email"
+                  {...register(`user.personal_details.email_id`, {
+                    required: "Email ID is required",
+                  })}
                   placeholder="Email ID"
                   value={user.personal_details?.email_id}
                   onChange={(e) =>
@@ -180,7 +220,11 @@ const UserProfileForm: React.FC = () => {
                       },
                     })
                   }
-                  className="w-full p-2 border rounded mb-4 text-gray-600"
+                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                    errors.user?.personal_details?.email_id
+                      ? "focus:outline-none border-red-500 bg-red-50"
+                      : ""
+                  }`}
                 />
               </div>
               <div className="w-full sm:w-1/3">
@@ -190,6 +234,9 @@ const UserProfileForm: React.FC = () => {
                 <input
                   type="date"
                   max={today}
+                  {...register(`user.personal_details.date_of_birth`, {
+                    required: "Date of birth is required",
+                  })}
                   placeholder="Date of Birth"
                   value={user.personal_details.date_of_birth}
                   onChange={(e) =>
@@ -201,15 +248,24 @@ const UserProfileForm: React.FC = () => {
                       },
                     })
                   }
-                  className="w-full p-2 border rounded mb-4 text-gray-600"
+                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                    errors.user?.personal_details?.date_of_birth
+                      ? "focus:outline-none border-red-500 bg-red-50"
+                      : ""
+                  }`}
                 />
               </div>
               <div className="w-full sm:w-1/3 sm:pl-4">
                 <DropdownSelect
                   label="Gender"
-                  options={
-                    ["Male", "Female", "Other", "Prefer not to say"] as Gender[]
-                  }
+                  options={genderOptions}
+                  {...register(`user.personal_details.gender`, {
+                    required: "Gender is required",
+                    validate: (value) =>
+                      value !== "Select Gender" ||
+                      "Please select a valid gender",
+                  })}
+                  error={errors.user?.personal_details?.gender}
                   value={user.personal_details?.gender}
                   onChange={(value) =>
                     setUser({
@@ -226,6 +282,13 @@ const UserProfileForm: React.FC = () => {
                 <DropdownSelect
                   label="Blood Group"
                   options={Object.values(BloodGroup)}
+                  {...register(`user.personal_details.blood_group`, {
+                    required: "Blood Group is required",
+                    validate: (value) =>
+                      value !== "Select Blood Group" ||
+                      "Please select a valid blood group",
+                  })}
+                  error={errors.user?.personal_details?.blood_group}
                   value={user.personal_details?.blood_group}
                   onChange={(value) =>
                     setUser({
@@ -245,6 +308,9 @@ const UserProfileForm: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Occupation"
+                  {...register(`user.personal_details.job_title`, {
+                    required: "Occupation is required",
+                  })}
                   value={user.personal_details.job_title}
                   onChange={(e) =>
                     setUser({
@@ -255,19 +321,30 @@ const UserProfileForm: React.FC = () => {
                       },
                     })
                   }
-                  className="w-full p-2 border rounded mb-4 text-gray-600"
+                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                    errors.user?.personal_details?.job_title
+                      ? "focus:outline-none border-red-500 bg-red-50"
+                      : ""
+                  }`}
                 />
               </div>
               <div className="w-full sm:w-1/3 sm:pl-4">
                 <DropdownSelect
                   label="Educational Qualification"
-                  options={[
-                    "High School",
-                    "Higher Secondary",
-                    "Bachelors Degree",
-                    "Masters Degree",
-                    "PhD",
-                  ]}
+                  {...register(
+                    `user.personal_details.educational_qualification.education_level`,
+                    {
+                      required: "Education level is required",
+                      validate: (value) =>
+                        value !== "Select Education" ||
+                        "Please select a valid education level",
+                    }
+                  )}
+                  error={
+                    errors.user?.personal_details?.educational_qualification
+                      ?.education_level
+                  }
+                  options={educationLevelOptions}
                   value={
                     user.personal_details?.educational_qualification
                       .education_level
@@ -346,12 +423,15 @@ const UserProfileForm: React.FC = () => {
               </h2>
             </div>
             <div className="flex-1 text-right">
-              <button
+              <Button
+                variant="text"
+                color="blue"
                 onClick={handleAddMember}
-                className="bg-blue-600 text-white px-4 py-2 mb-2 rounded"
+                {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
+                className="cursor-pointer hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
               >
-                Add Family Member
-              </button>
+                <Plus className="inline size-4" /> Add Member
+              </Button>
             </div>
           </div>
 
@@ -376,16 +456,30 @@ const UserProfileForm: React.FC = () => {
             </label>
             <input
               value={user.proposed_by}
+              {...register(`user.proposed_by`, {
+                required: "Proposed by is required",
+              })}
               onChange={(e) =>
                 setUser({ ...user, proposed_by: e.target.value })
               }
               type="text"
-              className="p-2 border mb-3 rounded w-full text-gray-600"
+              className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                errors.user?.proposed_by
+                  ? "focus:outline-none border-red-500 bg-red-50"
+                  : ""
+              }`}
             />
             <DropdownSelect
               label="Communication Preference"
-              options={["In Person", "Postal"] as CommunicationPreference[]}
+              options={communicationPreferenceOptions}
               value={user.communication_preference}
+              {...register(`user.communication_preference`, {
+                required: "Communication Preference is required",
+                validate: (value) =>
+                  value !== "Select Your Preference" ||
+                  "Please select a valid preference",
+              })}
+              error={errors.user?.communication_preference}
               onChange={(value) =>
                 setUser({ ...user, communication_preference: value })
               }
@@ -394,10 +488,8 @@ const UserProfileForm: React.FC = () => {
               Comments
             </label>
             <input
-              value={user.proposed_by}
-              onChange={(e) =>
-                setUser({ ...user, proposed_by: e.target.value })
-              }
+              value={user.comments}
+              onChange={(e) => setUser({ ...user, comments: e.target.value })}
               type="text"
               className="p-2 border mb-3 rounded w-full text-gray-600"
             />
@@ -406,23 +498,26 @@ const UserProfileForm: React.FC = () => {
       </div>
       <div className="p-4 w-full bg-gray-50 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
-          <button
+          <Button
             type="button"
             onClick={handleResetForm}
-            className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600"
+            className="cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            {...({} as React.ComponentProps<typeof Button>)}
           >
             Reset
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSaveMembersForm}
-            type="button"
-            className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
+            type="submit"
+            color="blue"
+            className="cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            {...({} as React.ComponentProps<typeof Button>)}
           >
             Save Member Details
-          </button>
+          </Button>
         </div>
       </div>
-    </div>
+    </form>
   );
 };
 

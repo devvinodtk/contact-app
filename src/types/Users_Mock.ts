@@ -16,7 +16,7 @@ export const Member_Address: Address = {
 }
 
 export const Educational_Qualification: EducationalQualification = {
-    education_level: "High School",
+    education_level: "Select Education",
     specialization: "",
 }
 
@@ -26,15 +26,15 @@ export const Personal_Details: PersonalDetails = {
     mobile_number: "",
     email_id: "",
     date_of_birth: "",
-    blood_group: BloodGroup.APositive,
-    gender: "Male",
+    blood_group: BloodGroup.SelectBloodGroup,
+    gender: "Select Gender",
     educational_qualification: Educational_Qualification,
     job_title: ""
 }
 
 export const Family_Details: FamilyDetails = {
     member_personal_details: Personal_Details,
-    relationship: "Spouse",
+    relationship: "Select Relationship",
 }
 
 export const Member_Details: Members = {
@@ -45,9 +45,10 @@ export const Member_Details: Members = {
     family_details: [Family_Details],
     proposed_by: "",
     seconded_by: "",
-    communication_preference: "In Person",
+    communication_preference: "Select Your Preference",
     date_of_joining: new Date().toISOString().split("T")[0],
     area_code: AreaCode.SNPS,
     is_inactive: false,
     geo_location: Geo_Location,
+    comments: ""
 }
