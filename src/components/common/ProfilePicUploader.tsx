@@ -3,12 +3,13 @@ import { useDropzone } from "react-dropzone";
 import Cropper, { ReactCropperElement } from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import ProfilePicEditor from "./ProfilePicEditor";
-import { Crop, Upload } from "lucide-react";
+import { Crop, Upload, Save } from "lucide-react";
 
 const ProfilePicUploader: React.FC = () => {
   const [image, setImage] = useState(null);
   const [croppedImage, setCroppedImage] = useState<any>(null);
   const imageRef = useRef<ReactCropperElement>(null);
+  const [imageStrting, setImageString] = useState<string | null>(null);
 
   const onDrop = (acceptedFiles: any) => {
     setCroppedImage(null);
@@ -24,6 +25,14 @@ const ProfilePicUploader: React.FC = () => {
     if (typeof imageRef.current?.cropper !== undefined) {
       setCroppedImage(imageRef.current?.cropper.getCroppedCanvas().toDataURL());
     }
+  };
+
+  const handleImageChange: (image: string) => void = (image) => {
+    setImageString(image);
+  };
+
+  const handleSave = () => {
+    console.log("Image saved", imageStrting);
   };
 
   return (
@@ -53,7 +62,12 @@ const ProfilePicUploader: React.FC = () => {
           className="h-[150px] w-[150px] mb-2 mx-auto rounded-full border-4 border-white shadow-md"
         />
       )}
-      {croppedImage && <ProfilePicEditor imageSrc={croppedImage} />}
+      {croppedImage && (
+        <ProfilePicEditor
+          onHandleSave={handleImageChange}
+          imageSrc={croppedImage}
+        />
+      )}
       <div className="flex justify-center mx-auto w-full">
         <div className="bg-blue-500 text-white px-4 py-2 rounded">
           <div {...getRootProps()}>
@@ -67,6 +81,11 @@ const ProfilePicUploader: React.FC = () => {
               className={image ? "cursor-pointer " : ""}
               onClick={handleCrop}
             />
+          </div>
+        </div>
+        <div className="bg-blue-500 text-white ml-2 px-4 py-2 rounded">
+          <div>
+            <Save className="cursor-pointer" onClick={handleSave} />
           </div>
         </div>
       </div>
