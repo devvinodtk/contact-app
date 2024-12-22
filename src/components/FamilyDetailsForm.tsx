@@ -1,17 +1,20 @@
-import React, { FormEvent, useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   PersonalDetails,
   FamilyDetails,
   BloodGroup,
-  Gender,
-  RelationshipType,
   EducationalQualification,
 } from "../types/Users";
 import DropdownSelect from "./DropdownSelect";
 import { Family_Details } from "../types/Users_Mock";
 import debounce from "lodash/debounce";
 import { Button } from "@material-tailwind/react";
-import { formatDate } from "../utils/Utility_Functions";
+import {
+  educationLevelOptions,
+  formatDate,
+  genderOptions,
+  relationshipOptions,
+} from "../utils/Utility_Functions";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 interface FamilyDetailsFormProps {
@@ -28,6 +31,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
     handleSubmit,
     formState: { errors },
   } = useForm<{ family: FamilyDetails }>({
+    mode: "all",
     defaultValues: {
       family: Family_Details,
     },
@@ -95,7 +99,11 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
     debouncedHandleChange(field, value);
   };
 
-  const onSubmitHandler: SubmitHandler<{ family: FamilyDetails }> = () => {
+  const onSubmitHandler: SubmitHandler<{ family: FamilyDetails }> = (
+    _data,
+    event
+  ) => {
+    event?.stopPropagation();
     handleSaveFormClick();
   };
 
@@ -119,40 +127,44 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
             onChange={(e) => handleChange("name", e.target.value)}
             className={`w-full p-2 mb-4 border rounded text-gray-600 ${
               errors.family?.member_personal_details?.name
-                ? "border-red-500"
+                ? "focus:outline-none border-red-500 bg-red-50"
                 : ""
             }`}
           />
-          {errors.family?.member_personal_details?.name && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.family.member_personal_details.name?.message}
-            </p>
-          )}
           <DropdownSelect
             label="Gender"
-            options={
-              ["Male", "Female", "Other", "Prefer not to say"] as Gender[]
-            }
+            {...register(`family.member_personal_details.gender`, {
+              required: "Gender is required",
+              validate: (value) =>
+                value !== "Select Gender" || "Please select a valid gender",
+            })}
+            error={errors.family?.member_personal_details?.gender}
+            options={genderOptions}
             value={familyDetails?.member_personal_details?.gender}
             onChange={(value) => handleChange("gender", value)}
           />
           <DropdownSelect
             label="Relationship"
-            options={
-              [
-                "Spouse",
-                "Kid",
-                "Father",
-                "Mother",
-                "Father In Law",
-                "Mother In Law",
-              ] as RelationshipType[]
-            }
+            {...register(`family.relationship`, {
+              required: "Relationship is required",
+              validate: (value) =>
+                value !== "Select Relationship" ||
+                "Please select a valid relationship",
+            })}
+            error={errors.family?.relationship}
+            options={relationshipOptions}
             value={familyDetails?.relationship}
             onChange={(value) => handleChange("relationship", value)}
           />
           <DropdownSelect
             label="Blood Group"
+            {...register(`family.member_personal_details.blood_group`, {
+              required: "Blood Group is required",
+              validate: (value) =>
+                value !== "Select Blood Group" ||
+                "Please select a valid blood group",
+            })}
+            error={errors.family?.member_personal_details?.blood_group}
             options={Object.values(BloodGroup)}
             value={familyDetails?.member_personal_details?.blood_group}
             onChange={(value) => handleChange("blood_group", value)}
@@ -160,16 +172,20 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
           {/* Additional fields for family details */}
           <DropdownSelect
             label="Educational Qualification"
-            options={[
-              "Nursery",
-              "Kindergarten",
-              "Primary School",
-              "High School",
-              "Higher Secondary",
-              "Bachelors Degree",
-              "Masters Degree",
-              "PhD",
-            ]}
+            {...register(
+              `family.member_personal_details.educational_qualification.education_level`,
+              {
+                required: "Education level is required",
+                validate: (value) =>
+                  value !== "Select Education" ||
+                  "Please select a valid education level",
+              }
+            )}
+            error={
+              errors.family?.member_personal_details?.educational_qualification
+                ?.education_level
+            }
+            options={educationLevelOptions}
             value={
               familyDetails?.member_personal_details?.educational_qualification
                 .education_level

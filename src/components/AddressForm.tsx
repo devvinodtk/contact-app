@@ -98,6 +98,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             checked={isCopyAddressChecked}
             onChange={handleCopyAddressCheckedChange}
             label="Copy Present Address"
+            className="bg-blue-500"
             {...({
               checked: isCopyAddressChecked,
               onChange: handleCopyAddressCheckedChange,
