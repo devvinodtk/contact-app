@@ -32,18 +32,20 @@ const FamilyDetailsDialog: React.FC<FamilyDetailsDialogProps> = ({
       {...({ open, handler: onClose } as React.ComponentProps<typeof Dialog>)}
     >
       <DialogHeader
-        className="w-full justify-between"
+        className="w-full justify-between border-b"
         {...({} as React.ComponentProps<typeof DialogHeader>)}
       >
-        <h2 className="text-center w-full ml-[10%]">Add a family member</h2>
+        <h2 className="text-center w-full ml-[10%]" sm:text-base md:text-lg>Add a family member</h2>
         <X
           onClick={onClose}
           className="cursor-pointer text-lg font-semibold w-[10%] mb-4 text-gray-600"
         />
       </DialogHeader>
+      <div className="w-full mt-1">
       <DialogBody {...({} as React.ComponentProps<typeof DialogHeader>)}>
         <FamilyDetailsForm onSaveDetails={handleOnFormSave} />
       </DialogBody>
+      </div>
       <DialogFooter
         className="w-full"
         {...({} as React.ComponentProps<typeof DialogHeader>)}
