@@ -8,12 +8,12 @@ import {
 } from "../types/Users";
 
 import AddressForm from "./AddressForm";
-import DropdownSelect from "./DropdownSelect";
+import DropdownSelect from "./common/DropdownSelect";
 import GeoLocationDisplay from "./GeoLocationDisplay";
 import Header from "./common/Header";
 import ProfilePicUploader from "./common/ProfilePicUploader";
-import FamilyDetailsDialog from "./common/FamilyDetailsDialog";
-import FamilyDetailsTable from "./common/FamilyDetailsTable";
+import PopupContainer from "./common/PopupContainer";
+import FamilyDetailsTable from "./FamilyDetailsTable";
 import { Member_Address, Member_Details } from "../types/Users_Mock";
 import { useDispatch } from "react-redux";
 import { addMember } from "../store/MembersSlice";
@@ -25,6 +25,7 @@ import {
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Button } from "@material-tailwind/react";
 import { Plus } from "lucide-react";
+import FamilyDetailsForm from "./FamilyDetailsForm";
 
 const UserProfileForm: React.FC = () => {
   const {
@@ -435,11 +436,9 @@ const UserProfileForm: React.FC = () => {
             </div>
           </div>
 
-          <FamilyDetailsDialog
-            open={open}
-            onClose={handleClose}
-            onSaveFamilyDetails={handlSaveFamilyDetails}
-          />
+          <PopupContainer open={open} onClose={handleClose}>
+            <FamilyDetailsForm onSaveDetails={handlSaveFamilyDetails} />
+          </PopupContainer>
           <FamilyDetailsTable fmaily_members={familyDetails} />
         </div>
 

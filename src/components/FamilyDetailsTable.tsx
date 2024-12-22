@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Typography } from "@material-tailwind/react";
-import { FamilyDetails } from "../../types/Users";
+import { FamilyDetails } from "../types/Users";
 
 const TABLE_HEADER = [
   "Name",

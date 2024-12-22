@@ -5,29 +5,23 @@ import {
   DialogHeader,
   DialogFooter,
 } from "@material-tailwind/react";
-import FamilyDetailsForm from "../FamilyDetailsForm";
 import { X } from "lucide-react";
-import { FamilyDetails } from "../../types/Users";
 
-interface FamilyDetailsDialogProps {
+interface PopupContainerProps {
   open: boolean;
   onClose: () => void;
-  onSaveFamilyDetails: (memberFamilyDetails: FamilyDetails) => void;
+  children?: React.ReactNode;
 }
 
-const FamilyDetailsDialog: React.FC<FamilyDetailsDialogProps> = ({
+const PopupContainer: React.FC<PopupContainerProps> = ({
   open,
   onClose,
-  onSaveFamilyDetails,
+  children,
 }: any) => {
-  const handleOnFormSave = (memberFamilyDetails: FamilyDetails) => {
-    onSaveFamilyDetails(memberFamilyDetails);
-  };
-
   return (
     <Dialog
       size="sm"
-      className="flex flex-col items-center justify-center"
+      className="items-center justify-center overflow-y-auto max-h-[95vh]"
       dismiss={{ outsidePress: false }}
       {...({ open, handler: onClose } as React.ComponentProps<typeof Dialog>)}
     >
@@ -35,16 +29,18 @@ const FamilyDetailsDialog: React.FC<FamilyDetailsDialogProps> = ({
         className="w-full justify-between border-b"
         {...({} as React.ComponentProps<typeof DialogHeader>)}
       >
-        <h2 className="text-center w-full ml-[10%]" sm:text-base md:text-lg>Add a family member</h2>
+        <h2 className="text-center w-full ml-[10%]" sm:text-base md:text-lg>
+          Add a family member
+        </h2>
         <X
           onClick={onClose}
           className="cursor-pointer text-lg font-semibold w-[10%] mb-4 text-gray-600"
         />
       </DialogHeader>
       <div className="w-full mt-1">
-      <DialogBody {...({} as React.ComponentProps<typeof DialogHeader>)}>
-        <FamilyDetailsForm onSaveDetails={handleOnFormSave} />
-      </DialogBody>
+        <DialogBody {...({} as React.ComponentProps<typeof DialogHeader>)}>
+          {children}
+        </DialogBody>
       </div>
       <DialogFooter
         className="w-full"
@@ -56,4 +52,4 @@ const FamilyDetailsDialog: React.FC<FamilyDetailsDialogProps> = ({
   );
 };
 
-export default FamilyDetailsDialog;
+export default PopupContainer;

@@ -5,7 +5,7 @@ import {
   BloodGroup,
   EducationalQualification,
 } from "../types/Users";
-import DropdownSelect from "./DropdownSelect";
+import DropdownSelect from "./common/DropdownSelect";
 import { Family_Details } from "../types/Users_Mock";
 import debounce from "lodash/debounce";
 import { Button } from "@material-tailwind/react";
