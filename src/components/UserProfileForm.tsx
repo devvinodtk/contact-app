@@ -238,14 +238,14 @@ const UserProfileForm: React.FC = () => {
                   }
                 />
               </div>
-              <div className="w-full sm:w-1/3" >
+              <div className="w-full sm:w-1/3">
                 <label className="block text-sm font-medium mb-1 text-gray-600">
                   Occupation
                 </label>
                 <input
                   type="text"
-                  placeholder="Name"
-                  value={user.personal_details.name}
+                  placeholder="Occupation"
+                  value={user.personal_details.job_title}
                   onChange={(e) =>
                     setUser({
                       ...user,
@@ -269,7 +269,8 @@ const UserProfileForm: React.FC = () => {
                     "PhD",
                   ]}
                   value={
-                    user.personal_details?.educational_qualification.education_level
+                    user.personal_details?.educational_qualification
+                      .education_level
                   }
                   onChange={(value) =>
                     setUser({
@@ -282,7 +283,10 @@ const UserProfileForm: React.FC = () => {
                   }
                 />
               </div>
-              <div className="w-full sm:w-1/3 sm:pl-4 sm:pt-6">
+              <div className="w-full sm:w-1/3 sm:pl-4">
+                <label className="block text-sm font-medium mb-1 text-gray-600">
+                  Specialization
+                </label>
                 <input
                   type="text"
                   placeholder="Specialization"
@@ -399,9 +403,6 @@ const UserProfileForm: React.FC = () => {
             />
           </div>
         </div>
-
-
-
       </div>
       <div className="p-4 w-full bg-gray-50 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
