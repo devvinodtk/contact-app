@@ -167,11 +167,10 @@ const UserProfileForm: React.FC = () => {
                       },
                     })
                   }
-                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                    errors.user?.personal_details?.name
+                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.user?.personal_details?.name
                       ? "focus:outline-none border-red-500 bg-red-50"
                       : ""
-                  }`}
+                    }`}
                 />
               </div>
               <div className="w-full sm:w-1/3 sm:pl-4">
@@ -194,11 +193,10 @@ const UserProfileForm: React.FC = () => {
                       },
                     })
                   }
-                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                    errors.user?.personal_details?.mobile_number
+                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.user?.personal_details?.mobile_number
                       ? "focus:outline-none border-red-500 bg-red-50"
                       : ""
-                  }`}
+                    }`}
                 />
               </div>
               <div className="w-full sm:w-1/3 sm:pl-4">
@@ -221,11 +219,10 @@ const UserProfileForm: React.FC = () => {
                       },
                     })
                   }
-                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                    errors.user?.personal_details?.email_id
+                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.user?.personal_details?.email_id
                       ? "focus:outline-none border-red-500 bg-red-50"
                       : ""
-                  }`}
+                    }`}
                 />
               </div>
               <div className="w-full sm:w-1/3">
@@ -249,11 +246,10 @@ const UserProfileForm: React.FC = () => {
                       },
                     })
                   }
-                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                    errors.user?.personal_details?.date_of_birth
+                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.user?.personal_details?.date_of_birth
                       ? "focus:outline-none border-red-500 bg-red-50"
                       : ""
-                  }`}
+                    }`}
                 />
               </div>
               <div className="w-full sm:w-1/3 sm:pl-4">
@@ -318,15 +314,14 @@ const UserProfileForm: React.FC = () => {
                       ...user,
                       personal_details: {
                         ...user.personal_details,
-                        name: e.target.value,
+                        job_title: e.target.value,
                       },
                     })
                   }
-                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                    errors.user?.personal_details?.job_title
+                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.user?.personal_details?.job_title
                       ? "focus:outline-none border-red-500 bg-red-50"
                       : ""
-                  }`}
+                    }`}
                 />
               </div>
               <div className="w-full sm:w-1/3 sm:pl-4">
@@ -389,7 +384,80 @@ const UserProfileForm: React.FC = () => {
             </div>
           </div>
         </div>
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-3">
+          <div className="p-4 border rounded ">
+            <div className="flex">
+              <div className="flex-1  text-left">
+                <h2 className="text-lg font-semibold text-gray-600">
+                  Present Address
+                </h2>
+              </div>
+              <div className="flex-1 text-right">
+              <Button
+                variant="text"
+                color="blue"
+                onClick={handleAddAddress}
+                {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
+                className="cursor-pointer bg-blue-500 text-white  hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg p-2 text-center"
+                >
+                <Plus className="inline size-4" /> 
+              </Button>
+              </div>
+            </div>
+            <div className="block w-full text-gray-600">
+              <p className="block w-full">#3, Brundavan Apartment</p>
+              <p className="block">2nd Cross, Pattelappa layout, Nagashettihalli</p>
+              <p className="block">Sanjayngar, Bangalore - 560094</p>
+            </div>
+          </div>
+          <div className="p-4 border rounded ">
+            <div className="flex">
+              <div className="flex-1  text-left">
+                <h2 className="text-lg font-semibold  text-gray-600">
+                  Permanent Address
+                </h2>
+                 
+              </div>
+              <div className="flex-1 text-right">
+              <Button
+                variant="text"
+                color="blue"
+                onClick={handleAddAddress}
+                {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
+                className="cursor-pointer bg-blue-500 text-white  hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg p-2 text-center"
+                >
+                <Plus className="inline size-4" /> 
+              </Button>
+              </div>
+            </div>
+            <div className="block w-full text-gray-600">
+              <p className="block w-full">#3, Brundavan Apartment</p>
+              <p className="block">2nd Cross, Pattelappa layout, Nagashettihalli</p>
+              <p className="block">Sanjayngar, Bangalore - 560094</p>
+            </div>
+          </div>
+          <div className="p-4 border rounded ">
+            <div className="flex">
+              <div className="flex-1  text-left">
+                <h2 className="text-lg font-semibold text-gray-600">
+                  Office Address
+                </h2>
+              </div>
+              <div className="flex-1 text-right">
+              <Button
+                variant="text"
+                color="blue"
+                onClick={handleAddAddress}
+                {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
+                className="cursor-pointer bg-blue-500 text-white  hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg p-2 text-center"
+                >
+                <Plus className="inline size-4" /> 
+              </Button>
+              </div>
+            </div>
+            
+          </div>
+        </div>
         {/* Present Address Form */}
 
         <div className="p-4 border rounded-lg mt-6">
@@ -424,6 +492,7 @@ const UserProfileForm: React.FC = () => {
               }
             />
           </PopupContainer>
+          
         </div>
 
         {/* Permanent Address Form */}
@@ -435,7 +504,7 @@ const UserProfileForm: React.FC = () => {
             handleAddressChange(AddressType.PermanentAddress, value)
           }
           onCopyPresentAddress={handleCopyPresentAddressChange}
-        /> */}
+        /> }
         {/* Office Address Form */}
         {/* <AddressForm
           label="Office Address"
@@ -494,11 +563,10 @@ const UserProfileForm: React.FC = () => {
                 setUser({ ...user, proposed_by: e.target.value })
               }
               type="text"
-              className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                errors.user?.proposed_by
+              className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.user?.proposed_by
                   ? "focus:outline-none border-red-500 bg-red-50"
                   : ""
-              }`}
+                }`}
             />
             <DropdownSelect
               label="Communication Preference"

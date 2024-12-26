@@ -57,7 +57,7 @@ function LoginPage() {
                 src="src/assets/Logo.jpeg"
                 alt="Kalakairali"
               />
-              <div className="flex items-center mb-6 text-2xl font-semibold text-gray-900">
+              <div className="flex items-center mb-6 text-center text-2xl font-semibold text-gray-900">
                 Kalakairali Member Management System
               </div>
               <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
