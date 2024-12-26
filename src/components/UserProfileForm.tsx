@@ -21,6 +21,7 @@ import {
   communicationPreferenceOptions,
   educationLevelOptions,
   genderOptions,
+  setTodayDate,
 } from "../utils/Utility_Functions";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Button } from "@material-tailwind/react";
@@ -45,10 +46,12 @@ const UserProfileForm: React.FC = () => {
   const [permanentAddress, setPermanentAddress] = useState<Address>();
   const [officeAddress, setOfficeAddress] = useState<Address>();
   const [today, setToday] = useState("");
+  const [openAddressDialog, setOpenAddressDialog] = useState(false);
 
   const handleClose = () => setOpen(false); // Callback function to close the Family Details Popup
   const handleAddMember = () => setOpen(true); // Callback function to open the Family Details Popup
-
+  const handleAddAddress = () => setOpenAddressDialog(true); // Callback function to open the Address Popup
+  const handleCloseAddress = () => setOpenAddressDialog(false);
   const dispatch = useDispatch();
 
   const handleResetForm = () => {
@@ -119,11 +122,8 @@ const UserProfileForm: React.FC = () => {
     }
   };
 
-  // Set today's date in YYYY-MM-DD format
   useEffect(() => {
-    const currentDate = new Date();
-    const formattedDate = currentDate.toISOString().split("T")[0];
-    setToday(formattedDate);
+    setToday(setTodayDate());
   }, []);
 
   const onHandleSaveMembersForm: SubmitHandler<{ user: Members }> = () => {
@@ -391,15 +391,43 @@ const UserProfileForm: React.FC = () => {
         </div>
 
         {/* Present Address Form */}
-        <AddressForm
-          label="Present Address"
-          addressInfo={presentAddress}
-          onAddressChange={(value) =>
-            handleAddressChange(AddressType.PresentAddress, value)
-          }
-        />
+
+        <div className="p-4 border rounded-lg mt-6">
+          <div className="flex flex-wrap gap-4">
+            <div className="flex-1  text-left">
+              <h2 className="text-lg font-semibold mb-4 text-gray-600">
+                Present Address
+              </h2>
+            </div>
+            <div className="flex-1 text-right">
+              <Button
+                variant="text"
+                color="blue"
+                onClick={handleAddAddress}
+                {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
+                className="cursor-pointer hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              >
+                <Plus className="inline size-4" /> Present Address
+              </Button>
+            </div>
+          </div>
+
+          <PopupContainer
+            header="Add Present Address"
+            open={openAddressDialog}
+            onClose={handleCloseAddress}
+          >
+            <AddressForm
+              addressInfo={presentAddress}
+              onAddressChange={(value) =>
+                handleAddressChange(AddressType.PresentAddress, value)
+              }
+            />
+          </PopupContainer>
+        </div>
+
         {/* Permanent Address Form */}
-        <AddressForm
+        {/* <AddressForm
           label="Permanent Address"
           copyAddress={true}
           addressInfo={permanentAddress}
@@ -407,20 +435,20 @@ const UserProfileForm: React.FC = () => {
             handleAddressChange(AddressType.PermanentAddress, value)
           }
           onCopyPresentAddress={handleCopyPresentAddressChange}
-        />
+        /> */}
         {/* Office Address Form */}
-        <AddressForm
+        {/* <AddressForm
           label="Office Address"
           addressInfo={officeAddress}
           onAddressChange={(value) =>
             handleAddressChange(AddressType.OfficeAddress, value)
           }
-        />
+        /> */}
         <div className="p-4 border rounded-lg mt-6">
           <div className="flex flex-wrap gap-4">
             <div className="flex-1  text-left">
               <h2 className="text-lg font-semibold mb-4 text-gray-600">
-                Family Members
+                Present Address
               </h2>
             </div>
             <div className="flex-1 text-right">
@@ -436,7 +464,11 @@ const UserProfileForm: React.FC = () => {
             </div>
           </div>
 
-          <PopupContainer open={open} onClose={handleClose}>
+          <PopupContainer
+            open={open}
+            header="Add Family Member"
+            onClose={handleClose}
+          >
             <FamilyDetailsForm onSaveDetails={handlSaveFamilyDetails} />
           </PopupContainer>
           <FamilyDetailsTable fmaily_members={familyDetails} />

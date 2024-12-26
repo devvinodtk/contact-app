@@ -9,6 +9,8 @@ import { Provider } from "react-redux";
 import store from "./store/store";
 import { useEffect, useState } from "react";
 import Dashboard from "./components/Dashboard";
+import AddressList from "./components/AddressList";
+import MembershipCard from "./components/MembershipCard";
 
 function App() {
   const { userLoggedIn }: UserAuthValue = useAuth();
@@ -66,6 +68,22 @@ function App() {
                 element={
                   <AuthenticateUser>
                     <UserProfileForm />
+                  </AuthenticateUser>
+                }
+              />
+              <Route
+                path="/address"
+                element={
+                  <AuthenticateUser>
+                    <AddressList />
+                  </AuthenticateUser>
+                }
+              />
+              <Route
+                path="/idcards"
+                element={
+                  <AuthenticateUser>
+                    <MembershipCard />
                   </AuthenticateUser>
                 }
               />

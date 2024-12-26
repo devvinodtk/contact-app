@@ -25,16 +25,16 @@ const SIDEBAR_ITEMS = [
   },
   { name: "Add Member", icon: UserPlus, color: "#f1bf00", href: "/users" },
   {
-    name: "Adrress List",
+    name: "Address List",
     icon: NotebookTabs,
     color: "#00ffff",
-    href: "/products",
+    href: "/address",
   },
   {
     name: "Membership Card",
     icon: IdCard,
     color: "#6EE7B7",
-    href: "/settings",
+    href: "/idcards",
   },
   { name: "Logout", icon: LogIn, color: "#ff7300", href: "/logout" },
 ];
@@ -46,21 +46,24 @@ function Sidebar() {
     <>
       <div className="block sm:hidden relative">
         <div className="absolute left-2 top-3 z-50">
-          <Menu size={40} onClick={() => setMobileIsSideBarOpen(!isMobileSideBarOpen)} className="p-2 rounded-full rounded bg-sky-500 hover:bg-sky-500 transition-colors max-w-fit" />
+          <Menu
+            size={40}
+            onClick={() => setMobileIsSideBarOpen(!isMobileSideBarOpen)}
+            className="p-2 rounded-full rounded bg-sky-500 hover:bg-sky-500 transition-colors max-w-fit"
+          />
         </div>
         <div>
-            <div className="absolute h-full h-full bg-sky-700 h-screen z-40">
+          <div className="absolute h-full h-full bg-sky-700 h-screen z-40">
             <nav className="mt-16 flex-grow">
               {SIDEBAR_ITEMS.map((item) => (
-                
                 <Link key={item.href} to={item.href}>
-                    {isMobileSideBarOpen && (
-                  <motion.div className="flex items-center p-4 text-sm font-medium rounded-lg hover:bg-sky-600 transition-colors mb-2">
-                    <item.icon
-                      size={20}
-                      style={{ color: item.color, minWidth: "20px" }}
-                    />
-                    <AnimatePresence>
+                  {isMobileSideBarOpen && (
+                    <motion.div className="flex items-center p-4 text-sm font-medium rounded-lg hover:bg-sky-600 transition-colors mb-2">
+                      <item.icon
+                        size={20}
+                        style={{ color: item.color, minWidth: "20px" }}
+                      />
+                      <AnimatePresence>
                         <motion.span
                           className="ml-4 whitespace-nowrap"
                           initial={{ opacity: 0, width: 0 }}
@@ -70,19 +73,20 @@ function Sidebar() {
                         >
                           {item.name}
                         </motion.span>
-                    </AnimatePresence>
-                  </motion.div>
-                      )}
+                      </AnimatePresence>
+                    </motion.div>
+                  )}
                 </Link>
               ))}
             </nav>
-            </div>
+          </div>
         </div>
       </div>
       <div className="hidden md:block">
         <motion.div
-          className={`relative z-10 duration-300 transition-all h-screen ease-in-out flex-shrink-0 mobileMenu${isSideBarOpen ? "w-64" : "w-20"
-            }`}
+          className={`relative z-10 duration-300 transition-all h-screen ease-in-out flex-shrink-0 mobileMenu${
+            isSideBarOpen ? "w-64" : "w-20"
+          }`}
           animate={{ width: isSideBarOpen ? 256 : 80 }}
         >
           <div className="h-full bg-sky-700 h-screen backdrop-blur-md p-4 flex flex-col">

@@ -62,6 +62,7 @@ export type Address = {
     flat_number_name: string,
     address_line_1: string,
     address_line_2: string,
+    post_office: string,
     city: string,
     state: string,
     country: string,
