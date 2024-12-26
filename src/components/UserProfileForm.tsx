@@ -314,7 +314,7 @@ const UserProfileForm: React.FC = () => {
                       ...user,
                       personal_details: {
                         ...user.personal_details,
-                        name: e.target.value,
+                        job_title: e.target.value,
                       },
                     })
                   }
@@ -393,15 +393,15 @@ const UserProfileForm: React.FC = () => {
                 </h2>
               </div>
               <div className="flex-1 text-right">
-                <Button
-                  variant="text"
-                  color="blue"
-                  onClick={handleAddMember}
-                  {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
-                  className="cursor-pointer bg-blue-500 text-white  hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg p-2 text-center"
+              <Button
+                variant="text"
+                color="blue"
+                onClick={handleAddAddress}
+                {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
+                className="cursor-pointer bg-blue-500 text-white  hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg p-2 text-center"
                 >
-                  <Plus className="inline size-4" />
-                </Button>
+                <Plus className="inline size-4" /> 
+              </Button>
               </div>
             </div>
             <div className="block w-full text-gray-600">
@@ -416,17 +416,18 @@ const UserProfileForm: React.FC = () => {
                 <h2 className="text-lg font-semibold  text-gray-600">
                   Permanent Address
                 </h2>
+                 
               </div>
               <div className="flex-1 text-right">
-                <Button
-                  variant="text"
-                  color="blue"
-                  onClick={handleAddMember}
-                  {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
-                  className="cursor-pointer bg-blue-500 text-white  hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg p-2 text-center"
+              <Button
+                variant="text"
+                color="blue"
+                onClick={handleAddAddress}
+                {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
+                className="cursor-pointer bg-blue-500 text-white  hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg p-2 text-center"
                 >
-                  <Plus className="inline size-4" />
-                </Button>
+                <Plus className="inline size-4" /> 
+              </Button>
               </div>
             </div>
             <div className="block w-full text-gray-600">
@@ -443,15 +444,15 @@ const UserProfileForm: React.FC = () => {
                 </h2>
               </div>
               <div className="flex-1 text-right">
-                <Button
-                  variant="text"
-                  color="blue"
-                  onClick={handleAddMember}
-                  {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
-                  className="cursor-pointer bg-blue-500 text-white  hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg p-2 text-center"
+              <Button
+                variant="text"
+                color="blue"
+                onClick={handleAddAddress}
+                {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
+                className="cursor-pointer bg-blue-500 text-white  hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg p-2 text-center"
                 >
-                  <Plus className="inline size-4" />
-                </Button>
+                <Plus className="inline size-4" /> 
+              </Button>
               </div>
             </div>
             
@@ -491,6 +492,7 @@ const UserProfileForm: React.FC = () => {
               }
             />
           </PopupContainer>
+          
         </div>
 
         {/* Permanent Address Form */}
@@ -502,7 +504,7 @@ const UserProfileForm: React.FC = () => {
             handleAddressChange(AddressType.PermanentAddress, value)
           }
           onCopyPresentAddress={handleCopyPresentAddressChange}
-        /> */}
+        /> }
         {/* Office Address Form */}
         {/* <AddressForm
           label="Office Address"
