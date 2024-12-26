@@ -10,12 +10,14 @@ import { X } from "lucide-react";
 interface PopupContainerProps {
   open: boolean;
   onClose: () => void;
+  header?: string;
   children?: React.ReactNode;
 }
 
 const PopupContainer: React.FC<PopupContainerProps> = ({
   open,
   onClose,
+  header,
   children,
 }: any) => {
   return (
@@ -30,7 +32,7 @@ const PopupContainer: React.FC<PopupContainerProps> = ({
         {...({} as React.ComponentProps<typeof DialogHeader>)}
       >
         <h2 className="text-center w-full ml-[10%]" sm:text-base md:text-lg>
-          Add a family member
+          {header}
         </h2>
         <X
           onClick={onClose}

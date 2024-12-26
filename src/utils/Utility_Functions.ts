@@ -5,6 +5,11 @@ export function formatDate(inputDate: string) {
     return `${date}/${month}/${year}`;
 }
 
+export function setTodayDate() {
+    const currentDate = new Date();
+    return currentDate.toISOString().split("T")[0];
+}
+
 export const relationshipOptions = [
     "Select Relationship",
     "Spouse",
@@ -15,6 +20,9 @@ export const relationshipOptions = [
     "Mother In Law",
   ] as RelationshipType[];
 
+export const postOfficeOptions = [
+    "Select Post Office",
+] as string[];
 
 export const genderOptions = [
     "Select Gender",

@@ -8,6 +8,7 @@ export const Member_Address: Address = {
     flat_number_name: "",
     address_line_1: "",
     address_line_2: "",
+    post_office: "",
     city: "",
     state: "",
     country: "INDIA",
