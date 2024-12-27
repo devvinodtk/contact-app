@@ -120,7 +120,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="flex-1 overflow-auto relative z-10">
+      <div className="flex-1 overflow-auto relative z-10 mt-16 sm:mt-0">
         <Header title="Dashboard" />
         <div className="m-5">
           <div className="w-full mx-auto">
