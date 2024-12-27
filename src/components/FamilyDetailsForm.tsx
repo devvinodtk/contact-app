@@ -137,7 +137,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
           }`}
         />
         <DropdownSelect
-          label="Gender"
+          label="Gender *"
           {...register(`family.member_personal_details.gender`, {
             required: "Gender is required",
             validate: (value) =>
@@ -149,7 +149,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
           onChange={(value) => handleChange("gender", value)}
         />
         <DropdownSelect
-          label="Relationship"
+          label="Relationship *"
           {...register(`family.relationship`, {
             required: "Relationship is required",
             validate: (value) =>
@@ -176,7 +176,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
         />
         {/* Additional fields for family details */}
         <DropdownSelect
-          label="Educational Qualification"
+          label="Educational Qualification  *"
           {...register(
             `family.member_personal_details.educational_qualification.education_level`,
             {
