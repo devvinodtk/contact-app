@@ -21,7 +21,7 @@ const GeoLocationDisplay: React.FC<GeoLocationDisplayProps> = (
         className="w-full text-center cursor-pointe hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
         {...({} as React.ComponentProps<typeof Button>)}
       >
-        <span className="float-left mr-1"><LocateFixed /></span> <span>Share My current/Home Location</span>
+        <LocateFixed className="inline size-5 mr-2"/>Share My current / Home Location
       </Button>
       {/* <p className="text-lg  mb-1 text-gray-600">
         <span>Latitude: {geoLocation?.latitude}</span> | <span>Longitude: {geoLocation?.longitude}</span>
