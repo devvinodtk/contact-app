@@ -22,7 +22,7 @@ const DropdownSelect = forwardRef<HTMLSelectElement, DropdownSelectProps<any>>(
         <select
           {...rest}
           ref={ref}
-          value={value as unknown as string}
+          value={value as string}
           onChange={(e) => onChange(e.target.value as T)}
           className={`w-full p-2 border rounded text-gray-600 ${
             error?.message ? "focus:outline-none border-red-500 bg-red-50" : ""

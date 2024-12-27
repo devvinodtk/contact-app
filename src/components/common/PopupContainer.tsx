@@ -31,7 +31,7 @@ const PopupContainer: React.FC<PopupContainerProps> = ({
         className="w-full justify-between border-b"
         {...({} as React.ComponentProps<typeof DialogHeader>)}
       >
-        <h2 className="text-center w-full ml-[10%]" sm:text-base md:text-lg>
+        <h2 className="text-center w-full ml-[10%] sm:text-base md:text-lg">
           {header}
         </h2>
         <X
