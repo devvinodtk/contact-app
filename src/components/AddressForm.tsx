@@ -134,21 +134,14 @@ const AddressForm: React.FC<AddressFormProps> = ({
           htmlFor="addressDetails.address_line_2"
           className="text-sm font-medium text-gray-600"
         >
-          Address Line 2 / Landmark *
+          Address Line 2 / Landmark
         </label>
         <input
           type="text"
           placeholder="Address Line 2 / Landmark"
-          {...register(`address.address_line_2`, {
-            required: "Address Line 2",
-          })}
           value={addressDetails?.address_line_2}
           onChange={(e) => handleChange("address_line_2", e.target.value)}
-          className={`w-full p-2 mb-4 border rounded text-gray-600 ${
-            errors.address?.address_line_2
-              ? "focus:outline-none border-red-500 bg-red-50"
-              : ""
-          }`}
+          className="w-full p-2 mb-4 border rounded text-gray-600"
         />
         <label
           htmlFor="addressDetails.pin_code"
