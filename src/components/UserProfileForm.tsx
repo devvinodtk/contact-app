@@ -191,7 +191,9 @@ const UserProfileForm: React.FC = () => {
                   type="number"
                   placeholder="Mobile number"
                   {...register(`user.personal_details.mobile_number`, {
-                    required: "Mobile number is required", minLength:10, maxLength: 10
+                    required: "Mobile number is required",
+                    minLength: 10,
+                    maxLength: 10,
                   })}
                   value={user.personal_details?.mobile_number}
                   onChange={(e) =>
@@ -217,7 +219,8 @@ const UserProfileForm: React.FC = () => {
                 <input
                   type="email"
                   {...register(`user.personal_details.email_id`, {
-                    required: "Email ID is required", pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i
+                    required: "Email ID is required",
+                    pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i,
                   })}
                   placeholder="Email ID"
                   value={user.personal_details?.email_id}
@@ -551,7 +554,7 @@ const UserProfileForm: React.FC = () => {
           <Button
             type="button"
             onClick={handleResetForm}
-            className="cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            className="cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             {...({} as React.ComponentProps<typeof Button>)}
           >
             Reset
@@ -560,7 +563,7 @@ const UserProfileForm: React.FC = () => {
             onClick={handleSaveMembersForm}
             type="submit"
             color="blue"
-            className="cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            className="cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             {...({} as React.ComponentProps<typeof Button>)}
           >
             Save Member Details

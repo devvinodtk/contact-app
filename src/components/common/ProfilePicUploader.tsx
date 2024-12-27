@@ -4,6 +4,7 @@ import Cropper, { ReactCropperElement } from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import ProfilePicEditor from "./ProfilePicEditor";
 import { Crop, Upload, Save } from "lucide-react";
+import { Button } from "@material-tailwind/react";
 
 const ProfilePicUploader: React.FC = () => {
   const [image, setImage] = useState(null);
@@ -39,20 +40,18 @@ const ProfilePicUploader: React.FC = () => {
     <div className="w-full">
       {!croppedImage && image && (
         <Cropper
+          height={150}
+          width={150}
           src={image}
           ref={imageRef}
-          zoomTo={0.5}
           initialAspectRatio={1}
           aspectRatio={1}
           guides={false}
-          viewMode={1}
-          minCropBoxHeight={10}
-          minCropBoxWidth={10}
+          scalable={true}
           background={false}
           responsive={true}
-          checkOrientation={false}
-          autoCropArea={1}
-          frameBorder={"20px"}
+          checkOrientation={true}
+          className="flex justify-center"
         />
       )}
       {!croppedImage && !image && (
@@ -69,25 +68,39 @@ const ProfilePicUploader: React.FC = () => {
         />
       )}
       <div className="flex justify-center mx-auto w-full">
-        <div className="bg-blue-500 text-white px-4 py-2 rounded">
+        <Button
+          {...({} as React.ComponentProps<typeof Button>)}
+          color="blue"
+          className="cursor-pointer mr-3 text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg text-xs px-2 py-1 text-center"
+        >
           <div {...getRootProps()}>
             <input {...getInputProps()} />
             <Upload className="cursor-pointer" />
           </div>
-        </div>
-        <div className="bg-blue-500 text-white ml-2 px-4 py-2 rounded">
+        </Button>
+        <Button
+          disabled={!image}
+          color="blue"
+          {...({} as React.ComponentProps<typeof Button>)}
+          className="cursor-pointer mr-3 text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg text-xs px-2 py-1 text-center"
+        >
           <div>
             <Crop
               className={image ? "cursor-pointer " : ""}
               onClick={handleCrop}
             />
           </div>
-        </div>
-        <div className="bg-blue-500 text-white ml-2 px-4 py-2 rounded">
+        </Button>
+        <Button
+          disabled={!image || !croppedImage}
+          color="blue"
+          {...({} as React.ComponentProps<typeof Button>)}
+          className="cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg text-xs px-2 py-1 text-center"
+        >
           <div>
             <Save className="cursor-pointer" onClick={handleSave} />
           </div>
-        </div>
+        </Button>
       </div>
     </div>
   );

@@ -21,10 +21,15 @@ const ProfilePicEditor: React.FC<ProfilePicEditorProps> = ({
   };
 
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-row justify-center">
       <AvatarEditor
+        height={150}
+        width={150}
+        style={{ height: "150px", width: "150px" }}
+        border={1}
+        borderRadius={9999}
         onImageReady={() => handleSave()}
-        className="rounded-full border-4 border-white shadow-md"
+        className="border-4 border-white shadow-md mb-2 rounded-full"
         ref={editorRef}
         image={imageSrc} // or file input
       />
