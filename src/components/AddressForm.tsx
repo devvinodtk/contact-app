@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Address, PostalInfo } from "../types/Users";
+import { Address, AddressType, PostalInfo } from "../types/Users";
 import { Button, Switch } from "@material-tailwind/react";
 import type { SwitchProps } from "@material-tailwind/react";
 import { Member_Address } from "../types/Users_Mock";
@@ -9,17 +9,15 @@ import DropdownSelect from "./common/DropdownSelect";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 interface AddressFormProps {
-  copyAddress?: boolean;
+  addressType: AddressType;
   addressInfo?: Address;
-  onAddressChange: (value: Address) => void;
-  onCopyPresentAddress?: (status: boolean) => void;
+  onAddressChange: (addressType: AddressType, value: Address) => void;
 }
 
 const AddressForm: React.FC<AddressFormProps> = ({
-  copyAddress,
+  addressType,
   addressInfo,
   onAddressChange,
-  onCopyPresentAddress,
 }) => {
   const {
     register,
@@ -81,41 +79,16 @@ const AddressForm: React.FC<AddressFormProps> = ({
     }
   }, [addressDetails]);
 
-  const [isCopyAddressChecked, setIsCopyAddressChecked] = useState(false);
-
-  const handleCopyAddressCheckedChange: SwitchProps["onChange"] = (event) => {
-    setIsCopyAddressChecked(event.target.checked);
-  };
-
-  useEffect(() => {
-    onCopyPresentAddress && onCopyPresentAddress(isCopyAddressChecked);
-  }, [isCopyAddressChecked]);
-
   const onSubmitHandler: SubmitHandler<{ address: Address }> = (
     _data,
     event
   ) => {
     event?.stopPropagation();
-    onAddressChange(addressDetails);
+    onAddressChange(addressType, addressDetails);
   };
 
   return (
     <form className="w-full" onSubmit={handleSubmit(onSubmitHandler)}>
-      <div className="w-full">
-        {copyAddress && (
-          <Switch
-            checked={isCopyAddressChecked}
-            onChange={handleCopyAddressCheckedChange}
-            label="Copy Present Address"
-            className="bg-blue-500"
-            {...({
-              checked: isCopyAddressChecked,
-              onChange: handleCopyAddressCheckedChange,
-              label: "Copy Present Address",
-            } as React.ComponentProps<typeof Switch>)}
-          />
-        )}
-      </div>
       <div className="w-full">
         <label
           htmlFor="addressDetails.flat_number_name"

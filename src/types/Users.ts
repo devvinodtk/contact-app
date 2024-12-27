@@ -58,6 +58,8 @@ export enum AddressType {
     OfficeAddress = "Office Address"
 }
 
+export enum UserOps { Add = "Add", Edit = "Edit", Delete = "Delete" , View = "View"}
+
 export type Address = {
     flat_number_name: string,
     address_line_1: string,
@@ -84,6 +86,7 @@ export type Gender = "Male" | "Female" | "Other" | "Prefer Not To Say" | "Select
 export type EducationLevel = "Select Education" | "Nursery" | "Kindergarten" | "Primary School" | "High School" | "Higher Secondary" | "Bachelors Degree" | "Masters Degree" | "PhD"
 export type RelationshipType = "Select Relationship" | "Spouse" | "Kid" | "Father" | "Mother" | "Father In Law" | "Mother In Law"
 export type CommunicationPreference = "Select Your Preference" | "In Person" | "Postal"
+
 export enum AreaCode {
     SNPS = "Sanjay Nagar Police Station",
     SNPO = "Sanjay nagar Post Office",
@@ -93,3 +96,8 @@ export enum AreaCode {
     DC = "Dollors Colony",
     RTN = "RT Nagar"
 }
+
+export type AddressChangeType = {
+    addressType: AddressType;
+    operation: UserOps;
+};
