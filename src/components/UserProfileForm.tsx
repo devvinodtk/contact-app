@@ -140,7 +140,7 @@ const UserProfileForm: React.FC = () => {
   };
 
   return (
-    <form
+    <form  autoComplete="off"
       className="flex-1 overflow-auto relative z-10"
       onSubmit={handleSubmit(onHandleSaveMembersForm)}
     >
@@ -162,7 +162,7 @@ const UserProfileForm: React.FC = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder="Name"
+                  placeholder="Name"  autoComplete="off"
                   {...register(`user.personal_details.name`, {
                     required: "Name is required",
                   })}
@@ -189,7 +189,7 @@ const UserProfileForm: React.FC = () => {
                 </label>
                 <input
                   type="number"
-                  placeholder="Mobile number"
+                  placeholder="Mobile number"  autoComplete="off"
                   {...register(`user.personal_details.mobile_number`, {
                     required: "Mobile number is required", minLength:10, maxLength: 10
                   })}
@@ -215,7 +215,7 @@ const UserProfileForm: React.FC = () => {
                   Email ID *
                 </label>
                 <input
-                  type="email"
+                  type="email"  autoComplete="off"
                   {...register(`user.personal_details.email_id`, {
                     required: "Email ID is required", pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i
                   })}
@@ -242,7 +242,7 @@ const UserProfileForm: React.FC = () => {
                   Date of Birth *
                 </label>
                 <input
-                  type="date"
+                  type="date"  autoComplete="off"
                   max={today}
                   {...register(`user.personal_details.date_of_birth`, {
                     required: "Date of birth is required",
@@ -267,7 +267,7 @@ const UserProfileForm: React.FC = () => {
               </div>
               <div className="w-full sm:w-1/3 sm:pl-4">
                 <DropdownSelect
-                  label="Gender *"
+                  label="Gender *" 
                   options={genderOptions}
                   {...register(`user.personal_details.gender`, {
                     required: "Gender is required",
@@ -316,7 +316,7 @@ const UserProfileForm: React.FC = () => {
                   Occupation *
                 </label>
                 <input
-                  type="text"
+                  type="text"  autoComplete="off"
                   placeholder="Occupation"
                   {...register(`user.personal_details.job_title`, {
                     required: "Occupation is required",
@@ -547,11 +547,12 @@ const UserProfileForm: React.FC = () => {
         </div>
       </div>
       <div className="p-4 w-full bg-gray-50 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+        <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center">
+          
           <Button
             type="button"
             onClick={handleResetForm}
-            className="cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            className="mt-4 sm:mt-0 order-1 sm:order-none  cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
             {...({} as React.ComponentProps<typeof Button>)}
           >
             Reset
@@ -560,12 +561,13 @@ const UserProfileForm: React.FC = () => {
             onClick={handleSaveMembersForm}
             type="submit"
             color="blue"
-            className="cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            className="ml-0 sm:ml-4 order-none sm:order-1 cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
             {...({} as React.ComponentProps<typeof Button>)}
           >
             Save Member Details
           </Button>
         </div>
+
       </div>
     </form>
   );
