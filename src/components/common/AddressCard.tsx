@@ -64,11 +64,11 @@ const AddressCard = ({
         </div>
         <div className="flex-1 text-right">
           <Button
-            variant="text"
+            type="button"
             color="blue"
             onClick={handleAddAddress}
             {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
-            className="cursor-pointer bg-blue-500 text-white  hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg p-2 text-center"
+            className="cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg text-xs px-2 py-1 text-center"
           >
             {address && address.flat_number_name ? (
               <Pencil className="inline size-4" />
@@ -91,10 +91,7 @@ const AddressCard = ({
               {address?.post_office}, {address?.city}, {address?.state} -{" "}
               {address?.pin_code}
             </p>
-            <p className="block">
-              {" "}
-              {address.contact_number}
-            </p>
+            <p className="block"> {address.contact_number}</p>
           </>
         )}
       </div>
