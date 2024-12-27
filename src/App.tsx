@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import Dashboard from "./components/Dashboard";
 import AddressList from "./components/AddressList";
 import MembershipCard from "./components/MembershipCard";
+import "./App.css";
 
 function App() {
   const { userLoggedIn }: UserAuthValue = useAuth();
