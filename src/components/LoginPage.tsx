@@ -35,7 +35,7 @@ function LoginPage() {
         const userCredentials: UserCredential =
           await doSignInWithEmailAndPassword(userName, password);
         if (userCredentials?.user?.email) {
-          navigate("/overview");
+          navigate("/dashboard");
           setIsSigningIn(false);
         }
       }

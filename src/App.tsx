@@ -43,15 +43,7 @@ function App() {
                 path="/"
                 element={
                   <AuthenticateUser>
-                    <OverviewPage />
-                  </AuthenticateUser>
-                }
-              />
-              <Route
-                path="/overview"
-                element={
-                  <AuthenticateUser>
-                    <OverviewPage />
+                    <Dashboard />
                   </AuthenticateUser>
                 }
               />

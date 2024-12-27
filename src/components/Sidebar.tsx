@@ -12,12 +12,6 @@ import { Link } from "react-router-dom";
 
 const SIDEBAR_ITEMS = [
   {
-    name: "Overview",
-    icon: LayoutDashboard,
-    color: "#ff3aac",
-    href: "/overview",
-  },
-  {
     name: "Dashboard",
     icon: LayoutDashboard,
     color: "#ff3aac",
