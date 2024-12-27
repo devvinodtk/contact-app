@@ -158,7 +158,7 @@ const UserProfileForm: React.FC = () => {
             <div className="flex flex-wrap">
               <div className="w-full sm:w-1/3">
                 <label className="block text-sm font-medium mb-1 text-gray-600">
-                  Name
+                  Name *
                 </label>
                 <input
                   type="text"
@@ -185,13 +185,13 @@ const UserProfileForm: React.FC = () => {
               </div>
               <div className="w-full sm:w-1/3 sm:pl-4">
                 <label className="block text-sm font-medium mb-1 text-gray-600">
-                  Mobile Number
+                  Mobile Number *
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   placeholder="Mobile number"
                   {...register(`user.personal_details.mobile_number`, {
-                    required: "Mobile number is required",
+                    required: "Mobile number is required", minLength:10, maxLength: 10
                   })}
                   value={user.personal_details?.mobile_number}
                   onChange={(e) =>
@@ -212,12 +212,12 @@ const UserProfileForm: React.FC = () => {
               </div>
               <div className="w-full sm:w-1/3 sm:pl-4">
                 <label className="block text-sm font-medium mb-1 text-gray-600">
-                  Email ID
+                  Email ID *
                 </label>
                 <input
                   type="email"
                   {...register(`user.personal_details.email_id`, {
-                    required: "Email ID is required",
+                    required: "Email ID is required", pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i
                   })}
                   placeholder="Email ID"
                   value={user.personal_details?.email_id}
@@ -239,7 +239,7 @@ const UserProfileForm: React.FC = () => {
               </div>
               <div className="w-full sm:w-1/3">
                 <label className="block text-sm font-medium mb-1 text-gray-600">
-                  Date of Birth
+                  Date of Birth *
                 </label>
                 <input
                   type="date"
@@ -267,7 +267,7 @@ const UserProfileForm: React.FC = () => {
               </div>
               <div className="w-full sm:w-1/3 sm:pl-4">
                 <DropdownSelect
-                  label="Gender"
+                  label="Gender *"
                   options={genderOptions}
                   {...register(`user.personal_details.gender`, {
                     required: "Gender is required",
@@ -290,7 +290,7 @@ const UserProfileForm: React.FC = () => {
               </div>
               <div className="w-full sm:w-1/3 sm:pl-4">
                 <DropdownSelect
-                  label="Blood Group"
+                  label="Blood Group *"
                   options={Object.values(BloodGroup)}
                   {...register(`user.personal_details.blood_group`, {
                     required: "Blood Group is required",
@@ -313,7 +313,7 @@ const UserProfileForm: React.FC = () => {
               </div>
               <div className="w-full sm:w-1/3">
                 <label className="block text-sm font-medium mb-1 text-gray-600">
-                  Occupation
+                  Occupation *
                 </label>
                 <input
                   type="text"
@@ -340,7 +340,7 @@ const UserProfileForm: React.FC = () => {
               </div>
               <div className="w-full sm:w-1/3 sm:pl-4">
                 <DropdownSelect
-                  label="Educational Qualification"
+                  label="Educational Qualification *"
                   {...register(
                     `user.personal_details.educational_qualification.education_level`,
                     {

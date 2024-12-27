@@ -42,12 +42,12 @@ const AddressCard = ({
   return (
     <div className="p-4 border rounded ">
       <div className="flex">
-        <div className="flex-1  text-left">
+        <div className="text-left">
           <h2 className="text-lg font-semibold  text-gray-600">
             {addressType}
           </h2>
         </div>
-        <div className="w-full">
+        <div className="">
           {copyAddress && (
             <Switch
               checked={isCopyAddressChecked}
@@ -90,6 +90,10 @@ const AddressCard = ({
               {" "}
               {address?.post_office}, {address?.city}, {address?.state} -{" "}
               {address?.pin_code}
+            </p>
+            <p className="block">
+              {" "}
+              {address.contact_number}
             </p>
           </>
         )}

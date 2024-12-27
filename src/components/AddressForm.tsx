@@ -157,22 +157,22 @@ const AddressForm: React.FC<AddressFormProps> = ({
           Pin Code *
         </label>
         <input
-          type="text"
+          type="number"
           autoComplete="off"
           placeholder="Pin Code"
           {...register(`address.pin_code`, {
-            required: "Pin Code",
+            required: "Pin Code",  minLength:6, maxLength: 6
           })}
           value={addressDetails?.pin_code}
           onChange={(e) => handleChange("pin_code", e.target.value)}
-          className={`w-full p-2 mb-4 border rounded text-gray-600 ${
+          className={`w-full p-2 mb-4 border rounded text-gray-600 appearance-none${
             errors.address?.pin_code
               ? "focus:outline-none border-red-500 bg-red-50"
               : ""
           }`}
         />
         <DropdownSelect
-          label="Post Office"
+          label="Post Office *"
           {...register(`address.post_office`, {
             required: "Post office is required",
             validate: (value) =>
