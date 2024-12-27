@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Address, AddressType, PostalInfo } from "../types/Users";
-import { Button, Switch } from "@material-tailwind/react";
-import type { SwitchProps } from "@material-tailwind/react";
+import { Button } from "@material-tailwind/react";
 import { Member_Address } from "../types/Users_Mock";
 // @ts-ignore
 import pincodeDirectory from "india-pincode-lookup";
@@ -88,7 +87,11 @@ const AddressForm: React.FC<AddressFormProps> = ({
   };
 
   return (
-    <form className="w-full" onSubmit={handleSubmit(onSubmitHandler)}  autoComplete="off">
+    <form
+      className="w-full"
+      onSubmit={handleSubmit(onSubmitHandler)}
+      autoComplete="off"
+    >
       <div className="w-full">
         <label
           htmlFor="addressDetails.flat_number_name"
@@ -154,7 +157,9 @@ const AddressForm: React.FC<AddressFormProps> = ({
           autoComplete="off"
           placeholder="Pin Code"
           {...register(`address.pin_code`, {
-            required: "Pin Code",  minLength:6, maxLength: 6
+            required: "Pin Code",
+            minLength: 6,
+            maxLength: 6,
           })}
           value={addressDetails?.pin_code}
           onChange={(e) => handleChange("pin_code", e.target.value)}

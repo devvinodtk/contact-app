@@ -5,7 +5,6 @@ import {
   Address,
   AddressType,
   FamilyDetails,
-  UserOps,
   AddressChangeType,
 } from "../types/Users";
 
