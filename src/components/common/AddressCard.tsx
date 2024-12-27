@@ -42,7 +42,7 @@ const AddressCard = ({
   return (
     <div className="p-4 border rounded ">
       <div className="flex">
-        <div className="text-left">
+        <div className="text-left mr-2">
           <h2 className="text-lg font-semibold  text-gray-600">
             {addressType}
           </h2>
