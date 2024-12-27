@@ -1,6 +1,7 @@
 import React from "react";
 import { GeoLocation } from "../types/Users";
 import { Button } from "@material-tailwind/react";
+import { LocateFixed } from "lucide-react";
 
 interface GeoLocationDisplayProps {
   geoLocation?: GeoLocation;
@@ -17,10 +18,10 @@ const GeoLocationDisplay: React.FC<GeoLocationDisplayProps> = (
       <Button
         color="blue"
         variant="text"
-        className="cursor-pointe hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+        className="w-full text-center cursor-pointe hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
         {...({} as React.ComponentProps<typeof Button>)}
       >
-        Detect My Location
+        <span className="float-left mr-1"><LocateFixed /></span> <span>Share My current/Home Location</span>
       </Button>
       {/* <p className="text-lg  mb-1 text-gray-600">
         <span>Latitude: {geoLocation?.latitude}</span> | <span>Longitude: {geoLocation?.longitude}</span>

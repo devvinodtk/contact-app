@@ -88,7 +88,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
   };
 
   return (
-    <form className="w-full" onSubmit={handleSubmit(onSubmitHandler)}>
+    <form className="w-full" onSubmit={handleSubmit(onSubmitHandler)}  autoComplete="off">
       <div className="w-full">
         <label
           htmlFor="addressDetails.flat_number_name"
