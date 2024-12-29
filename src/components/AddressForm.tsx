@@ -31,9 +31,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
     },
   });
 
-  const [postOfficeNames, setPostOfficeNames] = useState<string[]>([
-    "Select Post Office",
-  ]);
+  const [postOfficeNames, setPostOfficeNames] = useState<string[]>([""]);
 
   const handleChange = (field: keyof Address, value: any) => {
     if (value.length === 6 && field === "pin_code") {
@@ -44,7 +42,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
   const fetchPostOfficesByPIN = (pincode: string) => {
     let postalInfo: PostalInfo[] = pincodeDirectory.lookup(pincode);
     if (postalInfo && postalInfo.length) {
-      let officeNames = ["Select Post Office"];
+      let officeNames = [""];
       officeNames.push(...postalInfo.map((info) => info.officeName));
       setPostOfficeNames(officeNames);
       const postalInfoByPIN = postalInfo[0];
@@ -143,7 +141,6 @@ const AddressForm: React.FC<AddressFormProps> = ({
       <Controller
         name="address.post_office"
         control={control}
-        defaultValue=""
         rules={{ required: "Post office is required" }}
         render={({ field }) => (
           <DropdownSelect

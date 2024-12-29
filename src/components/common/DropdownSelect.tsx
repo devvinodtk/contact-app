@@ -10,7 +10,7 @@ interface DropdownSelectProps<T> {
 }
 
 const DropdownSelect = forwardRef<HTMLSelectElement, DropdownSelectProps<any>>(
-  <T extends any>(
+  <T extends string>(
     { label, options, value, onChange, error, ...rest }: DropdownSelectProps<T>,
     ref: any
   ) => {
@@ -28,11 +28,17 @@ const DropdownSelect = forwardRef<HTMLSelectElement, DropdownSelectProps<any>>(
             error?.message ? "focus:outline-none border-red-500 bg-red-50" : ""
           }`}
         >
-          {options.map((option, idx) => (
-            <option key={idx} value={option as unknown as string}>
-              {option as unknown as React.ReactNode}
-            </option>
-          ))}
+          {options.map((option) =>
+            option === "" ? (
+              <option key={option} value="">
+                Select {label}
+              </option>
+            ) : (
+              <option key={option} value={option as unknown as string}>
+                {option as unknown as React.ReactNode}
+              </option>
+            )
+          )}
         </select>
       </div>
     );

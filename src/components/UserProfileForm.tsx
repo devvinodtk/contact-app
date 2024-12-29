@@ -15,7 +15,11 @@ import Header from "./common/Header";
 import ProfilePicUploader from "./common/ProfilePicUploader";
 import PopupContainer from "./common/PopupContainer";
 import FamilyDetailsTable from "./FamilyDetailsTable";
-import { Member_Address, Member_Details } from "../types/Users_Mock";
+import {
+  Family_Details,
+  Member_Address,
+  Member_Details,
+} from "../types/Users_Mock";
 import { useDispatch } from "react-redux";
 import { addMember } from "../store/MembersSlice";
 import {
@@ -45,6 +49,8 @@ const UserProfileForm: React.FC = () => {
   const [user, setUser] = useState<Members>(Member_Details);
   const [open, setOpen] = useState(false); // Maintains open/close state of Family Details Popup
   const [familyDetails, setFamilyDetails] = useState<FamilyDetails[]>([]);
+  const [familyMemberToEdit, setFamilyMemberToEdit] =
+    useState<FamilyDetails>(Family_Details);
   const [presentAddress, setPresentAddress] = useState<Address>();
   const [permanentAddress, setPermanentAddress] = useState<Address>();
   const [officeAddress, setOfficeAddress] = useState<Address>();
@@ -81,10 +87,19 @@ const UserProfileForm: React.FC = () => {
   };
 
   const handlSaveFamilyDetails = (family_details: FamilyDetails) => {
-    setFamilyDetails((prevFamilyMembers) => [
-      ...prevFamilyMembers,
-      family_details,
-    ]);
+    setFamilyDetails((prevDetails) => {
+      const updateRecordIndx = prevDetails.findIndex(
+        (detail) => detail.familyMemberId === family_details.familyMemberId
+      );
+      if (updateRecordIndx > -1) {
+        return prevDetails.map((detail, index) =>
+          index === updateRecordIndx ? family_details : detail
+        );
+      } else {
+        return [...prevDetails, family_details];
+      }
+    });
+    setFamilyMemberToEdit(Family_Details);
     setOpen(false);
   };
 
@@ -139,6 +154,21 @@ const UserProfileForm: React.FC = () => {
   const onHandleSaveMembersForm: SubmitHandler<{ user: Members }> = () => {
     console.log("addressDetails: submit from UserProfile ===>");
     handleSaveMembersForm();
+  };
+
+  const handleEditFamilyMember = (familyMemberId: number) => {
+    const memberToEdit = familyDetails.find((member) => {
+      return member.familyMemberId === familyMemberId;
+    });
+
+    if (memberToEdit) {
+      setFamilyMemberToEdit(memberToEdit);
+      setOpen(true);
+    }
+  };
+
+  const handleDeleteFamilyMember = (index: number) => {
+    console.log("Edit Member: ", index);
   };
 
   return (
@@ -284,8 +314,7 @@ const UserProfileForm: React.FC = () => {
                     {...register(`user.personal_details.gender`, {
                       required: "Gender is required",
                       validate: (value) =>
-                        value !== "Select Gender" ||
-                        "Please select a valid gender",
+                        value !== "" || "Please select a valid gender",
                     })}
                     error={errors.user?.personal_details?.gender}
                     value={user.personal_details?.gender}
@@ -307,8 +336,7 @@ const UserProfileForm: React.FC = () => {
                     {...register(`user.personal_details.blood_group`, {
                       required: "Blood Group is required",
                       validate: (value) =>
-                        value !== "Select Blood Group" ||
-                        "Please select a valid blood group",
+                        value !== "" || "Please select a valid blood group",
                     })}
                     error={errors.user?.personal_details?.blood_group}
                     value={user.personal_details?.blood_group}
@@ -359,7 +387,7 @@ const UserProfileForm: React.FC = () => {
                       {
                         required: "Education level is required",
                         validate: (value) =>
-                          value !== "Select Education" ||
+                          value !== "" ||
                           "Please select a valid education level",
                       }
                     )}
@@ -493,7 +521,11 @@ const UserProfileForm: React.FC = () => {
                 </Button>
               </div>
             </div>
-            <FamilyDetailsTable fmaily_members={familyDetails} />
+            <FamilyDetailsTable
+              onEditFamilyMember={handleEditFamilyMember}
+              onDeleteFamilyMember={handleDeleteFamilyMember}
+              fmaily_members={familyDetails}
+            />
           </div>
 
           <div className="flex flex-col mt-6 gap-4 md:flex-row">
@@ -509,30 +541,18 @@ const UserProfileForm: React.FC = () => {
               </label>
               <input
                 value={user.proposed_by}
-                {...register(`user.proposed_by`, {
-                  required: "Proposed by is required",
-                })}
+                {...register(`user.proposed_by`)}
                 onChange={(e) =>
                   setUser({ ...user, proposed_by: e.target.value })
                 }
                 type="text"
-                className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                  errors.user?.proposed_by
-                    ? "focus:outline-none border-red-500 bg-red-50"
-                    : ""
-                }`}
+                className={`w-full p-2 border rounded mb-4 text-gray-600`}
               />
               <DropdownSelect
                 label="Communication Preference"
                 options={communicationPreferenceOptions}
                 value={user.communication_preference}
-                {...register(`user.communication_preference`, {
-                  required: "Communication Preference is required",
-                  validate: (value) =>
-                    value !== "Select Your Preference" ||
-                    "Please select a valid preference",
-                })}
-                error={errors.user?.communication_preference}
+                {...register(`user.communication_preference`)}
                 onChange={(value) =>
                   setUser({ ...user, communication_preference: value })
                 }
@@ -550,26 +570,25 @@ const UserProfileForm: React.FC = () => {
           </div>
         </div>
         <div className="p-4 w-full bg-gray-50 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center">
-  <Button
-    onClick={handleSaveMembersForm}
-    type="submit"
-    color="blue"
-    className="mb-4 sm:mb-0 order-1 sm:order-2 cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-    {...({} as React.ComponentProps<typeof Button>)}
-  >
-    Save Member Details
-  </Button>
-  <Button
-    type="button"
-    onClick={handleResetForm}
-    className="order-2 sm:order-1 cursor-pointer mr-0 sm:mr-2 text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-    {...({} as React.ComponentProps<typeof Button>)}
-  >
-    Reset
-  </Button>
-</div>
-
+          <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center">
+            <Button
+              onClick={handleSaveMembersForm}
+              type="submit"
+              color="blue"
+              className="mb-4 sm:mb-0 order-1 sm:order-2 cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              {...({} as React.ComponentProps<typeof Button>)}
+            >
+              Save Member Details
+            </Button>
+            <Button
+              type="button"
+              onClick={handleResetForm}
+              className="order-2 sm:order-1 cursor-pointer mr-0 sm:mr-2 text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              {...({} as React.ComponentProps<typeof Button>)}
+            >
+              Reset
+            </Button>
+          </div>
         </div>
       </form>
       <PopupContainer
@@ -577,7 +596,10 @@ const UserProfileForm: React.FC = () => {
         header="Add Family Member"
         onClose={handleClose}
       >
-        <FamilyDetailsForm onSaveDetails={handlSaveFamilyDetails} />
+        <FamilyDetailsForm
+          familyDetails={familyMemberToEdit}
+          onSaveDetails={handlSaveFamilyDetails}
+        />
       </PopupContainer>
     </>
   );
