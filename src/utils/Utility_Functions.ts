@@ -20,16 +20,16 @@ export async function saveMemberDataToFiresbase(memberData: Members) {
       const snapshot = await get(mobileQuery);
       if (snapshot.exists()) {
         // Mobile number already exists
-        throw new Error("This mobile number is already registered.");
+        throw new Error("A member with same mobile number is already registered. Please try register with a different mobile number.");
+      } else {
+        const newDocRef = push(ref(db, "kalakairali/members"));
+        set(newDocRef, memberData).then(() => {
+          console.log("Data saved successfully");
+        }).catch((error) => {
+          throw new Error("Error saving member details: "+ error.message);
+        });
       }
     }
-
-    const newDocRef = push(ref(db, "kalakairali/members"));
-    set(newDocRef, memberData).then(() => {
-      console.log("Document successfully written!");
-    }).catch((error) => {
-      console.error("Error writing document: ", error);
-    });
 }
 
 export async function getMemberDataFromFirebase() {

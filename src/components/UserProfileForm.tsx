@@ -34,6 +34,7 @@ import { Button } from "@material-tailwind/react";
 import { Plus } from "lucide-react";
 import FamilyDetailsForm from "./FamilyDetailsForm";
 import AddressCard from "./common/AddressCard";
+import { Slide, toast, ToastContainer } from "react-toastify";
 
 const UserProfileForm: React.FC = () => {
   const {
@@ -130,9 +131,35 @@ const UserProfileForm: React.FC = () => {
       present_address?.flat_number_name &&
       permanent_address?.flat_number_name
     ) {
-      saveMemberDataToFiresbase(userObj);
-      dispatch(addMember(userObj));
-      handleResetForm();
+      saveMemberDataToFiresbase(userObj)
+        .then(() => {
+          toast.success("Member details saved successfully", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Slide,
+          });
+          dispatch(addMember(userObj));
+          handleResetForm();
+        })
+        .catch((error) => {
+          toast.error(error.message, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Slide,
+          });
+        });
     }
   };
 
@@ -572,7 +599,6 @@ const UserProfileForm: React.FC = () => {
         <div className="p-4 w-full bg-gray-50 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center">
             <Button
-              onClick={handleSaveMembersForm}
               type="submit"
               color="blue"
               className="mb-4 sm:mb-0 order-1 sm:order-2 cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
@@ -601,6 +627,7 @@ const UserProfileForm: React.FC = () => {
           onSaveDetails={handlSaveFamilyDetails}
         />
       </PopupContainer>
+      <ToastContainer />
     </>
   );
 };
