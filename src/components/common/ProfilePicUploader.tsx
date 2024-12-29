@@ -56,7 +56,7 @@ const ProfilePicUploader: React.FC = () => {
       )}
       {!croppedImage && !image && (
         <img
-          src="/assets/place_holder_100.png"
+          src="https://placehold.co/400x400?text=Upload Your\nPhoto"
           alt="Profile"
           className="h-[150px] w-[150px] mb-2 mx-auto rounded-full border-4 border-white shadow-md"
         />

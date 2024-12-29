@@ -27,11 +27,11 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
 
   return (
     <Card
-      className="h-full w-full"
+      className="h-full w-full noShadow"
       {...({} as React.ComponentProps<typeof Card>)}
     >
       <div className="overflow-x-auto">
-        <table className="w-full min-w-max border rounded-lg table-auto text-left">
+        <table className="w-full min-w-max border table-auto text-left">
           <thead>
             <tr>
               {TABLE_HEADER.map((head) => (

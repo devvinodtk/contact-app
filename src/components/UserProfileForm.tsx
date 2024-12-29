@@ -153,7 +153,7 @@ const UserProfileForm: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="w-full sm:w-1/4">
               <div className="bg-white">
-                <div className="bg-gray-50 min-h-56 flex w-full mt-1 border items-center rounded">
+                <div className="bg-sky-50 bg-opacity-50  min-h-56 flex w-full mt-1 border items-center rounded">
                   <ProfilePicUploader />
                 </div>
               </div>
@@ -487,7 +487,7 @@ const UserProfileForm: React.FC = () => {
                   color="blue"
                   onClick={handleAddMember}
                   {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
-                  className="cursor-pointer hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                  className="cursor-pointer hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2 text-center"
                 >
                   <Plus className="inline size-4" /> Add Member
                 </Button>
