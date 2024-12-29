@@ -15,9 +15,12 @@ import {
   ChevronsUpDown,
   Phone,
   Eye,
+  Trash2,
   Mail,
-  Scale3dIcon,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Members } from "../types/Users";
+import { getAge, getMemberDataFromFirebase } from "../utils/Utility_Functions";
 
 const typographyProps = {
   variant: "small",
@@ -35,88 +38,15 @@ const Dashboard = () => {
     "",
   ];
 
-  const TABLE_ROWS = [
-    {
-      img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg",
-      name: "John Michael",
-      email: "john@creative-tim.com",
-      job: "Manager",
-      org: "Organization",
-      online: true,
-      date: "23/04/18",
-      phone: "8792527628",
-      age: "39",
-      area: "Sanjayngar",
-      bloodgroup: "O+",
-      occupation: "Software Engineer",
-      education: "MBA",
-      gender: "Male",
-    },
-    {
-      img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-2.jpg",
-      name: "Alexa Liras",
-      email: "alexa@creative-tim.com",
-      job: "Programator",
-      org: "Developer",
-      online: false,
-      date: "23/04/18",
-      phone: "8792527628",
-      age: "39",
-      area: "Sanjayngar",
-      bloodgroup: "O+",
-      occupation: "Software Engineer",
-      education: "MBA",
-      gender: "Male",
-    },
-    {
-      img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-1.jpg",
-      name: "Laurent Perrier",
-      email: "laurent@creative-tim.com",
-      job: "Executive",
-      org: "Projects",
-      online: false,
-      date: "19/09/17",
-      phone: "8792527628",
-      age: "39",
-      area: "Sanjayngar",
-      bloodgroup: "O+",
-      occupation: "Software Engineer",
-      education: "MBA",
-      gender: "Male",
-    },
-    {
-      img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-4.jpg",
-      name: "Michael Levi",
-      email: "michael@creative-tim.com",
-      job: "Programator",
-      org: "Developer",
-      online: true,
-      date: "24/12/08",
-      phone: "8792527628",
-      age: "39",
-      area: "Sanjayngar",
-      bloodgroup: "O+",
-      occupation: "Software Engineer",
-      education: "MBA",
-      gender: "Male",
-    },
-    {
-      img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-5.jpg",
-      name: "Richard Gran",
-      email: "richard@creative-tim.com",
-      job: "Manager",
-      org: "Executive",
-      online: false,
-      date: "04/10/21",
-      phone: "8792527628",
-      age: "39",
-      area: "Sanjayngar",
-      bloodgroup: "O+",
-      occupation: "Software Engineer",
-      education: "MBA",
-      gender: "Male",
-    },
-  ];
+  const [members, setMembers] = useState<Members[]>([]);
+  useEffect(() => {
+    const getMembers = async () => {
+      const existingMembers: Members[] = await getMemberDataFromFirebase();
+      setMembers(existingMembers);
+    };
+
+    getMembers();
+  }, []);
 
   return (
     <>
@@ -178,37 +108,34 @@ const Dashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {TABLE_ROWS.map(
-                        (
-                          {
-                            img,
-                            name,
-                            email,
-                            date,
-                            gender,
-                            phone,
-                            area,
-                            bloodgroup,
-                            age,
-                            occupation,
-                          },
-                          index
-                        ) => {
-                          const isLast = index === TABLE_ROWS.length - 1;
+                      {members &&
+                        members.length > 0 &&
+                        members.map((member, index) => {
+                          const isLast = index === members.length - 1;
                           const classes = isLast
                             ? "p-4"
                             : "p-4 border-b border-blue-gray-100";
 
                           return (
-                            <tr key={name} className="hover:bg-sky-50">
+                            <tr key={index} className="hover:bg-sky-50">
                               <td className={classes}>
                                 <div className="flex items-center gap-3">
                                   <Avatar
                                     {...({} as React.ComponentProps<
                                       typeof Avatar
                                     >)}
-                                    src={img}
-                                    alt={name}
+                                    src={
+                                      member.personal_details.profile_photo_url
+                                        ? member.personal_details
+                                            .profile_photo_url
+                                        : `/assets/member_${
+                                            member.personal_details.gender ===
+                                            "Male"
+                                              ? "male"
+                                              : "female"
+                                          }.png`
+                                    }
+                                    alt={member.personal_details.name}
                                     size="sm"
                                     withBorder={true}
                                   />
@@ -221,7 +148,7 @@ const Dashboard = () => {
                                       color="blue-gray"
                                       className="font-normal"
                                     >
-                                      {name}
+                                      {member.personal_details.name}
                                     </Typography>
                                     <Typography
                                       {...(typographyProps as React.ComponentProps<
@@ -232,9 +159,9 @@ const Dashboard = () => {
                                       className="font-normal opacity-70"
                                     >
                                       <Mail className="inline size-5 pr-2" />
-                                      {email} |{" "}
+                                      {member.personal_details.email_id} |{" "}
                                       <Phone className="inline size-5 pr-2" />
-                                      {phone}
+                                      {member.personal_details.mobile_number}
                                     </Typography>
                                   </div>
                                 </div>
@@ -248,7 +175,7 @@ const Dashboard = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {gender}
+                                  {member.personal_details.gender}
                                 </Typography>
                               </td>
                               <td className={classes}>
@@ -261,7 +188,10 @@ const Dashboard = () => {
                                     color="blue-gray"
                                     className="font-normal"
                                   >
-                                    {age} Years
+                                    {getAge(
+                                      member.personal_details.date_of_birth
+                                    )}{" "}
+                                    Years
                                   </Typography>
                                   <Typography
                                     {...(typographyProps as React.ComponentProps<
@@ -271,7 +201,7 @@ const Dashboard = () => {
                                     color="blue-gray"
                                     className="font-normal opacity-70"
                                   >
-                                    {date}
+                                    {member.personal_details.date_of_birth}
                                   </Typography>
                                 </div>
                               </td>
@@ -285,7 +215,7 @@ const Dashboard = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {bloodgroup}
+                                  {member.personal_details.blood_group}
                                 </Typography>
                               </td>
 
@@ -298,7 +228,7 @@ const Dashboard = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {occupation}
+                                  {member.personal_details.job_title}
                                 </Typography>
                               </td>
 
@@ -311,7 +241,7 @@ const Dashboard = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {area}
+                                  {member.area_code}
                                 </Typography>
                               </td>
 
@@ -328,7 +258,7 @@ const Dashboard = () => {
                                     <PencilIcon className="h-4 w-4" />
                                   </IconButton>
                                 </Tooltip>
-                                <Tooltip content="Edit User">
+                                <Tooltip content="View User">
                                   <IconButton
                                     variant="text"
                                     {...({
@@ -340,7 +270,7 @@ const Dashboard = () => {
                                     <Eye className="h-4 w-4" />
                                   </IconButton>
                                 </Tooltip>
-                                <Tooltip content="Edit User">
+                                <Tooltip content="Delete User">
                                   <IconButton
                                     variant="text"
                                     {...({
@@ -349,14 +279,13 @@ const Dashboard = () => {
                                       typeof IconButton
                                     >)}
                                   >
-                                    <Scale3dIcon className="h-4 w-4" />
+                                    <Trash2 className="h-4 w-4" />
                                   </IconButton>
                                 </Tooltip>
                               </td>
                             </tr>
                           );
-                        }
-                      )}
+                        })}
                     </tbody>
                   </table>
                 </CardBody>

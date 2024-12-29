@@ -64,12 +64,8 @@ const AddressForm: React.FC<AddressFormProps> = ({
     }
   }, [addressInfo]);
 
-  const onSubmitHandler: SubmitHandler<{ address: Address }> = (
-    _data,
-    event
-  ) => {
-    event?.stopPropagation();
-    onAddressChange(addressType, _data.address);
+  const onSubmitHandler: SubmitHandler<{ address: Address }> = (data) => {
+    onAddressChange(addressType, data.address);
   };
 
   return (
@@ -118,6 +114,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
       </label>
       <input
         type="text"
+        {...register(`address.address_line_2`)}
         placeholder="Address Line 2 / Landmark"
         className="w-full p-2 mb-4 border rounded text-gray-600"
       />

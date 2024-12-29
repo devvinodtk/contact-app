@@ -22,6 +22,7 @@ import {
   communicationPreferenceOptions,
   educationLevelOptions,
   genderOptions,
+  saveMemberDataToFiresbase,
   setTodayDate,
 } from "../utils/Utility_Functions";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -114,6 +115,7 @@ const UserProfileForm: React.FC = () => {
       present_address?.flat_number_name &&
       permanent_address?.flat_number_name
     ) {
+      saveMemberDataToFiresbase(userObj);
       dispatch(addMember(userObj));
       handleResetForm();
     }

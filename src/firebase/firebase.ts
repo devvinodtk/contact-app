@@ -1,22 +1,23 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getStorage, ref } from "firebase/storage";
-import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+import { getDatabase, ref, set, push, get, query, orderByChild, equalTo, } from "firebase/database";
 
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAzEyXJVHZxwefRdY1oDOJZFt7DoiaUF-g",
-  authDomain: "kk-contact-app.firebaseapp.com",
-  projectId: "kk-contact-app",
-  storageBucket: "kk-contact-app.firebasestorage.app",
-  messagingSenderId: "657586423122",
-  appId: "1:657586423122:web:44bc87f83169dbde9de68b"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const storage = getStorage(app);
-const db = getFirestore(app);
-export { app, auth, storage, ref, db}
+const db = getDatabase(app);
+export { app, auth, storage, ref, db, set, push, get, query, orderByChild, equalTo}

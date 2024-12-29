@@ -1,4 +1,5 @@
-import { storage, ref } from "./firebase";
+import { ref } from "firebase/storage";
+import { storage } from "./firebase";
 
 const mountainsRef = ref(storage, 'mountains.jpg');
 const mountainImagesRef = ref(storage, 'images/mountains.jpg');

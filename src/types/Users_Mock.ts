@@ -51,5 +51,6 @@ export const Member_Details: Members = {
     area_code: AreaCode.SNPS,
     is_inactive: false,
     geo_location: Geo_Location,
-    comments: ""
+    comments: "",
+    verified: false,
 }

@@ -13,6 +13,7 @@ export type Members = {
     is_inactive: boolean,
     geo_location?: GeoLocation
     comments?: string
+    verified: boolean
 }
 
 export type PostalInfo = {

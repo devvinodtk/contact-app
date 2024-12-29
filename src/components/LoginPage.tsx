@@ -54,7 +54,7 @@ function LoginPage() {
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
               <img
                 className="w-16 h-16 mr-2 mb-3"
-                src="src/assets/Logo.jpeg"
+                src="/assets/Logo.jpeg"
                 alt="Kalakairali"
               />
               <div className="flex items-center mb-6 text-center text-2xl font-semibold text-gray-900">
@@ -65,7 +65,7 @@ function LoginPage() {
                   <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                     Sign in to your account
                   </h1>
-                  <form 
+                  <form
                     className="space-y-4 md:space-y-6"
                     onKeyDown={handleKeyDown}
                   >
