@@ -1,11 +1,12 @@
-
 input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
-        /* Hide spin buttons in Firefox */
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+.font10 label{
+  font-size: 12px !important;
+}
