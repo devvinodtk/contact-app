@@ -550,25 +550,26 @@ const UserProfileForm: React.FC = () => {
           </div>
         </div>
         <div className="p-4 w-full bg-gray-50 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center">
-            <Button
-              type="button"
-              onClick={handleResetForm}
-              className="cursor-pointer mr-0 sm:mr-2 text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-              {...({} as React.ComponentProps<typeof Button>)}
-            >
-              Reset
-            </Button>
-            <Button
-              onClick={handleSaveMembersForm}
-              type="submit"
-              color="blue"
-              className="cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-              {...({} as React.ComponentProps<typeof Button>)}
-            >
-              Save Member Details
-            </Button>
-          </div>
+        <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center">
+  <Button
+    onClick={handleSaveMembersForm}
+    type="submit"
+    color="blue"
+    className="mb-4 sm:mb-0 order-1 sm:order-2 cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+    {...({} as React.ComponentProps<typeof Button>)}
+  >
+    Save Member Details
+  </Button>
+  <Button
+    type="button"
+    onClick={handleResetForm}
+    className="order-2 sm:order-1 cursor-pointer mr-0 sm:mr-2 text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+    {...({} as React.ComponentProps<typeof Button>)}
+  >
+    Reset
+  </Button>
+</div>
+
         </div>
       </form>
       <PopupContainer

@@ -47,13 +47,13 @@ const AddressCard = ({
             {addressType}
           </h2>
         </div>
-        <div className="">
+        <div className="font10 ml-2">
           {copyAddress && (
             <Switch
               checked={isCopyAddressChecked}
               onChange={handleCopyAddressCheckedChange}
               label="Copy Present Address"
-              className="bg-blue-500"
+              className="bg-blue-500 "
               {...({
                 checked: isCopyAddressChecked,
                 onChange: handleCopyAddressCheckedChange,
