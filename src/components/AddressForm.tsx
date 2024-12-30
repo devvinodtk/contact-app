@@ -12,7 +12,6 @@ interface AddressFormProps {
 }
 
 const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onAddressChange }) => {
-  console.log(addressInfo);
   const [postOfficeNames, setPostOfficeNames] = useState<string[]>(['']);
   const {
     register,
@@ -38,7 +37,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
         const postalInfoByPIN = postalInfo[0];
         setValue('city', postalInfoByPIN.districtName);
         setValue('state', postalInfoByPIN.stateName);
-        setValue('postOffice', postalInfoByPIN.officeName[0]);
+        setValue('postOffice', postalInfoByPIN.officeName);
       } else {
         setValue('city', '');
         setValue('state', '');
@@ -50,8 +49,6 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
   }, [pincode, setValue, trigger]);
 
   const onSubmitHandler: SubmitHandler<Address> = (data) => {
-    console.dir(data);
-    console.log(addressType);
     onAddressChange(addressType, data);
   };
 
@@ -111,15 +108,14 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
       <Controller
         name="postOffice"
         control={control}
-        defaultValue=""
         rules={{ required: 'Post office is required' }}
-        render={({ field, fieldState }) => (
+        render={({ field: { value, onChange }, fieldState }) => (
           <DropdownSelect
             label="Post Office *"
-            value={field.value}
+            value={value}
             error={fieldState.error}
             options={postOfficeNames}
-            onChange={(value) => field.onChange(value)}
+            onChange={onChange}
           />
         )}
       />

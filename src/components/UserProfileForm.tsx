@@ -30,6 +30,7 @@ const UserProfileForm: React.FC = () => {
     handleSubmit,
     control,
     setError,
+    clearErrors,
     formState: { errors, isValid },
   } = useForm<Members>({
     mode: 'onSubmit',
@@ -77,9 +78,11 @@ const UserProfileForm: React.FC = () => {
 
   const handleAddressChange = (addressType: AddressType, value: Address) => {
     if (addressType === AddressType.PresentAddress) {
+      clearErrors('presentAddress');
       setPresentAddress(value);
     } else if (addressType === AddressType.PermanentAddress) {
       setPermanentAddress(value);
+      clearErrors('permanentAddress');
     } else if (addressType === AddressType.OfficeAddress) {
       setOfficeAddress(value);
     }
@@ -91,6 +94,7 @@ const UserProfileForm: React.FC = () => {
   }, []);
 
   const onHandleSaveMembersForm: SubmitHandler<Members> = (data) => {
+    clearErrors();
     console.log('addressDetails: submit from UserProfile ===>');
     if (!presentAddress?.flatNumberName) {
       setError('presentAddress', { type: 'manual', message: 'Present Address is required' });
