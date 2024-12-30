@@ -1,51 +1,41 @@
-import React from "react";
-import { Card, Typography } from "@material-tailwind/react";
-import { FamilyDetails } from "../types/Users";
+import React from 'react';
+import { Card, Typography } from '@material-tailwind/react';
+import { FamilyDetails } from '../types/Users';
 
 const TABLE_HEADER = [
-  "Name",
-  "Gender",
-  "Relationship",
-  "Blood Group",
-  "Education",
-  "Specialization",
-  "Job Title",
-  "Date of Birth",
+  'Name',
+  'Gender',
+  'Relationship',
+  'Blood Group',
+  'Education',
+  'Specialization',
+  'Job Title',
+  'Date of Birth',
 ];
 
 interface FamilyDetailsTableProps {
-  fmaily_members: FamilyDetails[];
+  familyMembers: FamilyDetails[] | undefined;
 }
 
-const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
-  fmaily_members,
-}) => {
+const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({ familyMembers }) => {
   const typographyProps = {
-    variant: "small",
-    color: "blue-gray",
+    variant: 'small',
+    color: 'blue-gray',
   };
 
   return (
-    <Card
-      className="h-full w-full"
-      {...({} as React.ComponentProps<typeof Card>)}
-    >
+    <Card className="h-full w-full" {...({} as React.ComponentProps<typeof Card>)}>
       <div className="overflow-x-auto">
         <table className="w-full min-w-max border rounded-lg table-auto text-left">
           <thead>
             <tr>
               {TABLE_HEADER.map((head) => (
-                <th
-                  key={head}
-                  className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
-                >
+                <th key={head} className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">
                   <Typography
                     variant="small"
                     color="blue-gray"
                     className="font-bold leading-none"
-                    {...(typographyProps as React.ComponentProps<
-                      typeof Typography
-                    >)}
+                    {...(typographyProps as React.ComponentProps<typeof Typography>)}
                   >
                     {head}
                   </Typography>
@@ -54,13 +44,11 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {fmaily_members &&
-              fmaily_members.length > 0 &&
-              fmaily_members.map((member: FamilyDetails, index: number) => {
-                const isLast = index === fmaily_members.length - 1;
-                const classes = isLast
-                  ? "p-4"
-                  : "p-4 border-b border-blue-gray-50";
+            {familyMembers &&
+              familyMembers.length > 0 &&
+              familyMembers.map((member: FamilyDetails, index: number) => {
+                const isLast = index === familyMembers.length - 1;
+                const classes = isLast ? 'p-4' : 'p-4 border-b border-blue-gray-50';
 
                 return (
                   <tr key={index}>
@@ -69,11 +57,9 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                         variant="small"
                         color="blue-gray"
                         className="font-normal"
-                        {...(typographyProps as React.ComponentProps<
-                          typeof Typography
-                        >)}
+                        {...(typographyProps as React.ComponentProps<typeof Typography>)}
                       >
-                        {member.member_personal_details.name}
+                        {member.memberPersonalDetails.name}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -81,11 +67,9 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                         variant="small"
                         color="blue-gray"
                         className="font-normal"
-                        {...(typographyProps as React.ComponentProps<
-                          typeof Typography
-                        >)}
+                        {...(typographyProps as React.ComponentProps<typeof Typography>)}
                       >
-                        {member.member_personal_details.gender}
+                        {member.memberPersonalDetails.gender}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -93,9 +77,7 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                         variant="small"
                         color="blue-gray"
                         className="font-normal"
-                        {...(typographyProps as React.ComponentProps<
-                          typeof Typography
-                        >)}
+                        {...(typographyProps as React.ComponentProps<typeof Typography>)}
                       >
                         {member.relationship}
                       </Typography>
@@ -105,11 +87,9 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                         variant="small"
                         color="blue-gray"
                         className="font-medium"
-                        {...(typographyProps as React.ComponentProps<
-                          typeof Typography
-                        >)}
+                        {...(typographyProps as React.ComponentProps<typeof Typography>)}
                       >
-                        {member.member_personal_details.blood_group}
+                        {member.memberPersonalDetails.bloodGroup}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -117,14 +97,9 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                         variant="small"
                         color="blue-gray"
                         className="font-normal"
-                        {...(typographyProps as React.ComponentProps<
-                          typeof Typography
-                        >)}
+                        {...(typographyProps as React.ComponentProps<typeof Typography>)}
                       >
-                        {
-                          member.member_personal_details
-                            .educational_qualification.education_level
-                        }
+                        {member.memberPersonalDetails.educationalQualification.educationLevel}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -132,14 +107,9 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                         variant="small"
                         color="blue-gray"
                         className="font-normal"
-                        {...(typographyProps as React.ComponentProps<
-                          typeof Typography
-                        >)}
+                        {...(typographyProps as React.ComponentProps<typeof Typography>)}
                       >
-                        {
-                          member.member_personal_details
-                            .educational_qualification.specialization
-                        }
+                        {member.memberPersonalDetails.educationalQualification.specialization}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -147,11 +117,9 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                         variant="small"
                         color="blue-gray"
                         className="font-medium"
-                        {...(typographyProps as React.ComponentProps<
-                          typeof Typography
-                        >)}
+                        {...(typographyProps as React.ComponentProps<typeof Typography>)}
                       >
-                        {member.member_personal_details.job_title}
+                        {member.memberPersonalDetails.jobTitle}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -159,11 +127,9 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                         variant="small"
                         color="blue-gray"
                         className="font-medium"
-                        {...(typographyProps as React.ComponentProps<
-                          typeof Typography
-                        >)}
+                        {...(typographyProps as React.ComponentProps<typeof Typography>)}
                       >
-                        {member.member_personal_details.date_of_birth}
+                        {member.memberPersonalDetails.dateOfBirth}
                       </Typography>
                     </td>
                   </tr>

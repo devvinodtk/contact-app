@@ -1,51 +1,45 @@
-import { Button, Switch, SwitchProps } from "@material-tailwind/react";
-import { Plus, Pencil } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import {
-  Address,
-  AddressChangeType,
-  AddressType,
-  UserOps,
-} from "../../types/Users";
+import { Button, Switch, SwitchProps } from '@material-tailwind/react';
+import { Plus, Pencil } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Address, AddressChangeType, AddressType, UserOps } from '../../types/Users';
 
 interface AddressCardProps {
   copyAddress?: boolean;
   addressType: AddressType;
-  address?: Address;
+  address?: Address | null;
   onEdit?: (addressChange: AddressChangeType) => void;
   onCopyPresentAddress?: (status: boolean) => void;
+  error: boolean;
 }
 
-const AddressCard = ({
-  copyAddress,
-  addressType,
-  address,
-  onEdit,
-  onCopyPresentAddress,
-}: AddressCardProps) => {
+const AddressCard = ({ copyAddress, addressType, address, onEdit, error, onCopyPresentAddress }: AddressCardProps) => {
   const handleAddAddress = () => {
-    const operation: UserOps =
-      address && address.flat_number_name ? UserOps.Edit : UserOps.Add;
-    onEdit && onEdit({ operation, addressType });
+    const operation: UserOps = address?.flatNumberName ? UserOps.Edit : UserOps.Add;
+    if (onEdit) {
+      onEdit({ operation, addressType });
+    }
   };
+
+  let style = 'p-4 border rounded';
+  style = error ? ' focus:outline-none border-red-500 bg-red-50' : style;
 
   const [isCopyAddressChecked, setIsCopyAddressChecked] = useState(false);
 
-  const handleCopyAddressCheckedChange: SwitchProps["onChange"] = (event) => {
+  const handleCopyAddressCheckedChange: SwitchProps['onChange'] = (event) => {
     setIsCopyAddressChecked(event.target.checked);
   };
 
   useEffect(() => {
-    onCopyPresentAddress && onCopyPresentAddress(isCopyAddressChecked);
-  }, [isCopyAddressChecked]);
+    if (onCopyPresentAddress) {
+      onCopyPresentAddress(isCopyAddressChecked);
+    }
+  }, [isCopyAddressChecked, onCopyPresentAddress]);
 
   return (
-    <div className="p-4 border rounded ">
+    <div className={style}>
       <div className="flex">
         <div className="text-left mr-2">
-          <h2 className="text-lg font-semibold  text-gray-600">
-            {addressType}
-          </h2>
+          <h2 className="text-lg font-semibold  text-gray-600">{addressType}</h2>
         </div>
         <div className="font10 ml-2">
           {copyAddress && (
@@ -57,7 +51,7 @@ const AddressCard = ({
               {...({
                 checked: isCopyAddressChecked,
                 onChange: handleCopyAddressCheckedChange,
-                label: "Copy Present Address",
+                label: 'Copy Present Address',
               } as React.ComponentProps<typeof Switch>)}
             />
           )}
@@ -70,28 +64,23 @@ const AddressCard = ({
             {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
             className="cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg text-xs px-2 py-1 text-center"
           >
-            {address && address.flat_number_name ? (
-              <Pencil className="inline size-4" />
-            ) : (
-              <Plus className="inline size-4" />
-            )}
+            {address?.flatNumberName ? <Pencil className="inline size-4" /> : <Plus className="inline size-4" />}
           </Button>
         </div>
       </div>
       <div className="block w-full text-gray-600">
-        {address && address.flat_number_name && (
+        {address?.flatNumberName && (
           <>
-            <p className="block w-full">{address?.flat_number_name},</p>
+            <p className="block w-full">{address?.flatNumberName},</p>
             <p className="block">
-              {address?.address_line_1}, {address?.address_line_2}
-              {address?.address_line_2 ? "," : ""}
+              {address?.addressLine1}, {address?.addressLine2}
+              {address?.addressLine2 ? ',' : ''}
             </p>
             <p className="block">
-              {" "}
-              {address?.post_office}, {address?.city}, {address?.state} -{" "}
-              {address?.pin_code}
+              {' '}
+              {address?.postOffice}, {address?.city}, {address?.state} - {address?.pincode}
             </p>
-            <p className="block"> {address.contact_number}</p>
+            <p className="block"> {address.contactNumber}</p>
           </>
         )}
       </div>

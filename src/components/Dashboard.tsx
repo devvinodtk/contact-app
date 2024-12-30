@@ -1,42 +1,17 @@
-import {
-  Avatar,
-  Card,
-  CardBody,
-  CardHeader,
-  IconButton,
-  Input,
-  Tooltip,
-  Typography,
-} from "@material-tailwind/react";
-import Header from "./common/Header";
-import {
-  PencilIcon,
-  Search,
-  ChevronsUpDown,
-  Phone,
-  Eye,
-  Trash2,
-  Mail,
-} from "lucide-react";
-import { useEffect, useState } from "react";
-import { Members } from "../types/Users";
-import { getAge, getMemberDataFromFirebase } from "../utils/Utility_Functions";
+import { Avatar, Card, CardBody, CardHeader, IconButton, Input, Tooltip, Typography } from '@material-tailwind/react';
+import Header from './common/Header';
+import { PencilIcon, Search, ChevronsUpDown, Phone, Eye, Trash2, Mail } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Members } from '../types/Users';
+import { getAge, getMemberDataFromFirebase } from '../utils/Utility_Functions';
 
 const typographyProps = {
-  variant: "small",
-  color: "blue-gray",
+  variant: 'small',
+  color: 'blue-gray',
 };
 
 const Dashboard = () => {
-  const TABLE_HEAD = [
-    "Member",
-    "Gender",
-    "Age",
-    "Blood Group",
-    "Occupation",
-    "Area",
-    "",
-  ];
+  const TABLE_HEAD = ['Member', 'Gender', 'Age', 'Blood Group', 'Occupation', 'Area', ''];
 
   const [members, setMembers] = useState<Members[]>([]);
   useEffect(() => {
@@ -55,10 +30,7 @@ const Dashboard = () => {
         <div className="m-5">
           <div className="w-full mx-auto">
             <div className="overflow-x-auto bg-white text-gray-700  rounded-lg">
-              <Card
-                className="h-full w-full"
-                {...({} as React.ComponentProps<typeof Card>)}
-              >
+              <Card className="h-full w-full" {...({} as React.ComponentProps<typeof Card>)}>
                 <CardHeader
                   floated={false}
                   shadow={false}
@@ -75,10 +47,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                 </CardHeader>
-                <CardBody
-                  className="p-4 overflow-auto px-0"
-                  {...({} as React.ComponentProps<typeof CardBody>)}
-                >
+                <CardBody className="p-4 overflow-auto px-0" {...({} as React.ComponentProps<typeof CardBody>)}>
                   <table className="w-full min-w-max table-auto text-left border rounded border-collapse border border-gray-200">
                     <thead className="bg-sky-50 text-gray-700">
                       <tr>
@@ -88,19 +57,14 @@ const Dashboard = () => {
                             className="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50"
                           >
                             <Typography
-                              {...(typographyProps as React.ComponentProps<
-                                typeof Typography
-                              >)}
+                              {...(typographyProps as React.ComponentProps<typeof Typography>)}
                               variant="small"
                               color="blue-gray"
                               className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
                             >
-                              {head}{" "}
+                              {head}{' '}
                               {index !== TABLE_HEAD.length - 1 && (
-                                <ChevronsUpDown
-                                  strokeWidth={2}
-                                  className="h-4 w-4"
-                                />
+                                <ChevronsUpDown strokeWidth={2} className="h-4 w-4" />
                               )}
                             </Typography>
                           </th>
@@ -112,136 +76,106 @@ const Dashboard = () => {
                         members.length > 0 &&
                         members.map((member, index) => {
                           const isLast = index === members.length - 1;
-                          const classes = isLast
-                            ? "p-4"
-                            : "p-4 border-b border-blue-gray-100";
+                          const classes = isLast ? 'p-4' : 'p-4 border-b border-blue-gray-100';
 
                           return (
                             <tr key={index} className="hover:bg-sky-50">
                               <td className={classes}>
                                 <div className="flex items-center gap-3">
                                   <Avatar
-                                    {...({} as React.ComponentProps<
-                                      typeof Avatar
-                                    >)}
+                                    {...({} as React.ComponentProps<typeof Avatar>)}
                                     src={
-                                      member.personal_details.profile_photo_url
-                                        ? member.personal_details
-                                            .profile_photo_url
-                                        : `/assets/member_${
-                                            member.personal_details.gender ===
-                                            "Male"
-                                              ? "male"
-                                              : "female"
-                                          }.png`
+                                      member.personalDetails?.profilePhotoUrl
+                                        ? member.personalDetails.profilePhotoUrl
+                                        : `/assets/member_${member.personalDetails?.gender}.png`
                                     }
-                                    alt={member.personal_details.name}
+                                    alt={member.personalDetails?.name}
                                     size="sm"
                                     withBorder={true}
                                   />
                                   <div className="flex flex-col">
                                     <Typography
-                                      {...(typographyProps as React.ComponentProps<
-                                        typeof Typography
-                                      >)}
+                                      {...(typographyProps as React.ComponentProps<typeof Typography>)}
                                       variant="small"
                                       color="blue-gray"
                                       className="font-normal"
                                     >
-                                      {member.personal_details.name}
+                                      {member.personalDetails?.name}
                                     </Typography>
                                     <Typography
-                                      {...(typographyProps as React.ComponentProps<
-                                        typeof Typography
-                                      >)}
+                                      {...(typographyProps as React.ComponentProps<typeof Typography>)}
                                       variant="small"
                                       color="blue-gray"
                                       className="font-normal opacity-70"
                                     >
                                       <Mail className="inline size-5 pr-2" />
-                                      {member.personal_details.email_id} |{" "}
-                                      <Phone className="inline size-5 pr-2" />
-                                      {member.personal_details.mobile_number}
+                                      {member.personalDetails?.emailId} | <Phone className="inline size-5 pr-2" />
+                                      {member.personalDetails?.mobileNumber}
                                     </Typography>
                                   </div>
                                 </div>
                               </td>
                               <td className={classes}>
                                 <Typography
-                                  {...(typographyProps as React.ComponentProps<
-                                    typeof Typography
-                                  >)}
+                                  {...(typographyProps as React.ComponentProps<typeof Typography>)}
                                   variant="small"
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {member.personal_details.gender}
+                                  {member.personalDetails?.gender}
                                 </Typography>
                               </td>
                               <td className={classes}>
                                 <div className="flex flex-col">
                                   <Typography
-                                    {...(typographyProps as React.ComponentProps<
-                                      typeof Typography
-                                    >)}
+                                    {...(typographyProps as React.ComponentProps<typeof Typography>)}
                                     variant="small"
                                     color="blue-gray"
                                     className="font-normal"
                                   >
-                                    {getAge(
-                                      member.personal_details.date_of_birth
-                                    )}{" "}
-                                    Years
+                                    {getAge(member.personalDetails?.dateOfBirth)} Years
                                   </Typography>
                                   <Typography
-                                    {...(typographyProps as React.ComponentProps<
-                                      typeof Typography
-                                    >)}
+                                    {...(typographyProps as React.ComponentProps<typeof Typography>)}
                                     variant="small"
                                     color="blue-gray"
                                     className="font-normal opacity-70"
                                   >
-                                    {member.personal_details.date_of_birth}
+                                    {member.personalDetails?.dateOfBirth}
                                   </Typography>
                                 </div>
                               </td>
 
                               <td className={classes}>
                                 <Typography
-                                  {...(typographyProps as React.ComponentProps<
-                                    typeof Typography
-                                  >)}
+                                  {...(typographyProps as React.ComponentProps<typeof Typography>)}
                                   variant="small"
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {member.personal_details.blood_group}
+                                  {member.personalDetails?.bloodGroup}
                                 </Typography>
                               </td>
 
                               <td className={classes}>
                                 <Typography
-                                  {...(typographyProps as React.ComponentProps<
-                                    typeof Typography
-                                  >)}
+                                  {...(typographyProps as React.ComponentProps<typeof Typography>)}
                                   variant="small"
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {member.personal_details.job_title}
+                                  {member.personalDetails?.jobTitle}
                                 </Typography>
                               </td>
 
                               <td className={classes}>
                                 <Typography
-                                  {...(typographyProps as React.ComponentProps<
-                                    typeof Typography
-                                  >)}
+                                  {...(typographyProps as React.ComponentProps<typeof Typography>)}
                                   variant="small"
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {member.area_code}
+                                  {member.areacode}
                                 </Typography>
                               </td>
 
@@ -250,10 +184,8 @@ const Dashboard = () => {
                                   <IconButton
                                     variant="text"
                                     {...({
-                                      variant: "text",
-                                    } as React.ComponentProps<
-                                      typeof IconButton
-                                    >)}
+                                      variant: 'text',
+                                    } as React.ComponentProps<typeof IconButton>)}
                                   >
                                     <PencilIcon className="h-4 w-4" />
                                   </IconButton>
@@ -262,10 +194,8 @@ const Dashboard = () => {
                                   <IconButton
                                     variant="text"
                                     {...({
-                                      variant: "text",
-                                    } as React.ComponentProps<
-                                      typeof IconButton
-                                    >)}
+                                      variant: 'text',
+                                    } as React.ComponentProps<typeof IconButton>)}
                                   >
                                     <Eye className="h-4 w-4" />
                                   </IconButton>
@@ -274,10 +204,8 @@ const Dashboard = () => {
                                   <IconButton
                                     variant="text"
                                     {...({
-                                      variant: "text",
-                                    } as React.ComponentProps<
-                                      typeof IconButton
-                                    >)}
+                                      variant: 'text',
+                                    } as React.ComponentProps<typeof IconButton>)}
                                   >
                                     <Trash2 className="h-4 w-4" />
                                   </IconButton>

@@ -1,176 +1,171 @@
 import React, { useEffect, useState } from 'react';
 import { Address, AddressType, PostalInfo } from '../types/Users';
 import { Button } from '@material-tailwind/react';
-import { Member_Address } from '../types/UsersMock';
-// @ts-ignore
 import pincodeDirectory from 'india-pincode-lookup';
 import DropdownSelect from './common/DropdownSelect';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 
 interface AddressFormProps {
   addressType: AddressType;
-  addressInfo?: Address;
+  addressInfo: Address;
   onAddressChange: (addressType: AddressType, value: Address) => void;
 }
 
 const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onAddressChange }) => {
+  console.log(addressInfo);
+  const [postOfficeNames, setPostOfficeNames] = useState<string[]>(['']);
   const {
     register,
     handleSubmit,
     setValue,
     control,
+    watch,
+    trigger,
     formState: { errors },
-  } = useForm<{ address: Address }>({
+  } = useForm<Address>({
     mode: 'all',
-    defaultValues: {
-      address: addressInfo ?? Member_Address,
-    },
+    defaultValues: addressInfo,
   });
 
-  const [postOfficeNames, setPostOfficeNames] = useState<string[]>(['Select Post Office']);
-
-  const handleChange = (field: keyof Address, value: any) => {
-    if (value.length === 6 && field === 'pin_code') {
-      fetchPostOfficesByPIN(value);
-    }
-  };
-
-  const fetchPostOfficesByPIN = (pincode: string) => {
-    let postalInfo: PostalInfo[] = pincodeDirectory.lookup(pincode);
-    if (postalInfo && postalInfo.length) {
-      let officeNames = ['Select Post Office'];
-      officeNames.push(...postalInfo.map((info) => info.officeName));
-      setPostOfficeNames(officeNames);
-      const postalInfoByPIN = postalInfo[0];
-      setValue('address.city', postalInfoByPIN.districtName);
-      setValue('address.state', postalInfoByPIN.stateName);
-      setValue('address.post_office', postalInfoByPIN.officeName[0]);
-    }
-  };
+  const pincode = watch('pincode');
 
   useEffect(() => {
-    if (addressInfo && addressInfo.pin_code && addressInfo.pin_code.length === 6) {
-      fetchPostOfficesByPIN(addressInfo.pin_code);
+    if (pincode?.length === 6) {
+      const postalInfo: PostalInfo[] = pincodeDirectory.lookup(pincode);
+      const officeNames = [''];
+      if (postalInfo?.length) {
+        officeNames.push(...postalInfo.map((info) => info.officeName));
+        const postalInfoByPIN = postalInfo[0];
+        setValue('city', postalInfoByPIN.districtName);
+        setValue('state', postalInfoByPIN.stateName);
+        setValue('postOffice', postalInfoByPIN.officeName[0]);
+      } else {
+        setValue('city', '');
+        setValue('state', '');
+        setValue('postOffice', '');
+      }
+      setPostOfficeNames(officeNames);
+      trigger(['city', 'state', 'postOffice']);
     }
-  }, [addressInfo]);
+  }, [pincode, setValue, trigger]);
 
-  const onSubmitHandler: SubmitHandler<{ address: Address }> = (data) => {
-    onAddressChange(addressType, data.address);
+  const onSubmitHandler: SubmitHandler<Address> = (data) => {
+    console.dir(data);
+    console.log(addressType);
+    onAddressChange(addressType, data);
   };
 
   return (
     <div className="w-full">
-      <label htmlFor="addressDetails.flat_number_name" className="text-sm font-medium text-gray-600">
+      <label className="text-sm font-medium text-gray-600">
         Flat Number / Name *
+        <input
+          type="text"
+          placeholder="Flat Number/Name"
+          {...register(`flatNumberName`, {
+            required: 'Flat Number / Name',
+          })}
+          className={`w-full p-2 mb-4 border rounded text-gray-600 ${
+            errors.flatNumberName ? 'focus:outline-none border-red-500 bg-red-50' : ''
+          }`}
+        />
       </label>
-      <input
-        type="text"
-        placeholder="Flat Number/Name"
-        {...register(`address.flat_number_name`, {
-          required: 'Flat Number / Name',
-        })}
-        className={`w-full p-2 mb-4 border rounded text-gray-600 ${
-          errors.address?.flat_number_name ? 'focus:outline-none border-red-500 bg-red-50' : ''
-        }`}
-      />
-      <label htmlFor="addressDetails.address_line_1" className="text-sm font-medium text-gray-600">
+      <label className="text-sm font-medium text-gray-600">
         Address Line 1 *
+        <input
+          type="text"
+          placeholder="Address Line 1"
+          {...register('addressLine1', {
+            required: 'Address Line 1',
+          })}
+          className={`w-full p-2 mb-4 border rounded text-gray-600 ${
+            errors.addressLine1 ? 'focus:outline-none border-red-500 bg-red-50' : ''
+          }`}
+        />
       </label>
-      <input
-        type="text"
-        placeholder="Address Line 1"
-        {...register(`address.address_line_1`, {
-          required: 'Address Line 1',
-        })}
-        className={`w-full p-2 mb-4 border rounded text-gray-600 ${
-          errors.address?.address_line_1 ? 'focus:outline-none border-red-500 bg-red-50' : ''
-        }`}
-      />
-      <label htmlFor="addressDetails.address_line_2" className="text-sm font-medium text-gray-600">
+      <label className="text-sm font-medium text-gray-600">
         Address Line 2 / Landmark
+        <input
+          type="text"
+          {...register('addressLine2')}
+          placeholder="Address Line 2 / Landmark"
+          className="w-full p-2 mb-4 border rounded text-gray-600"
+        />
       </label>
-      <input
-        type="text"
-        {...register(`address.address_line_2`)}
-        placeholder="Address Line 2 / Landmark"
-        className="w-full p-2 mb-4 border rounded text-gray-600"
-      />
-      <label htmlFor="addressDetails.pin_code" className="text-sm font-medium text-gray-600">
+      <label className="text-sm font-medium text-gray-600">
         Pin Code *
+        <input
+          type="number"
+          autoComplete="off"
+          placeholder="Pin Code"
+          {...register('pincode', {
+            required: 'Pin Code',
+            minLength: 6,
+            maxLength: 6,
+          })}
+          className={`w-full p-2 mb-4 border rounded text-gray-600 appearance-none${
+            errors.pincode ? 'focus:outline-none border-red-500 bg-red-50' : ''
+          }`}
+        />
       </label>
-      <input
-        type="number"
-        autoComplete="off"
-        placeholder="Pin Code"
-        {...register(`address.pin_code`, {
-          required: 'Pin Code',
-          minLength: 6,
-          maxLength: 6,
-        })}
-        onChange={(e) => handleChange('pin_code', e.target.value)}
-        className={`w-full p-2 mb-4 border rounded text-gray-600 appearance-none${
-          errors.address?.pin_code ? 'focus:outline-none border-red-500 bg-red-50' : ''
-        }`}
-      />
       <Controller
-        name="address.post_office"
+        name="postOffice"
         control={control}
         defaultValue=""
         rules={{ required: 'Post office is required' }}
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <DropdownSelect
             label="Post Office *"
             value={field.value}
-            error={errors.address?.post_office}
+            error={fieldState.error}
             options={postOfficeNames}
-            onChange={field.onChange}
+            onChange={(value) => field.onChange(value)}
           />
         )}
-      ></Controller>
-      <label htmlFor="addressDetails.city" className="text-sm font-medium text-gray-600">
+      />
+      <label className="text-sm font-medium text-gray-600">
         City *
+        <input
+          type="text"
+          placeholder="City"
+          {...register('city', {
+            required: 'City',
+          })}
+          className={`w-full p-2 mb-4 border rounded text-gray-600 ${
+            errors.city ? 'focus:outline-none border-red-500 bg-red-50' : ''
+          }`}
+        />
       </label>
-      <input
-        type="text"
-        placeholder="City"
-        {...register(`address.city`, {
-          required: 'City',
-        })}
-        className={`w-full p-2 mb-4 border rounded text-gray-600 ${
-          errors.address?.city ? 'focus:outline-none border-red-500 bg-red-50' : ''
-        }`}
-      />
-      <label htmlFor="addressDetails.state" className="text-sm font-medium text-gray-600">
+      <label className="text-sm font-medium text-gray-600">
         State *
+        <input
+          type="text"
+          placeholder="State"
+          {...register('state', {
+            required: 'State',
+          })}
+          className={`w-full p-2 mb-4 border rounded text-gray-600 ${
+            errors.state ? 'focus:outline-none border-red-500 bg-red-50' : ''
+          }`}
+        />
       </label>
-      <input
-        type="text"
-        placeholder="State"
-        {...register(`address.state`, {
-          required: 'State',
-        })}
-        className={`w-full p-2 mb-4 border rounded text-gray-600 ${
-          errors.address?.state ? 'focus:outline-none border-red-500 bg-red-50' : ''
-        }`}
-      />
-      <label htmlFor="addressDetails.country" className="text-sm font-medium text-gray-600">
+      <label className="text-sm font-medium text-gray-600">
         Country *
+        <input
+          type="text"
+          {...register('country', {
+            required: 'Country',
+          })}
+          placeholder="Country"
+          className={`w-full p-2 mb-4 border rounded text-gray-600 ${
+            errors.country ? 'focus:outline-none border-red-500 bg-red-50' : ''
+          }`}
+        />
       </label>
-      <input
-        type="text"
-        disabled={true}
-        {...register(`address.country`, {
-          required: 'Country',
-        })}
-        placeholder="Country"
-        className={`w-full p-2 mb-4 border rounded text-gray-600 ${
-          errors.address?.country ? 'focus:outline-none border-red-500 bg-red-50' : ''
-        }`}
-      />
-      <label htmlFor="addressDetails.contact_number" className="text-sm font-medium text-gray-600">
+      <label className="text-sm font-medium text-gray-600">
         Land Phone
+        <input type="text" placeholder="Land Phone" className="p-2 border mb-4 rounded w-full text-gray-600" />
       </label>
-      <input type="text" placeholder="Land Phone" className="p-2 border mb-4 rounded w-full text-gray-600" />
       <Button
         type="button"
         onClick={handleSubmit(onSubmitHandler)}

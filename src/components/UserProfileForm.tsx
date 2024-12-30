@@ -18,7 +18,7 @@ import {
   saveMemberDataToFiresbase,
   setTodayDate,
 } from '../utils/Utility_Functions';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Button } from '@material-tailwind/react';
 import { Plus } from 'lucide-react';
 import FamilyDetailsForm from './FamilyDetailsForm';
@@ -28,19 +28,19 @@ const UserProfileForm: React.FC = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<{ user: Members }>({
+    control,
+    setError,
+    formState: { errors, isValid },
+  } = useForm<Members>({
     mode: 'onSubmit',
-    defaultValues: {
-      user: memberDetails,
-    },
+    defaultValues: memberDetails,
   });
-  const [user, setUser] = useState<Members>(Member_Details);
+  const [user, setUser] = useState<Members>(memberDetails);
   const [open, setOpen] = useState(false); // Maintains open/close state of Family Details Popup
-  const [familyDetails, setFamilyDetails] = useState<FamilyDetails[]>([]);
-  const [presentAddress, setPresentAddress] = useState<Address>();
-  const [permanentAddress, setPermanentAddress] = useState<Address>();
-  const [officeAddress, setOfficeAddress] = useState<Address>();
+  const [familyDetails, setFamilyDetails] = useState<FamilyDetails[] | undefined>(memberDetails.familyDetails);
+  const [presentAddress, setPresentAddress] = useState<Address | null>(memberDetails.presentAddress);
+  const [permanentAddress, setPermanentAddress] = useState<Address | null>(memberDetails.permanentAddress);
+  const [officeAddress, setOfficeAddress] = useState<Address | null | undefined>(memberDetails.officeAddress);
   const [today, setToday] = useState('');
   const [openAddressDialog, setOpenAddressDialog] = useState(false);
   const [currentAddressChange, setCurrentAddressChange] = useState<AddressChangeType>({} as AddressChangeType);
@@ -57,48 +57,22 @@ const UserProfileForm: React.FC = () => {
   const handleResetForm = () => {
     setUser(memberDetails);
     setFamilyDetails([]);
-    setPresentAddress(Member_Address);
-    setPermanentAddress(Member_Address);
-    setOfficeAddress(Member_Address);
+    setPresentAddress(memberAddress);
+    setPermanentAddress(memberAddress);
+    setOfficeAddress(memberAddress);
   };
 
-  // const members_state: Members = useSelector((state: any) => state.members);
-
   const handleCopyPresentAddressChange = (value: boolean) => {
-    if (value && presentAddress && presentAddress.flat_number_name) {
+    if (value && presentAddress?.flatNumberName) {
       setPermanentAddress(presentAddress);
     } else {
-      setPermanentAddress(Member_Address);
+      setPermanentAddress(memberAddress);
     }
   };
 
   const handlSaveFamilyDetails = (family_details: FamilyDetails) => {
     setFamilyDetails((prevFamilyMembers) => [...prevFamilyMembers, family_details]);
     setOpen(false);
-  };
-
-  const handleSaveMembersForm = () => {
-    const present_address = presentAddress && presentAddress.flat_number_name ? presentAddress : null;
-
-    const permanent_address = permanentAddress && permanentAddress.flat_number_name ? permanentAddress : null;
-
-    const office_address = officeAddress && officeAddress.flat_number_name ? officeAddress : null;
-
-    const userObj = {
-      ...user,
-      present_address,
-      permanent_address,
-      family_details: familyDetails && familyDetails.length ? familyDetails : [],
-      office_address,
-    };
-
-    setUser(userObj);
-
-    if (present_address?.flat_number_name && permanent_address?.flat_number_name) {
-      saveMemberDataToFiresbase(userObj);
-      dispatch(addMember(userObj));
-      handleResetForm();
-    }
   };
 
   const handleAddressChange = (addressType: AddressType, value: Address) => {
@@ -116,9 +90,27 @@ const UserProfileForm: React.FC = () => {
     setToday(setTodayDate());
   }, []);
 
-  const onHandleSaveMembersForm: SubmitHandler<{ user: Members }> = () => {
+  const onHandleSaveMembersForm: SubmitHandler<Members> = (data) => {
     console.log('addressDetails: submit from UserProfile ===>');
-    handleSaveMembersForm();
+    if (!presentAddress?.flatNumberName) {
+      setError('presentAddress', { type: 'manual', message: 'Present Address is required' });
+    }
+    if (!permanentAddress?.flatNumberName) {
+      setError('permanentAddress', { type: 'manual', message: 'Permanent Address is required' });
+    }
+
+    if (isValid) {
+      const userObj = {
+        ...data,
+        presentAddress: presentAddress,
+        permanentAddress: permanentAddress,
+        officeAddress: officeAddress,
+        familyDetails: familyDetails,
+      };
+      saveMemberDataToFiresbase(userObj);
+      dispatch(addMember(userObj));
+      handleResetForm();
+    }
   };
 
   return (
@@ -146,21 +138,11 @@ const UserProfileForm: React.FC = () => {
                     type="text"
                     placeholder="Name"
                     autoComplete="off"
-                    {...register(`user.personal_details.name`, {
+                    {...register(`personalDetails.name`, {
                       required: 'Name is required',
                     })}
-                    value={user.personal_details.name}
-                    onChange={(e) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          name: e.target.value,
-                        },
-                      })
-                    }
                     className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                      errors.user?.personal_details?.name ? 'focus:outline-none border-red-500 bg-red-50' : ''
+                      errors.personalDetails?.name ? 'focus:outline-none border-red-500 bg-red-50' : ''
                     }`}
                   />
                 </div>
@@ -170,23 +152,13 @@ const UserProfileForm: React.FC = () => {
                     type="number"
                     placeholder="Mobile number"
                     autoComplete="off"
-                    {...register(`user.personal_details.mobile_number`, {
+                    {...register(`personalDetails.mobileNumber`, {
                       required: 'Mobile number is required',
                       minLength: 10,
                       maxLength: 10,
                     })}
-                    value={user.personal_details?.mobile_number}
-                    onChange={(e) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          mobile_number: e.target.value,
-                        },
-                      })
-                    }
                     className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                      errors.user?.personal_details?.mobile_number ? 'focus:outline-none border-red-500 bg-red-50' : ''
+                      errors.personalDetails?.mobileNumber ? 'focus:outline-none border-red-500 bg-red-50' : ''
                     }`}
                   />
                 </div>
@@ -195,23 +167,13 @@ const UserProfileForm: React.FC = () => {
                   <input
                     type="email"
                     autoComplete="off"
-                    {...register(`user.personal_details.email_id`, {
+                    {...register(`personalDetails.emailId`, {
                       required: 'Email ID is required',
                       pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i,
                     })}
                     placeholder="Email ID"
-                    value={user.personal_details?.email_id}
-                    onChange={(e) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          email_id: e.target.value,
-                        },
-                      })
-                    }
                     className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                      errors.user?.personal_details?.email_id ? 'focus:outline-none border-red-500 bg-red-50' : ''
+                      errors.personalDetails?.emailId ? 'focus:outline-none border-red-500 bg-red-50' : ''
                     }`}
                   />
                 </div>
@@ -221,65 +183,53 @@ const UserProfileForm: React.FC = () => {
                     type="date"
                     autoComplete="off"
                     max={today}
-                    {...register(`user.personal_details.date_of_birth`, {
+                    {...register(`personalDetails.dateOfBirth`, {
                       required: 'Date of birth is required',
                     })}
                     placeholder="Date of Birth"
-                    value={user.personal_details.date_of_birth}
-                    onChange={(e) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          date_of_birth: e.target.value,
-                        },
-                      })
-                    }
                     className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                      errors.user?.personal_details?.date_of_birth ? 'focus:outline-none border-red-500 bg-red-50' : ''
+                      errors.personalDetails?.dateOfBirth ? 'focus:outline-none border-red-500 bg-red-50' : ''
                     }`}
                   />
                 </div>
                 <div className="w-full sm:w-1/3 sm:pl-4">
-                  <DropdownSelect
-                    label="Gender *"
-                    options={genderOptions}
-                    {...register(`user.personal_details.gender`, {
+                  <Controller
+                    name="personalDetails.gender"
+                    control={control}
+                    defaultValue=""
+                    rules={{
                       required: 'Gender is required',
                       validate: (value) => value !== 'Select Gender' || 'Please select a valid gender',
-                    })}
-                    error={errors.user?.personal_details?.gender}
-                    value={user.personal_details?.gender}
-                    onChange={(value) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          gender: value,
-                        },
-                      })
-                    }
+                    }}
+                    render={({ field: { value, onChange }, fieldState: { error } }) => (
+                      <DropdownSelect
+                        label="Gender *"
+                        value={value}
+                        error={error}
+                        onChange={onChange}
+                        options={genderOptions}
+                      />
+                    )}
                   />
                 </div>
                 <div className="w-full sm:w-1/3 sm:pl-4">
-                  <DropdownSelect
-                    label="Blood Group *"
-                    options={Object.values(BloodGroup)}
-                    {...register(`user.personal_details.blood_group`, {
+                  <Controller
+                    name="personalDetails.bloodGroup"
+                    control={control}
+                    defaultValue=""
+                    rules={{
                       required: 'Blood Group is required',
                       validate: (value) => value !== 'Select Blood Group' || 'Please select a valid blood group',
-                    })}
-                    error={errors.user?.personal_details?.blood_group}
-                    value={user.personal_details?.blood_group}
-                    onChange={(value) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          blood_group: value,
-                        },
-                      })
-                    }
+                    }}
+                    render={({ field: { value, onChange }, fieldState: { error } }) => (
+                      <DropdownSelect
+                        label="Blood Group *"
+                        value={value}
+                        error={error}
+                        onChange={onChange}
+                        options={Object.values(BloodGroup)}
+                      />
+                    )}
                   />
                 </div>
                 <div className="w-full sm:w-1/3">
@@ -288,43 +238,32 @@ const UserProfileForm: React.FC = () => {
                     type="text"
                     autoComplete="off"
                     placeholder="Occupation"
-                    {...register(`user.personal_details.job_title`, {
+                    {...register(`personalDetails.jobTitle`, {
                       required: 'Occupation is required',
                     })}
-                    value={user.personal_details.job_title}
-                    onChange={(e) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          job_title: e.target.value,
-                        },
-                      })
-                    }
                     className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                      errors.user?.personal_details?.job_title ? 'focus:outline-none border-red-500 bg-red-50' : ''
+                      errors.personalDetails?.jobTitle ? 'focus:outline-none border-red-500 bg-red-50' : ''
                     }`}
                   />
                 </div>
                 <div className="w-full sm:w-1/3 sm:pl-4">
-                  <DropdownSelect
-                    label="Educational Qualification *"
-                    {...register(`user.personal_details.educational_qualification.education_level`, {
+                  <Controller
+                    name="personalDetails.educationalQualification.educationLevel"
+                    control={control}
+                    defaultValue=""
+                    rules={{
                       required: 'Education level is required',
                       validate: (value) => value !== 'Select Education' || 'Please select a valid education level',
-                    })}
-                    error={errors.user?.personal_details?.educational_qualification?.education_level}
-                    options={educationLevelOptions}
-                    value={user.personal_details?.educational_qualification.education_level}
-                    onChange={(value) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          educational_qualification: { education_level: value },
-                        },
-                      })
-                    }
+                    }}
+                    render={({ field: { value, onChange }, fieldState: { error } }) => (
+                      <DropdownSelect
+                        label="Educational Qualification *"
+                        value={value}
+                        error={error}
+                        onChange={onChange}
+                        options={educationLevelOptions}
+                      />
+                    )}
                   />
                 </div>
                 <div className="w-full sm:w-1/3 sm:pl-4">
@@ -332,19 +271,7 @@ const UserProfileForm: React.FC = () => {
                   <input
                     type="text"
                     placeholder="Specialization"
-                    value={user.personal_details?.educational_qualification.specialization}
-                    onChange={(e) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          educational_qualification: {
-                            specialization: e.target.value,
-                          },
-                        },
-                      })
-                    }
-                    className="w-full p-2 border rounded mb-4 text-gray-600"
+                    {...register(`personalDetails.educationalQualification.specialization`)}
                   />
                 </div>
               </div>
@@ -355,6 +282,7 @@ const UserProfileForm: React.FC = () => {
               address={presentAddress}
               addressType={AddressType.PresentAddress}
               onEdit={({ operation, addressType }) => handleAddAddress({ operation, addressType })}
+              error={!!errors.presentAddress}
             />
             <AddressCard
               address={permanentAddress}
@@ -362,11 +290,13 @@ const UserProfileForm: React.FC = () => {
               addressType={AddressType.PermanentAddress}
               onEdit={({ operation, addressType }) => handleAddAddress({ operation, addressType })}
               onCopyPresentAddress={handleCopyPresentAddressChange}
+              error={!!errors.presentAddress}
             />
             <AddressCard
               address={officeAddress}
               addressType={AddressType.OfficeAddress}
               onEdit={({ operation, addressType }) => handleAddAddress({ operation, addressType })}
+              error={false}
             />
           </div>
           <PopupContainer
@@ -386,24 +316,6 @@ const UserProfileForm: React.FC = () => {
               onAddressChange={(addressType, value) => handleAddressChange(addressType, value)}
             />
           </PopupContainer>
-          {/* Permanent Address Form */}
-          {/* <AddressForm
-          label="Permanent Address"
-          copyAddress={true}
-          addressInfo={permanentAddress}
-          onAddressChange={(value) =>
-            handleAddressChange(AddressType.PermanentAddress, value)
-          }
-          onCopyPresentAddress={handleCopyPresentAddressChange}
-        /> }
-        {/* Office Address Form */}
-          {/* <AddressForm
-          label="Office Address"
-          addressInfo={officeAddress}
-          onAddressChange={(value) =>
-            handleAddressChange(AddressType.OfficeAddress, value)
-          }
-        /> */}
           <div className="p-4 border rounded-lg mt-6">
             <div className="flex flex-wrap gap-4">
               <div className="flex-1  text-left">
@@ -421,52 +333,51 @@ const UserProfileForm: React.FC = () => {
                 </Button>
               </div>
             </div>
-            <FamilyDetailsTable fmaily_members={familyDetails} />
+            <FamilyDetailsTable familyMembers={familyDetails} />
           </div>
 
           <div className="flex flex-col mt-6 gap-4 md:flex-row">
             <div className="flex-1 p-4 border rounded">
-              <GeoLocationDisplay geoLocation={user.geo_location} />
+              <GeoLocationDisplay geoLocation={memberDetails.geoLocation} />
             </div>
             <div className="flex-1 p-4 border rounded">
               <h2 className="text-lg font-semibold mb-4 text-gray-600">Office Use</h2>
               <label className="text-gray-600 text-sm font-medium">Proposed by</label>
               <input
-                value={user.proposed_by}
-                {...register(`user.proposed_by`, {
+                {...register(`proposedBy`, {
                   required: 'Proposed by is required',
                 })}
-                onChange={(e) => setUser({ ...user, proposed_by: e.target.value })}
                 type="text"
                 className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                  errors.user?.proposed_by ? 'focus:outline-none border-red-500 bg-red-50' : ''
+                  errors.proposedBy ? 'focus:outline-none border-red-500 bg-red-50' : ''
                 }`}
               />
-              <DropdownSelect
-                label="Communication Preference"
-                options={communicationPreferenceOptions}
-                value={user.communication_preference}
-                {...register(`user.communication_preference`, {
+              <Controller
+                name="communicationPreference"
+                control={control}
+                defaultValue=""
+                rules={{
                   required: 'Communication Preference is required',
                   validate: (value) => value !== 'Select Your Preference' || 'Please select a valid preference',
-                })}
-                error={errors.user?.communication_preference}
-                onChange={(value) => setUser({ ...user, communication_preference: value })}
+                }}
+                render={({ field: { value, onChange }, fieldState: { error } }) => (
+                  <DropdownSelect
+                    label="Communication Preference"
+                    value={value}
+                    error={error}
+                    onChange={onChange}
+                    options={communicationPreferenceOptions}
+                  />
+                )}
               />
               <label className="text-gray-600 text-sm font-medium">Comments</label>
-              <input
-                value={user.comments}
-                onChange={(e) => setUser({ ...user, comments: e.target.value })}
-                type="text"
-                className="p-2 border mb-3 rounded w-full text-gray-600"
-              />
+              <input {...register(`comments`)} type="text" className="p-2 border mb-3 rounded w-full text-gray-600" />
             </div>
           </div>
         </div>
         <div className="p-4 w-full bg-gray-50 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center">
             <Button
-              onClick={handleSaveMembersForm}
               type="submit"
               color="blue"
               className="mb-4 sm:mb-0 order-1 sm:order-2 cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
