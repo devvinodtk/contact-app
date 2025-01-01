@@ -4,12 +4,12 @@ import { Button } from "@material-tailwind/react";
 // @ts-ignore
 import pincodeDirectory from "india-pincode-lookup";
 import DropdownSelect from "./common/DropdownSelect";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { memberAddress } from "../types/UsersMock";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
 
 interface AddressFormProps {
   addressType: AddressType;
-  addressInfo: Address | null;
+  addressInfo?: Address | null;
   onAddressChange: (addressType: AddressType, value: Address) => void;
 }
 

@@ -38,6 +38,7 @@ const UserProfileForm: React.FC = () => {
     control,
     setError,
     clearErrors,
+    reset,
     formState: { errors, isValid },
   } = useForm<Members>({
     mode: "onSubmit",
@@ -71,10 +72,7 @@ const UserProfileForm: React.FC = () => {
   const dispatch = useDispatch();
 
   const handleResetForm = () => {
-    setFamilyDetails([]);
-    setPresentAddress(memberAddress);
-    setPermanentAddress(memberAddress);
-    setOfficeAddress(memberAddress);
+    reset();
   };
 
   const handleCopyPresentAddressChange = (value: boolean) => {
@@ -87,7 +85,7 @@ const UserProfileForm: React.FC = () => {
 
   const handlSaveFamilyDetails = (family_details: FamilyDetails) => {
     setFamilyDetails((prevFamilyMembers) => [
-      ...(prevFamilyMembers || []),
+      ...(prevFamilyMembers ?? []),
       family_details,
     ]);
     setOpen(false);
@@ -240,7 +238,6 @@ const UserProfileForm: React.FC = () => {
                   <Controller
                     name="personalDetails.gender"
                     control={control}
-                    defaultValue=""
                     rules={{
                       required: "Gender is required",
                       validate: (value) =>
@@ -307,7 +304,6 @@ const UserProfileForm: React.FC = () => {
                   <Controller
                     name="personalDetails.educationalQualification.educationLevel"
                     control={control}
-                    defaultValue=""
                     rules={{
                       required: "Education level is required",
                       validate: (value) =>
@@ -440,7 +436,6 @@ const UserProfileForm: React.FC = () => {
               <Controller
                 name="communicationPreference"
                 control={control}
-                defaultValue=""
                 rules={{
                   required: "Communication Preference is required",
                   validate: (value) =>

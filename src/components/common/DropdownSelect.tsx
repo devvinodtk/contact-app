@@ -4,7 +4,7 @@ import { FieldError } from "react-hook-form";
 interface DropdownSelectProps<T> {
   label: string;
   options: T[];
-  value: T;
+  value?: T;
   onChange: ChangeEventHandler<HTMLSelectElement>;
   error?: FieldError;
   mandatory?: boolean;

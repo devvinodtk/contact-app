@@ -58,7 +58,6 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
         <Controller
           name="memberPersonalDetails.gender"
           control={control}
-          defaultValue=""
           rules={{
             required: "Gender is required",
             validate: (value) => value !== "" || "Please select a valid gender",
@@ -77,7 +76,6 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
         <Controller
           name="relationship"
           control={control}
-          defaultValue=""
           rules={{
             required: "Relationship is required",
             validate: (value) =>
