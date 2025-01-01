@@ -27,7 +27,7 @@ export const memberAddress: Address = {
 };
 
 export const educationalQualification: EducationalQualification = {
-  educationLevel: 'Select Education',
+  educationLevel: '',
   specialization: '',
 };
 
@@ -38,14 +38,14 @@ export const personalDetails: PersonalDetails = {
   emailId: '',
   dateOfBirth: '',
   bloodGroup: BloodGroup.SelectBloodGroup,
-  gender: 'Select Gender',
+  gender: '',
   educationalQualification: educationalQualification,
   jobTitle: '',
 };
 
 export const familyDetails: FamilyDetails = {
   memberPersonalDetails: personalDetails,
-  relationship: 'Select Relationship',
+  relationship: '',
 };
 
 export const memberDetails: Members = {
@@ -56,7 +56,7 @@ export const memberDetails: Members = {
   familyDetails: [familyDetails],
   proposedBy: '',
   secondedBy: '',
-  communicationPreference: 'Select Your Preference',
+  communicationPreference: '',
   dateOfJoining: new Date().toISOString().split('T')[0],
   areaCode: AreaCode.SNPS,
   isInactive: false,

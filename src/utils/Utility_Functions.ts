@@ -65,7 +65,7 @@ export function getAge(dob: string) {
 }
 
 export const relationshipOptions = [
-  'Select Relationship',
+  '',
   'Spouse',
   'Kid',
   'Father',
@@ -74,12 +74,12 @@ export const relationshipOptions = [
   'Mother In Law',
 ] as RelationshipType[];
 
-export const postOfficeOptions = ['Select Post Office'] as string[];
+export const postOfficeOptions = [''] as string[];
 
-export const genderOptions = ['Select Gender', 'Male', 'Female', 'Other', 'Prefer not to say'] as Gender[];
+export const genderOptions = ['', 'Male', 'Female', 'Other', 'Prefer not to say'] as Gender[];
 
 export const educationLevelOptions = [
-  'Select Education',
+  '',
   'Nursery',
   'Kindergarten',
   'Primary School',
@@ -91,7 +91,7 @@ export const educationLevelOptions = [
 ] as EducationLevel[];
 
 export const communicationPreferenceOptions = [
-  'Select Your Preference',
+  '',
   'In Person',
   'Postal',
 ] as CommunicationPreference[];

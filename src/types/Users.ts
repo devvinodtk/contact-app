@@ -1,5 +1,5 @@
 export enum BloodGroup {
-  SelectBloodGroup = 'Select Blood Group',
+  SelectBloodGroup = '',
   APositive = 'A+',
   ANegative = 'A-',
   BPositive = 'B+',
@@ -23,9 +23,9 @@ export enum UserOps {
   View = 'View',
 }
 
-export type Gender = 'Male' | 'Female' | 'Other' | 'Prefer Not To Say' | 'Select Gender';
+export type Gender = ''| 'Male' | 'Female' | 'Other' | 'Prefer Not To Say';
 export type EducationLevel =
-  | 'Select Education'
+  | ''
   | 'Nursery'
   | 'Kindergarten'
   | 'Primary School'
@@ -35,14 +35,14 @@ export type EducationLevel =
   | 'Masters Degree'
   | 'PhD';
 export type RelationshipType =
-  | 'Select Relationship'
+  | ''
   | 'Spouse'
   | 'Kid'
   | 'Father'
   | 'Mother'
   | 'Father In Law'
   | 'Mother In Law';
-export type CommunicationPreference = 'Select Your Preference' | 'In Person' | 'Postal';
+export type CommunicationPreference = '' | 'In Person' | 'Postal';
 
 export enum AreaCode {
   SNPS = 'Sanjay Nagar Police Station',
@@ -71,7 +71,7 @@ export type Members = {
   jobTitle?: string;
   presentAddress: Address | null;
   permanentAddress: Address | null;
-  officeAddress?: Address | null;
+  officeAddress: Address | null;
   familyDetails?: FamilyDetails[];
   proposedBy: string;
   secondedBy: string;
@@ -110,7 +110,7 @@ export type Address = {
 };
 
 export type EducationalQualification = {
-  educationLevel?: EducationLevel;
+  educationLevel: EducationLevel;
   specialization?: string;
 };
 

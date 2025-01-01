@@ -1,18 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { Address, AddressType, PostalInfo } from '../types/Users';
-import { Button } from '@material-tailwind/react';
-import pincodeDirectory from 'india-pincode-lookup';
-import DropdownSelect from './common/DropdownSelect';
-import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import React, { useEffect, useState } from "react";
+import { Address, AddressType, PostalInfo } from "../types/Users";
+import { Button } from "@material-tailwind/react";
+// @ts-ignore
+import pincodeDirectory from "india-pincode-lookup";
+import DropdownSelect from "./common/DropdownSelect";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { memberAddress } from "../types/UsersMock";
 
 interface AddressFormProps {
   addressType: AddressType;
-  addressInfo: Address;
+  addressInfo: Address | null;
   onAddressChange: (addressType: AddressType, value: Address) => void;
 }
 
-const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onAddressChange }) => {
-  const [postOfficeNames, setPostOfficeNames] = useState<string[]>(['']);
+const AddressForm: React.FC<AddressFormProps> = ({
+  addressType,
+  addressInfo,
+  onAddressChange,
+}) => {
+  const [postOfficeNames, setPostOfficeNames] = useState<string[]>([""]);
   const {
     register,
     handleSubmit,
@@ -22,29 +28,29 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
     trigger,
     formState: { errors },
   } = useForm<Address>({
-    mode: 'all',
-    defaultValues: addressInfo,
+    mode: "all",
+    defaultValues: addressInfo ?? memberAddress,
   });
 
-  const pincode = watch('pincode');
+  const pincode = watch("pincode");
 
   useEffect(() => {
     if (pincode?.length === 6) {
       const postalInfo: PostalInfo[] = pincodeDirectory.lookup(pincode);
-      const officeNames = [''];
+      const officeNames = [""];
       if (postalInfo?.length) {
         officeNames.push(...postalInfo.map((info) => info.officeName));
         const postalInfoByPIN = postalInfo[0];
-        setValue('city', postalInfoByPIN.districtName);
-        setValue('state', postalInfoByPIN.stateName);
-        setValue('postOffice', postalInfoByPIN.officeName);
+        setValue("city", postalInfoByPIN.districtName);
+        setValue("state", postalInfoByPIN.stateName);
+        setValue("postOffice", postalInfoByPIN.officeName);
       } else {
-        setValue('city', '');
-        setValue('state', '');
-        setValue('postOffice', '');
+        setValue("city", "");
+        setValue("state", "");
+        setValue("postOffice", "");
       }
       setPostOfficeNames(officeNames);
-      trigger(['city', 'state', 'postOffice']);
+      trigger(["city", "state", "postOffice"]);
     }
   }, [pincode, setValue, trigger]);
 
@@ -60,10 +66,12 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
           type="text"
           placeholder="Flat Number/Name"
           {...register(`flatNumberName`, {
-            required: 'Flat Number / Name',
+            required: "Flat Number / Name",
           })}
           className={`w-full p-2 mb-4 border rounded text-gray-600 ${
-            errors.flatNumberName ? 'focus:outline-none border-red-500 bg-red-50' : ''
+            errors.flatNumberName
+              ? "focus:outline-none border-red-500 bg-red-50"
+              : ""
           }`}
         />
       </label>
@@ -72,11 +80,13 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
         <input
           type="text"
           placeholder="Address Line 1"
-          {...register('addressLine1', {
-            required: 'Address Line 1',
+          {...register("addressLine1", {
+            required: "Address Line 1",
           })}
           className={`w-full p-2 mb-4 border rounded text-gray-600 ${
-            errors.addressLine1 ? 'focus:outline-none border-red-500 bg-red-50' : ''
+            errors.addressLine1
+              ? "focus:outline-none border-red-500 bg-red-50"
+              : ""
           }`}
         />
       </label>
@@ -84,7 +94,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
         Address Line 2 / Landmark
         <input
           type="text"
-          {...register('addressLine2')}
+          {...register("addressLine2")}
           placeholder="Address Line 2 / Landmark"
           className="w-full p-2 mb-4 border rounded text-gray-600"
         />
@@ -95,23 +105,24 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
           type="number"
           autoComplete="off"
           placeholder="Pin Code"
-          {...register('pincode', {
-            required: 'Pin Code',
+          {...register("pincode", {
+            required: "Pin Code",
             minLength: 6,
             maxLength: 6,
           })}
           className={`w-full p-2 mb-4 border rounded text-gray-600 appearance-none${
-            errors.pincode ? 'focus:outline-none border-red-500 bg-red-50' : ''
+            errors.pincode ? "focus:outline-none border-red-500 bg-red-50" : ""
           }`}
         />
       </label>
       <Controller
         name="postOffice"
         control={control}
-        rules={{ required: 'Post office is required' }}
+        rules={{ required: "Post office is required" }}
         render={({ field: { value, onChange }, fieldState }) => (
           <DropdownSelect
-            label="Post Office *"
+            label="Post Office"
+            mandatory={true}
             value={value}
             error={fieldState.error}
             options={postOfficeNames}
@@ -124,11 +135,11 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
         <input
           type="text"
           placeholder="City"
-          {...register('city', {
-            required: 'City',
+          {...register("city", {
+            required: "City",
           })}
           className={`w-full p-2 mb-4 border rounded text-gray-600 ${
-            errors.city ? 'focus:outline-none border-red-500 bg-red-50' : ''
+            errors.city ? "focus:outline-none border-red-500 bg-red-50" : ""
           }`}
         />
       </label>
@@ -137,11 +148,11 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
         <input
           type="text"
           placeholder="State"
-          {...register('state', {
-            required: 'State',
+          {...register("state", {
+            required: "State",
           })}
           className={`w-full p-2 mb-4 border rounded text-gray-600 ${
-            errors.state ? 'focus:outline-none border-red-500 bg-red-50' : ''
+            errors.state ? "focus:outline-none border-red-500 bg-red-50" : ""
           }`}
         />
       </label>
@@ -149,18 +160,22 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
         Country *
         <input
           type="text"
-          {...register('country', {
-            required: 'Country',
+          {...register("country", {
+            required: "Country",
           })}
           placeholder="Country"
           className={`w-full p-2 mb-4 border rounded text-gray-600 ${
-            errors.country ? 'focus:outline-none border-red-500 bg-red-50' : ''
+            errors.country ? "focus:outline-none border-red-500 bg-red-50" : ""
           }`}
         />
       </label>
       <label className="text-sm font-medium text-gray-600">
         Land Phone
-        <input type="text" placeholder="Land Phone" className="p-2 border mb-4 rounded w-full text-gray-600" />
+        <input
+          type="text"
+          placeholder="Land Phone"
+          className="p-2 border mb-4 rounded w-full text-gray-600"
+        />
       </label>
       <Button
         type="button"
