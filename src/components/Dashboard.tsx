@@ -175,7 +175,7 @@ const Dashboard = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {member.areacode}
+                                  {member.areaCode}
                                 </Typography>
                               </td>
 

@@ -3,11 +3,12 @@ import { Address, AddressType, PostalInfo } from '../types/Users';
 import { Button } from '@material-tailwind/react';
 import pincodeDirectory from 'india-pincode-lookup';
 import DropdownSelect from './common/DropdownSelect';
+import { memberAddress } from '../types/UsersMock';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 
 interface AddressFormProps {
   addressType: AddressType;
-  addressInfo: Address;
+  addressInfo?: Address | null;
   onAddressChange: (addressType: AddressType, value: Address) => void;
 }
 
@@ -23,7 +24,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
     formState: { errors },
   } = useForm<Address>({
     mode: 'all',
-    defaultValues: addressInfo,
+    defaultValues: addressInfo ?? memberAddress,
   });
 
   const pincode = watch('pincode');

@@ -45,7 +45,6 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({ familyDetails, on
         <Controller
           name="memberPersonalDetails.gender"
           control={control}
-          defaultValue=""
           rules={{
             required: 'Gender is required',
             validate: (value) => value !== 'Select Gender' || 'Please select a valid gender',
@@ -57,7 +56,6 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({ familyDetails, on
         <Controller
           name="relationship"
           control={control}
-          defaultValue=""
           rules={{
             required: 'Relationship is required',
             validate: (value) => value !== 'Select Relationship' || 'Please select a valid relationship',
@@ -76,7 +74,6 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({ familyDetails, on
         <Controller
           name="memberPersonalDetails.bloodGroup"
           control={control}
-          defaultValue=""
           rules={{
             required: 'Blood Group is required',
             validate: (value) => value !== 'Select Blood Group' || 'Please select a valid blood group',
@@ -94,7 +91,6 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({ familyDetails, on
         <Controller
           name="memberPersonalDetails.educationalQualification.educationLevel"
           control={control}
-          defaultValue=""
           rules={{
             required: 'Education level is required',
             validate: (value) => value !== 'Select Education' || 'Please select a valid education level',
