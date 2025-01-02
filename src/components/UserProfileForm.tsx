@@ -6,6 +6,7 @@ import {
   AddressType,
   FamilyDetails,
   AddressChangeType,
+  typographyProps,
 } from "../types/Users";
 
 import AddressForm from "./AddressForm";
@@ -15,7 +16,7 @@ import Header from "./common/Header";
 import ProfilePicUploader from "./common/ProfilePicUploader";
 import PopupContainer from "./common/PopupContainer";
 import FamilyDetailsTable from "./FamilyDetailsTable";
-import { Member_Address, Member_Details } from "../types/Users_Mock";
+import { memberAddress, memberDetails } from "../types/UsersMock";
 import { useDispatch } from "react-redux";
 import { addMember } from "../store/MembersSlice";
 import {
@@ -25,29 +26,41 @@ import {
   saveMemberDataToFiresbase,
   setTodayDate,
 } from "../utils/Utility_Functions";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { Button } from "@material-tailwind/react";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { Button, Typography } from "@material-tailwind/react";
 import { Plus } from "lucide-react";
 import FamilyDetailsForm from "./FamilyDetailsForm";
 import AddressCard from "./common/AddressCard";
+import { Slide, toast, ToastContainer } from "react-toastify";
 
 const UserProfileForm: React.FC = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<{ user: Members }>({
+    control,
+    setError,
+    clearErrors,
+    reset,
+    trigger,
+    formState: { errors, isValid },
+  } = useForm<Members>({
     mode: "onSubmit",
-    defaultValues: {
-      user: Member_Details,
-    },
+    defaultValues: memberDetails,
   });
-  const [user, setUser] = useState<Members>(Member_Details);
   const [open, setOpen] = useState(false); // Maintains open/close state of Family Details Popup
-  const [familyDetails, setFamilyDetails] = useState<FamilyDetails[]>([]);
-  const [presentAddress, setPresentAddress] = useState<Address>();
-  const [permanentAddress, setPermanentAddress] = useState<Address>();
-  const [officeAddress, setOfficeAddress] = useState<Address>();
+  const [familyDetails, setFamilyDetails] = useState<FamilyDetails[]>(
+    memberDetails.familyDetails
+  );
+  const [familyMemberToEdit, setFamilyMemberToEdit] = useState<FamilyDetails>();
+  const [presentAddress, setPresentAddress] = useState<Address>(
+    memberDetails.presentAddress
+  );
+  const [permanentAddress, setPermanentAddress] = useState<Address>(
+    memberDetails.permanentAddress
+  );
+  const [officeAddress, setOfficeAddress] = useState<
+    Address | null | undefined
+  >(memberDetails.officeAddress);
   const [today, setToday] = useState("");
   const [openAddressDialog, setOpenAddressDialog] = useState(false);
   const [currentAddressChange, setCurrentAddressChange] =
@@ -63,69 +76,47 @@ const UserProfileForm: React.FC = () => {
   const dispatch = useDispatch();
 
   const handleResetForm = () => {
-    setUser(Member_Details);
+    reset();
+    setPresentAddress(memberAddress);
+    setPermanentAddress(memberAddress);
+    setOfficeAddress(null);
     setFamilyDetails([]);
-    setPresentAddress(Member_Address);
-    setPermanentAddress(Member_Address);
-    setOfficeAddress(Member_Address);
+    setFamilyMemberToEdit(undefined);
   };
 
-  // const members_state: Members = useSelector((state: any) => state.members);
-
   const handleCopyPresentAddressChange = (value: boolean) => {
-    if (value && presentAddress && presentAddress.flat_number_name) {
+    if (value && presentAddress?.flatNumberName) {
       setPermanentAddress(presentAddress);
+      clearErrors("permanentAddress");
     } else {
-      setPermanentAddress(Member_Address);
+      setPermanentAddress(memberAddress);
     }
   };
 
   const handlSaveFamilyDetails = (family_details: FamilyDetails) => {
-    setFamilyDetails((prevFamilyMembers) => [
-      ...prevFamilyMembers,
-      family_details,
-    ]);
+    setFamilyDetails((prevDetails) => {
+      const updateRecordIndx = prevDetails.findIndex(
+        (detail) => detail.familyMemberId === family_details.familyMemberId
+      );
+      if (updateRecordIndx > -1) {
+        return prevDetails.map((detail, index) =>
+          index === updateRecordIndx ? family_details : detail
+        );
+      } else {
+        return [...prevDetails, family_details];
+      }
+    });
+    setFamilyMemberToEdit(undefined);
     setOpen(false);
-  };
-
-  const handleSaveMembersForm = () => {
-    const present_address =
-      presentAddress && presentAddress.flat_number_name ? presentAddress : null;
-
-    const permanent_address =
-      permanentAddress && permanentAddress.flat_number_name
-        ? permanentAddress
-        : null;
-
-    const office_address =
-      officeAddress && officeAddress.flat_number_name ? officeAddress : null;
-
-    const userObj = {
-      ...user,
-      present_address,
-      permanent_address,
-      family_details:
-        familyDetails && familyDetails.length ? familyDetails : [],
-      office_address,
-    };
-
-    setUser(userObj);
-
-    if (
-      present_address?.flat_number_name &&
-      permanent_address?.flat_number_name
-    ) {
-      saveMemberDataToFiresbase(userObj);
-      dispatch(addMember(userObj));
-      handleResetForm();
-    }
   };
 
   const handleAddressChange = (addressType: AddressType, value: Address) => {
     if (addressType === AddressType.PresentAddress) {
+      clearErrors("presentAddress");
       setPresentAddress(value);
     } else if (addressType === AddressType.PermanentAddress) {
       setPermanentAddress(value);
+      clearErrors("permanentAddress");
     } else if (addressType === AddressType.OfficeAddress) {
       setOfficeAddress(value);
     }
@@ -136,9 +127,84 @@ const UserProfileForm: React.FC = () => {
     setToday(setTodayDate());
   }, []);
 
-  const onHandleSaveMembersForm: SubmitHandler<{ user: Members }> = () => {
-    console.log("addressDetails: submit from UserProfile ===>");
-    handleSaveMembersForm();
+  const onHandleSaveMembersForm: SubmitHandler<Members> = (data) => {
+    clearErrors();
+    let error = false;
+    if (!presentAddress?.flatNumberName) {
+      setError("presentAddress", {
+        type: "manual",
+        message: "Present Address is required",
+      });
+      error = true;
+    }
+    if (!permanentAddress?.flatNumberName) {
+      setError("permanentAddress", {
+        type: "manual",
+        message: "Permanent Address is required",
+      });
+      error = true;
+    }
+    trigger();
+    if (error) return;
+
+    if (isValid) {
+      const userObj = {
+        ...data,
+        presentAddress: presentAddress,
+        permanentAddress: permanentAddress,
+        officeAddress: officeAddress,
+        familyDetails: familyDetails,
+      };
+
+      saveMemberDataToFiresbase(userObj)
+        .then(() => {
+          toast.success("Member details saved successfully", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Slide,
+          });
+          dispatch(addMember(userObj));
+          handleResetForm();
+        })
+        .catch((error) => {
+          toast.error(error.message, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Slide,
+          });
+        });
+    }
+  };
+
+  const handleEditFamilyMember = (familyMemberId: string) => {
+    const memberToEdit = familyDetails.find((member) => {
+      return member.familyMemberId === familyMemberId;
+    });
+
+    if (memberToEdit) {
+      setFamilyMemberToEdit(memberToEdit);
+      setOpen(true);
+    }
+  };
+
+  const handleDeleteFamilyMember = (familyMemberId: string) => {
+    const updatedFamilyDetails = familyDetails.filter((member) => {
+      return member.familyMemberId !== familyMemberId;
+    });
+    setFamilyDetails(updatedFamilyDetails);
+    setFamilyMemberToEdit(undefined);
   };
 
   return (
@@ -150,291 +216,242 @@ const UserProfileForm: React.FC = () => {
       >
         <Header title="Add Members" />
         <div className="p-4 w-full mt-16 sm:mt-0">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="w-full sm:w-1/4">
-              <div className="bg-white">
-                <div className="bg-sky-50 bg-opacity-50  min-h-56 flex w-full mt-1 border items-center rounded">
-                  <ProfilePicUploader />
+          <div className="p-4 border rounded-lg mt-6">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="w-full sm:w-1/4">
+                <div className="bg-white">
+                  <div className="bg-gray-50 min-h-56 flex w-full mt-1 border items-center rounded">
+                    <ProfilePicUploader />
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="w-full sm:w-3/4 ">
-              <div className="flex flex-wrap">
-                <div className="w-full sm:w-1/3">
-                  <label className="block text-sm font-medium mb-1 text-gray-600">
-                    Name *
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Name"
-                    autoComplete="off"
-                    {...register(`user.personal_details.name`, {
-                      required: "Name is required",
-                    })}
-                    value={user.personal_details.name}
-                    onChange={(e) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          name: e.target.value,
-                        },
-                      })
-                    }
-                    className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                      errors.user?.personal_details?.name
-                        ? "focus:outline-none border-red-500 bg-red-50"
-                        : ""
-                    }`}
-                  />
-                </div>
-                <div className="w-full sm:w-1/3 sm:pl-4">
-                  <label className="block text-sm font-medium mb-1 text-gray-600">
-                    Mobile Number *
-                  </label>
-                  <input
-                    type="number"
-                    placeholder="Mobile number"
-                    autoComplete="off"
-                    {...register(`user.personal_details.mobile_number`, {
-                      required: "Mobile number is required",
-                      minLength: 10,
-                      maxLength: 10,
-                    })}
-                    value={user.personal_details?.mobile_number}
-                    onChange={(e) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          mobile_number: e.target.value,
-                        },
-                      })
-                    }
-                    className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                      errors.user?.personal_details?.mobile_number
-                        ? "focus:outline-none border-red-500 bg-red-50"
-                        : ""
-                    }`}
-                  />
-                </div>
-                <div className="w-full sm:w-1/3 sm:pl-4">
-                  <label className="block text-sm font-medium mb-1 text-gray-600">
-                    Email ID *
-                  </label>
-                  <input
-                    type="email"
-                    autoComplete="off"
-                    {...register(`user.personal_details.email_id`, {
-                      required: "Email ID is required",
-                      pattern:
-                        /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i,
-                    })}
-                    placeholder="Email ID"
-                    value={user.personal_details?.email_id}
-                    onChange={(e) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          email_id: e.target.value,
-                        },
-                      })
-                    }
-                    className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                      errors.user?.personal_details?.email_id
-                        ? "focus:outline-none border-red-500 bg-red-50"
-                        : ""
-                    }`}
-                  />
-                </div>
-                <div className="w-full sm:w-1/3">
-                  <label className="block text-sm font-medium mb-1 text-gray-600">
-                    Date of Birth *
-                  </label>
-                  <input
-                    type="date"
-                    autoComplete="off"
-                    max={today}
-                    {...register(`user.personal_details.date_of_birth`, {
-                      required: "Date of birth is required",
-                    })}
-                    placeholder="Date of Birth"
-                    value={user.personal_details.date_of_birth}
-                    onChange={(e) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          date_of_birth: e.target.value,
-                        },
-                      })
-                    }
-                    className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                      errors.user?.personal_details?.date_of_birth
-                        ? "focus:outline-none border-red-500 bg-red-50"
-                        : ""
-                    }`}
-                  />
-                </div>
-                <div className="w-full sm:w-1/3 sm:pl-4">
-                  <DropdownSelect
-                    label="Gender *"
-                    options={genderOptions}
-                    {...register(`user.personal_details.gender`, {
-                      required: "Gender is required",
-                      validate: (value) =>
-                        value !== "Select Gender" ||
-                        "Please select a valid gender",
-                    })}
-                    error={errors.user?.personal_details?.gender}
-                    value={user.personal_details?.gender}
-                    onChange={(value) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          gender: value,
-                        },
-                      })
-                    }
-                  />
-                </div>
-                <div className="w-full sm:w-1/3 sm:pl-4">
-                  <DropdownSelect
-                    label="Blood Group *"
-                    options={Object.values(BloodGroup)}
-                    {...register(`user.personal_details.blood_group`, {
-                      required: "Blood Group is required",
-                      validate: (value) =>
-                        value !== "Select Blood Group" ||
-                        "Please select a valid blood group",
-                    })}
-                    error={errors.user?.personal_details?.blood_group}
-                    value={user.personal_details?.blood_group}
-                    onChange={(value) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          blood_group: value,
-                        },
-                      })
-                    }
-                  />
-                </div>
-                <div className="w-full sm:w-1/3">
-                  <label className="block text-sm font-medium mb-1 text-gray-600">
-                    Occupation *
-                  </label>
-                  <input
-                    type="text"
-                    autoComplete="off"
-                    placeholder="Occupation"
-                    {...register(`user.personal_details.job_title`, {
-                      required: "Occupation is required",
-                    })}
-                    value={user.personal_details.job_title}
-                    onChange={(e) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          job_title: e.target.value,
-                        },
-                      })
-                    }
-                    className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                      errors.user?.personal_details?.job_title
-                        ? "focus:outline-none border-red-500 bg-red-50"
-                        : ""
-                    }`}
-                  />
-                </div>
-                <div className="w-full sm:w-1/3 sm:pl-4">
-                  <DropdownSelect
-                    label="Educational Qualification *"
-                    {...register(
-                      `user.personal_details.educational_qualification.education_level`,
-                      {
+              <div className="w-full sm:w-3/4 ">
+                <div className="flex flex-wrap">
+                  <div className="w-full sm:w-1/3">
+                    <label className="block text-sm font-medium mb-1 text-gray-600">
+                      Name *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Name"
+                      autoComplete="off"
+                      {...register(`personalDetails.name`, {
+                        required: "Name is required",
+                      })}
+                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                        errors.personalDetails?.name
+                          ? "focus:outline-none border-red-500 bg-red-50"
+                          : ""
+                      }`}
+                    />
+                  </div>
+                  <div className="w-full sm:w-1/3 sm:pl-4">
+                    <label className="block text-sm font-medium mb-1 text-gray-600">
+                      Mobile Number *
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="Mobile number"
+                      autoComplete="off"
+                      {...register(`personalDetails.mobileNumber`, {
+                        required: "Mobile number is required",
+                        minLength: 10,
+                        maxLength: 10,
+                      })}
+                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                        errors.personalDetails?.mobileNumber
+                          ? "focus:outline-none border-red-500 bg-red-50"
+                          : ""
+                      }`}
+                    />
+                  </div>
+                  <div className="w-full sm:w-1/3 sm:pl-4">
+                    <label className="block text-sm font-medium mb-1 text-gray-600">
+                      Email ID *
+                    </label>
+                    <input
+                      type="email"
+                      autoComplete="off"
+                      {...register(`personalDetails.emailId`, {
+                        required: "Email ID is required",
+                        pattern:
+                          /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i,
+                      })}
+                      placeholder="Email ID"
+                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                        errors.personalDetails?.emailId
+                          ? "focus:outline-none border-red-500 bg-red-50"
+                          : ""
+                      }`}
+                    />
+                  </div>
+                  <div className="w-full sm:w-1/3">
+                    <label className="block text-sm font-medium mb-1 text-gray-600">
+                      Date of Birth *
+                    </label>
+                    <input
+                      type="date"
+                      autoComplete="off"
+                      max={today}
+                      {...register(`personalDetails.dateOfBirth`, {
+                        required: "Date of birth is required",
+                      })}
+                      placeholder="Date of Birth"
+                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                        errors.personalDetails?.dateOfBirth
+                          ? "focus:outline-none border-red-500 bg-red-50"
+                          : ""
+                      }`}
+                    />
+                  </div>
+                  <div className="w-full sm:w-1/3 sm:pl-4">
+                    <Controller
+                      name="personalDetails.gender"
+                      control={control}
+                      rules={{
+                        required: "Gender is required",
+                        validate: (value) =>
+                          value !== "" || "Please select a valid gender",
+                      }}
+                      render={({
+                        field: { value, onChange },
+                        fieldState: { error },
+                      }) => (
+                        <DropdownSelect
+                          label="Gender"
+                          mandatory={true}
+                          value={value}
+                          error={error}
+                          onChange={onChange}
+                          options={genderOptions}
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="w-full sm:w-1/3 sm:pl-4">
+                    <Controller
+                      name="personalDetails.bloodGroup"
+                      control={control}
+                      rules={{
+                        required: "Blood Group is required",
+                        validate: (value) =>
+                          value !== "" || "Please select a valid blood group",
+                      }}
+                      render={({
+                        field: { value, onChange },
+                        fieldState: { error },
+                      }) => (
+                        <DropdownSelect
+                          label="Blood Group"
+                          mandatory={true}
+                          value={value}
+                          error={error}
+                          onChange={onChange}
+                          options={Object.values(BloodGroup)}
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="w-full sm:w-1/3">
+                    <label className="block text-sm font-medium mb-1 text-gray-600">
+                      Occupation *
+                    </label>
+                    <input
+                      type="text"
+                      autoComplete="off"
+                      placeholder="Occupation"
+                      {...register(`personalDetails.jobTitle`, {
+                        required: "Occupation is required",
+                      })}
+                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                        errors.personalDetails?.jobTitle
+                          ? "focus:outline-none border-red-500 bg-red-50"
+                          : ""
+                      }`}
+                    />
+                  </div>
+                  <div className="w-full sm:w-1/3 sm:pl-4">
+                    <Controller
+                      name="personalDetails.educationalQualification.educationLevel"
+                      control={control}
+                      rules={{
                         required: "Education level is required",
                         validate: (value) =>
-                          value !== "Select Education" ||
+                          value !== "" ||
                           "Please select a valid education level",
-                      }
-                    )}
-                    error={
-                      errors.user?.personal_details?.educational_qualification
-                        ?.education_level
-                    }
-                    options={educationLevelOptions}
-                    value={
-                      user.personal_details?.educational_qualification
-                        .education_level
-                    }
-                    onChange={(value) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          educational_qualification: { education_level: value },
-                        },
-                      })
-                    }
-                  />
-                </div>
-                <div className="w-full sm:w-1/3 sm:pl-4">
-                  <label className="block text-sm font-medium mb-1 text-gray-600">
-                    Specialization
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Specialization"
-                    value={
-                      user.personal_details?.educational_qualification
-                        .specialization
-                    }
-                    onChange={(e) =>
-                      setUser({
-                        ...user,
-                        personal_details: {
-                          ...user.personal_details,
-                          educational_qualification: {
-                            specialization: e.target.value,
-                          },
-                        },
-                      })
-                    }
-                    className="w-full p-2 border rounded mb-4 text-gray-600"
-                  />
+                      }}
+                      render={({
+                        field: { value, onChange },
+                        fieldState: { error },
+                      }) => (
+                        <DropdownSelect
+                          label="Educational Qualification"
+                          mandatory={true}
+                          value={value}
+                          error={error}
+                          onChange={onChange}
+                          options={educationLevelOptions}
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="w-full sm:w-1/3 sm:pl-4">
+                    <label className="block text-sm font-medium mb-1 text-gray-600">
+                      Specialization
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Specialization"
+                      className="w-full p-2 border rounded mb-4 text-gray-600"
+                      {...register(
+                        `personalDetails.educationalQualification.specialization`
+                      )}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-3">
-            <AddressCard
-              address={presentAddress}
-              addressType={AddressType.PresentAddress}
-              onEdit={({ operation, addressType }) =>
-                handleAddAddress({ operation, addressType })
-              }
-            />
-            <AddressCard
-              address={permanentAddress}
-              copyAddress={true}
-              addressType={AddressType.PermanentAddress}
-              onEdit={({ operation, addressType }) =>
-                handleAddAddress({ operation, addressType })
-              }
-              onCopyPresentAddress={handleCopyPresentAddressChange}
-            />
-            <AddressCard
-              address={officeAddress}
-              addressType={AddressType.OfficeAddress}
-              onEdit={({ operation, addressType }) =>
-                handleAddAddress({ operation, addressType })
-              }
-            />
+          <div className="p-4 border rounded-lg mt-6">
+            <div className="w-full text-left pb-2">
+              <Typography
+                variant="small"
+                color="blue-gray"
+                {...(typographyProps as React.ComponentProps<
+                  typeof Typography
+                >)}
+              >
+                Both Present Address and Permanent Address are mandatory{" "}
+              </Typography>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-3">
+              <AddressCard
+                address={presentAddress}
+                addressType={AddressType.PresentAddress}
+                onEdit={({ operation, addressType }) =>
+                  handleAddAddress({ operation, addressType })
+                }
+                error={!!errors.presentAddress}
+              />
+              <AddressCard
+                address={permanentAddress}
+                copyAddress={true}
+                addressType={AddressType.PermanentAddress}
+                onEdit={({ operation, addressType }) =>
+                  handleAddAddress({ operation, addressType })
+                }
+                onCopyPresentAddress={handleCopyPresentAddressChange}
+                error={!!errors.permanentAddress}
+              />
+              <AddressCard
+                address={officeAddress}
+                addressType={AddressType.OfficeAddress}
+                onEdit={({ operation, addressType }) =>
+                  handleAddAddress({ operation, addressType })
+                }
+                error={false}
+              />
+            </div>
           </div>
           <PopupContainer
             header={`${currentAddressChange.operation} ${currentAddressChange.addressType}`}
@@ -444,6 +461,7 @@ const UserProfileForm: React.FC = () => {
             <AddressForm
               addressType={currentAddressChange.addressType}
               addressInfo={
+                (presentAddress || permanentAddress || officeAddress) &&
                 currentAddressChange.addressType === AddressType.PresentAddress
                   ? presentAddress
                   : currentAddressChange.addressType ===
@@ -456,24 +474,6 @@ const UserProfileForm: React.FC = () => {
               }
             />
           </PopupContainer>
-          {/* Permanent Address Form */}
-          {/* <AddressForm
-          label="Permanent Address"
-          copyAddress={true}
-          addressInfo={permanentAddress}
-          onAddressChange={(value) =>
-            handleAddressChange(AddressType.PermanentAddress, value)
-          }
-          onCopyPresentAddress={handleCopyPresentAddressChange}
-        /> }
-        {/* Office Address Form */}
-          {/* <AddressForm
-          label="Office Address"
-          addressInfo={officeAddress}
-          onAddressChange={(value) =>
-            handleAddressChange(AddressType.OfficeAddress, value)
-          }
-        /> */}
           <div className="p-4 border rounded-lg mt-6">
             <div className="flex flex-wrap gap-4">
               <div className="flex-1  text-left">
@@ -487,18 +487,22 @@ const UserProfileForm: React.FC = () => {
                   color="blue"
                   onClick={handleAddMember}
                   {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
-                  className="cursor-pointer hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2 text-center"
+                  className="cursor-pointer hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                 >
                   <Plus className="inline size-4" /> Add Member
                 </Button>
               </div>
             </div>
-            <FamilyDetailsTable fmaily_members={familyDetails} />
+            <FamilyDetailsTable
+              onEditFamilyMember={handleEditFamilyMember}
+              onDeleteFamilyMember={handleDeleteFamilyMember}
+              familyMembers={familyDetails}
+            />
           </div>
 
           <div className="flex flex-col mt-6 gap-4 md:flex-row">
             <div className="flex-1 p-4 border rounded">
-              <GeoLocationDisplay geoLocation={user.geo_location} />
+              <GeoLocationDisplay geoLocation={memberDetails.geoLocation} />
             </div>
             <div className="flex-1 p-4 border rounded">
               <h2 className="text-lg font-semibold mb-4 text-gray-600">
@@ -508,41 +512,31 @@ const UserProfileForm: React.FC = () => {
                 Proposed by
               </label>
               <input
-                value={user.proposed_by}
-                {...register(`user.proposed_by`, {
-                  required: "Proposed by is required",
-                })}
-                onChange={(e) =>
-                  setUser({ ...user, proposed_by: e.target.value })
-                }
+                {...register(`proposedBy`)}
                 type="text"
                 className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                  errors.user?.proposed_by
+                  errors.proposedBy
                     ? "focus:outline-none border-red-500 bg-red-50"
                     : ""
                 }`}
               />
-              <DropdownSelect
-                label="Communication Preference"
-                options={communicationPreferenceOptions}
-                value={user.communication_preference}
-                {...register(`user.communication_preference`, {
-                  required: "Communication Preference is required",
-                  validate: (value) =>
-                    value !== "Select Your Preference" ||
-                    "Please select a valid preference",
-                })}
-                error={errors.user?.communication_preference}
-                onChange={(value) =>
-                  setUser({ ...user, communication_preference: value })
-                }
+              <Controller
+                name="communicationPreference"
+                control={control}
+                render={({ field: { value, onChange } }) => (
+                  <DropdownSelect
+                    label="Communication Preference"
+                    value={value}
+                    onChange={onChange}
+                    options={communicationPreferenceOptions}
+                  />
+                )}
               />
               <label className="text-gray-600 text-sm font-medium">
                 Comments
               </label>
               <input
-                value={user.comments}
-                onChange={(e) => setUser({ ...user, comments: e.target.value })}
+                {...register(`comments`)}
                 type="text"
                 className="p-2 border mb-3 rounded w-full text-gray-600"
               />
@@ -550,26 +544,24 @@ const UserProfileForm: React.FC = () => {
           </div>
         </div>
         <div className="p-4 w-full bg-gray-50 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center">
-  <Button
-    onClick={handleSaveMembersForm}
-    type="submit"
-    color="blue"
-    className="mb-4 sm:mb-0 order-1 sm:order-2 cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-    {...({} as React.ComponentProps<typeof Button>)}
-  >
-    Save Member Details
-  </Button>
-  <Button
-    type="button"
-    onClick={handleResetForm}
-    className="order-2 sm:order-1 cursor-pointer mr-0 sm:mr-2 text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-    {...({} as React.ComponentProps<typeof Button>)}
-  >
-    Reset
-  </Button>
-</div>
-
+          <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center">
+            <Button
+              type="submit"
+              color="blue"
+              className="mb-4 sm:mb-0 order-1 sm:order-2 cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              {...({} as React.ComponentProps<typeof Button>)}
+            >
+              Save Member Details
+            </Button>
+            <Button
+              type="button"
+              onClick={handleResetForm}
+              className="order-2 sm:order-1 cursor-pointer mr-0 sm:mr-2 text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              {...({} as React.ComponentProps<typeof Button>)}
+            >
+              Reset
+            </Button>
+          </div>
         </div>
       </form>
       <PopupContainer
@@ -577,8 +569,12 @@ const UserProfileForm: React.FC = () => {
         header="Add Family Member"
         onClose={handleClose}
       >
-        <FamilyDetailsForm onSaveDetails={handlSaveFamilyDetails} />
+        <FamilyDetailsForm
+          familyDetails={familyMemberToEdit}
+          onSaveDetails={handlSaveFamilyDetails}
+        />
       </PopupContainer>
+      <ToastContainer />
     </>
   );
 };

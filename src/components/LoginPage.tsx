@@ -23,7 +23,6 @@ function LoginPage() {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
     if (e.key === "Enter") {
-      console.log(`Pressed key is ${e.key}`);
       handleLoginClick();
     }
   };

@@ -19,13 +19,8 @@ import {
   Mail,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Members } from "../types/Users";
+import { Members, typographyProps } from "../types/Users";
 import { getAge, getMemberDataFromFirebase } from "../utils/Utility_Functions";
-
-const typographyProps = {
-  variant: "small",
-  color: "blue-gray",
-};
 
 const Dashboard = () => {
   const TABLE_HEAD = [
@@ -35,6 +30,7 @@ const Dashboard = () => {
     "Blood Group",
     "Occupation",
     "Area",
+    "Verified",
     "",
   ];
 
@@ -79,7 +75,7 @@ const Dashboard = () => {
                   className="p-4 overflow-auto px-0"
                   {...({} as React.ComponentProps<typeof CardBody>)}
                 >
-                  <table className="w-full min-w-max table-auto text-left border rounded border-collapse border border-gray-200">
+                  <table className="w-full min-w-max table-auto text-left rounded border-collapse border border-gray-200">
                     <thead className="bg-sky-50 text-gray-700">
                       <tr>
                         {TABLE_HEAD.map((head, index) => (
@@ -125,17 +121,11 @@ const Dashboard = () => {
                                       typeof Avatar
                                     >)}
                                     src={
-                                      member.personal_details.profile_photo_url
-                                        ? member.personal_details
-                                            .profile_photo_url
-                                        : `/assets/member_${
-                                            member.personal_details.gender ===
-                                            "Male"
-                                              ? "male"
-                                              : "female"
-                                          }.png`
+                                      member.personalDetails?.profilePhotoUrl
+                                        ? member.personalDetails.profilePhotoUrl
+                                        : `/assets/member_${member.personalDetails?.gender.toLocaleLowerCase()}.png`
                                     }
-                                    alt={member.personal_details.name}
+                                    alt={member.personalDetails?.name}
                                     size="sm"
                                     withBorder={true}
                                   />
@@ -148,7 +138,7 @@ const Dashboard = () => {
                                       color="blue-gray"
                                       className="font-normal"
                                     >
-                                      {member.personal_details.name}
+                                      {member.personalDetails?.name}
                                     </Typography>
                                     <Typography
                                       {...(typographyProps as React.ComponentProps<
@@ -159,9 +149,9 @@ const Dashboard = () => {
                                       className="font-normal opacity-70"
                                     >
                                       <Mail className="inline size-5 pr-2" />
-                                      {member.personal_details.email_id} |{" "}
+                                      {member.personalDetails?.emailId} |{" "}
                                       <Phone className="inline size-5 pr-2" />
-                                      {member.personal_details.mobile_number}
+                                      {member.personalDetails?.mobileNumber}
                                     </Typography>
                                   </div>
                                 </div>
@@ -175,7 +165,7 @@ const Dashboard = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {member.personal_details.gender}
+                                  {member.personalDetails?.gender}
                                 </Typography>
                               </td>
                               <td className={classes}>
@@ -189,7 +179,7 @@ const Dashboard = () => {
                                     className="font-normal"
                                   >
                                     {getAge(
-                                      member.personal_details.date_of_birth
+                                      member.personalDetails?.dateOfBirth
                                     )}{" "}
                                     Years
                                   </Typography>
@@ -201,7 +191,7 @@ const Dashboard = () => {
                                     color="blue-gray"
                                     className="font-normal opacity-70"
                                   >
-                                    {member.personal_details.date_of_birth}
+                                    {member.personalDetails?.dateOfBirth}
                                   </Typography>
                                 </div>
                               </td>
@@ -215,7 +205,7 @@ const Dashboard = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {member.personal_details.blood_group}
+                                  {member.personalDetails?.bloodGroup}
                                 </Typography>
                               </td>
 
@@ -228,7 +218,7 @@ const Dashboard = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {member.personal_details.job_title}
+                                  {member.personalDetails?.jobTitle}
                                 </Typography>
                               </td>
 
@@ -241,7 +231,20 @@ const Dashboard = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {member.area_code}
+                                  {member.presentAddress?.postOffice}
+                                </Typography>
+                              </td>
+
+                              <td className={classes}>
+                                <Typography
+                                  {...(typographyProps as React.ComponentProps<
+                                    typeof Typography
+                                  >)}
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {member.verified ? "Yes" : "No"}
                                 </Typography>
                               </td>
 

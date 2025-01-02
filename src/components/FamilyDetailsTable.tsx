@@ -1,6 +1,12 @@
 import React from "react";
-import { Card, Typography } from "@material-tailwind/react";
-import { FamilyDetails } from "../types/Users";
+import {
+  Card,
+  IconButton,
+  Tooltip,
+  Typography,
+} from "@material-tailwind/react";
+import { FamilyDetails, typographyProps } from "../types/Users";
+import { PencilIcon, Trash2 } from "lucide-react";
 
 const TABLE_HEADER = [
   "Name",
@@ -11,20 +17,20 @@ const TABLE_HEADER = [
   "Specialization",
   "Job Title",
   "Date of Birth",
+  "",
 ];
 
 interface FamilyDetailsTableProps {
-  fmaily_members: FamilyDetails[];
+  familyMembers: FamilyDetails[] | undefined;
+  onEditFamilyMember: (uuid: string) => void;
+  onDeleteFamilyMember: (uuid: string) => void;
 }
 
 const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
-  fmaily_members,
+  familyMembers,
+  onEditFamilyMember,
+  onDeleteFamilyMember,
 }) => {
-  const typographyProps = {
-    variant: "small",
-    color: "blue-gray",
-  };
-
   return (
     <Card
       className="h-full w-full noShadow"
@@ -54,16 +60,16 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {fmaily_members &&
-              fmaily_members.length > 0 &&
-              fmaily_members.map((member: FamilyDetails, index: number) => {
-                const isLast = index === fmaily_members.length - 1;
+            {familyMembers &&
+              familyMembers.length > 0 &&
+              familyMembers.map((member: FamilyDetails, index: number) => {
+                const isLast = index === familyMembers.length - 1;
                 const classes = isLast
                   ? "p-4"
                   : "p-4 border-b border-blue-gray-50";
 
                 return (
-                  <tr key={index}>
+                  <tr key={member.familyMemberId}>
                     <td className={classes}>
                       <Typography
                         variant="small"
@@ -73,7 +79,7 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                           typeof Typography
                         >)}
                       >
-                        {member.member_personal_details.name}
+                        {member.memberPersonalDetails.name}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -85,7 +91,7 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                           typeof Typography
                         >)}
                       >
-                        {member.member_personal_details.gender}
+                        {member.memberPersonalDetails.gender}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -109,7 +115,7 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                           typeof Typography
                         >)}
                       >
-                        {member.member_personal_details.blood_group}
+                        {member.memberPersonalDetails.bloodGroup}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -122,8 +128,8 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                         >)}
                       >
                         {
-                          member.member_personal_details
-                            .educational_qualification.education_level
+                          member.memberPersonalDetails.educationalQualification
+                            .educationLevel
                         }
                       </Typography>
                     </td>
@@ -137,8 +143,8 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                         >)}
                       >
                         {
-                          member.member_personal_details
-                            .educational_qualification.specialization
+                          member.memberPersonalDetails.educationalQualification
+                            .specialization
                         }
                       </Typography>
                     </td>
@@ -151,7 +157,7 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                           typeof Typography
                         >)}
                       >
-                        {member.member_personal_details.job_title}
+                        {member.memberPersonalDetails.jobTitle}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -163,8 +169,36 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                           typeof Typography
                         >)}
                       >
-                        {member.member_personal_details.date_of_birth}
+                        {member.memberPersonalDetails.dateOfBirth}
                       </Typography>
+                    </td>
+                    <td className={classes}>
+                      <Tooltip content="Edit User">
+                        <IconButton
+                          onClick={() => {
+                            onEditFamilyMember(member.familyMemberId);
+                          }}
+                          variant="text"
+                          {...({
+                            variant: "text",
+                          } as React.ComponentProps<typeof IconButton>)}
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip content="Delete User">
+                        <IconButton
+                          onClick={() => {
+                            onDeleteFamilyMember(member.familyMemberId);
+                          }}
+                          variant="text"
+                          {...({
+                            variant: "text",
+                          } as React.ComponentProps<typeof IconButton>)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </IconButton>
+                      </Tooltip>
                     </td>
                   </tr>
                 );

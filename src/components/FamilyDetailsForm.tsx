@@ -1,22 +1,14 @@
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  PersonalDetails,
-  FamilyDetails,
-  BloodGroup,
-  EducationalQualification,
-} from "../types/Users";
+import { FamilyDetails, BloodGroup } from "../types/Users";
 import DropdownSelect from "./common/DropdownSelect";
-import { Family_Details } from "../types/Users_Mock";
-import debounce from "lodash/debounce";
 import { Button } from "@material-tailwind/react";
 import {
   educationLevelOptions,
-  formatDate,
   genderOptions,
   relationshipOptions,
   setTodayDate,
 } from "../utils/Utility_Functions";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
 
 interface FamilyDetailsFormProps {
   familyDetails?: FamilyDetails;
@@ -30,214 +22,150 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
-  } = useForm<{ family: FamilyDetails }>({
+  } = useForm<FamilyDetails>({
     mode: "all",
-    defaultValues: {
-      family: Family_Details,
-    },
+    defaultValues: familyDetails,
   });
 
-  const [memberFamilyDetails, setMemberFamilyDetails] =
-    useState<FamilyDetails>(Family_Details);
-  const [today, setToday] = useState("");
-  const handleSaveFormClick = () => {
-    onSaveDetails(memberFamilyDetails);
-  };
+  const today = setTodayDate();
 
-  // Set today's date in YYYY-MM-DD format
-  useEffect(() => {
-    setToday(setTodayDate());
-  }, []);
-
-  const debouncedHandleChange = useCallback(
-    debounce(
-      (
-        field:
-          | keyof FamilyDetails
-          | keyof EducationalQualification
-          | keyof PersonalDetails,
-        value: any
-      ) => {
-        if (field === "relationship") {
-          setMemberFamilyDetails((prevState: FamilyDetails) => ({
-            ...prevState,
-            [field]: value,
-          }));
-        } else if (
-          field === "name" ||
-          field === "gender" ||
-          field === "blood_group" ||
-          field === "job_title" ||
-          field === "date_of_birth"
-        ) {
-          setMemberFamilyDetails((prevState: FamilyDetails) => ({
-            ...prevState,
-            member_personal_details: {
-              ...prevState.member_personal_details,
-              [field]: field === "date_of_birth" ? formatDate(value) : value,
-            },
-          }));
-        } else if (field === "education_level" || field === "specialization") {
-          setMemberFamilyDetails((prevState: FamilyDetails) => ({
-            ...prevState,
-            member_personal_details: {
-              ...prevState.member_personal_details,
-              educational_qualification: {
-                ...prevState.member_personal_details.educational_qualification,
-                [field]: value,
-              },
-            },
-          }));
-        }
-      },
-      500
-    ),
-    []
-  );
-  const handleChange = (
-    field:
-      | keyof FamilyDetails
-      | keyof EducationalQualification
-      | keyof PersonalDetails,
-    value: any
-  ) => {
-    debouncedHandleChange(field, value);
-  };
-
-  const onSubmitHandler: SubmitHandler<{ family: FamilyDetails }> = (
-    _data,
-    event
-  ) => {
-    event?.stopPropagation();
-    handleSaveFormClick();
+  const onSubmitHandler: SubmitHandler<FamilyDetails> = (data) => {
+    if (!data.familyMemberId) {
+      data.familyMemberId = uuidv4();
+    }
+    onSaveDetails(data);
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmitHandler)}  autoComplete="off">
+    <form onSubmit={handleSubmit(onSubmitHandler)} autoComplete="off">
       <div className="w-full">
         <label
-          htmlFor="family.member_personal_details.name"
+          htmlFor=".memberPersonalDetails.name"
           className="text-sm font-medium text-gray-600"
         >
           Name *
         </label>
         <input
           type="text"
-          {...register(`family.member_personal_details.name`, {
+          {...register(`memberPersonalDetails.name`, {
             required: "Name is required",
           })}
           placeholder="Name"
-          value={familyDetails?.member_personal_details?.name}
-          onChange={(e) => handleChange("name", e.target.value)}
           className={`w-full p-2 mb-4 border rounded text-gray-600 ${
-            errors.family?.member_personal_details?.name
+            errors.memberPersonalDetails?.name
               ? "focus:outline-none border-red-500 bg-red-50"
               : ""
           }`}
         />
-        <DropdownSelect
-          label="Gender *"
-          {...register(`family.member_personal_details.gender`, {
+        <Controller
+          name="memberPersonalDetails.gender"
+          control={control}
+          rules={{
             required: "Gender is required",
-            validate: (value) =>
-              value !== "Select Gender" || "Please select a valid gender",
-          })}
-          error={errors.family?.member_personal_details?.gender}
-          options={genderOptions}
-          value={familyDetails?.member_personal_details?.gender}
-          onChange={(value) => handleChange("gender", value)}
+            validate: (value) => value !== "" || "Please select a valid gender",
+          }}
+          render={({ field: { value, onChange }, fieldState: { error } }) => (
+            <DropdownSelect
+              label="Gender"
+              mandatory={true}
+              value={value}
+              error={error}
+              onChange={onChange}
+              options={genderOptions}
+            />
+          )}
         />
-        <DropdownSelect
-          label="Relationship *"
-          {...register(`family.relationship`, {
+        <Controller
+          name="relationship"
+          control={control}
+          rules={{
             required: "Relationship is required",
             validate: (value) =>
-              value !== "Select Relationship" ||
-              "Please select a valid relationship",
-          })}
-          error={errors.family?.relationship}
-          options={relationshipOptions}
-          value={familyDetails?.relationship}
-          onChange={(value) => handleChange("relationship", value)}
+              value !== "" || "Please select a valid relationship",
+          }}
+          render={({ field: { value, onChange }, fieldState: { error } }) => (
+            <DropdownSelect
+              label="Relationship"
+              mandatory={true}
+              value={value}
+              error={error}
+              onChange={onChange}
+              options={relationshipOptions}
+            />
+          )}
         />
-        <DropdownSelect
-          label="Blood Group"
-          {...register(`family.member_personal_details.blood_group`, {
+
+        <Controller
+          name="memberPersonalDetails.bloodGroup"
+          control={control}
+          rules={{
             required: "Blood Group is required",
             validate: (value) =>
-              value !== "Select Blood Group" ||
-              "Please select a valid blood group",
-          })}
-          error={errors.family?.member_personal_details?.blood_group}
-          options={Object.values(BloodGroup)}
-          value={familyDetails?.member_personal_details?.blood_group}
-          onChange={(value) => handleChange("blood_group", value)}
-        />
-        {/* Additional fields for family details */}
-        <DropdownSelect
-          label="Educational Qualification  *"
-          {...register(
-            `family.member_personal_details.educational_qualification.education_level`,
-            {
-              required: "Education level is required",
-              validate: (value) =>
-                value !== "Select Education" ||
-                "Please select a valid education level",
-            }
+              value !== "" || "Please select a valid blood group",
+          }}
+          render={({ field: { value, onChange }, fieldState: { error } }) => (
+            <DropdownSelect
+              label="Blood Group"
+              mandatory={true}
+              value={value}
+              error={error}
+              onChange={onChange}
+              options={Object.values(BloodGroup)}
+            />
           )}
-          error={
-            errors.family?.member_personal_details?.educational_qualification
-              ?.education_level
-          }
-          options={educationLevelOptions}
-          value={
-            familyDetails?.member_personal_details?.educational_qualification
-              .education_level
-          }
-          onChange={(value) => handleChange("education_level", value)}
         />
-        <label
-          htmlFor="family.member_personal_details.educational_qualification
-                .specialization"
-          className="text-sm font-medium text-gray-600"
-        >
+        <Controller
+          name="memberPersonalDetails.educationalQualification.educationLevel"
+          control={control}
+          rules={{
+            required: "Education level is required",
+            validate: (value) =>
+              value !== "" || "Please select a valid education level",
+          }}
+          render={({ field: { value, onChange }, fieldState: { error } }) => (
+            <DropdownSelect
+              label="Educational Qualification"
+              mandatory={true}
+              value={value}
+              error={error}
+              onChange={onChange}
+              options={educationLevelOptions}
+            />
+          )}
+        />
+
+        <label className="text-sm font-medium text-gray-600">
           Specialization
+          <input
+            type="text"
+            placeholder="Specialization"
+            {...register(
+              "memberPersonalDetails.educationalQualification.specialization"
+            )}
+            className="w-full p-2 mb-4 border rounded text-gray-600"
+          />
         </label>
-        <input
-          type="text"
-          placeholder="Specialization"
-          value={
-            familyDetails?.member_personal_details?.educational_qualification
-              .specialization
-          }
-          onChange={(e) => handleChange("specialization", e.target.value)}
-          className="w-full p-2 mb-4 border rounded text-gray-600"
-        />
-        <label
-          htmlFor="family.member_personal_details.job_title"
-          className="w-full text-sm font-medium text-gray-600"
-        >
+        <label className="w-full text-sm font-medium text-gray-600">
           Occupation
+          <input
+            type="text"
+            placeholder="Occupation"
+            {...register("memberPersonalDetails.jobTitle")}
+            className="w-full p-2 border rounded text-gray-600"
+          />
         </label>
-        <input
-          type="text"
-          placeholder="Occupation"
-          value={familyDetails?.member_personal_details?.job_title}
-          onChange={(e) => handleChange("job_title", e.target.value)}
-          className="w-full p-2 border rounded text-gray-600"
-        />
         <label className="block text-sm font-medium mt-6 mb-1 text-gray-600">
           Date of Birth
+          <input
+            type="date"
+            max={today}
+            placeholder="Date of Birth"
+            {...register("memberPersonalDetails.dateOfBirth")}
+            className="w-full p-2 border rounded text-gray-600"
+          />
         </label>
-        <input
-          type="date"
-          max={today}
-          placeholder="Date of Birth"
-          value={familyDetails?.member_personal_details?.date_of_birth}
-          onChange={(e) => handleChange("date_of_birth", e.target.value)}
-          className="w-full p-2 border rounded text-gray-600"
-        />
         <Button
           type="submit"
           color="blue"
