@@ -19,13 +19,8 @@ import {
   Mail,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Members } from "../types/Users";
+import { Members, typographyProps } from "../types/Users";
 import { getAge, getMemberDataFromFirebase } from "../utils/Utility_Functions";
-
-const typographyProps = {
-  variant: "small",
-  color: "blue-gray",
-};
 
 const Dashboard = () => {
   const TABLE_HEAD = [
@@ -235,7 +230,7 @@ const Dashboard = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {member.areaCode}
+                                  {member.presentAddress?.postOffice}
                                 </Typography>
                               </td>
 

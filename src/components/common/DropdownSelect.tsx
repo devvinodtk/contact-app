@@ -15,13 +15,21 @@ const DropdownSelect = forwardRef<
   DropdownSelectProps<string>
 >(
   <T extends string>(
-    { label, options, value, onChange, error, ...rest }: DropdownSelectProps<T>,
+    {
+      label,
+      options,
+      value,
+      onChange,
+      mandatory,
+      error,
+      ...rest
+    }: DropdownSelectProps<T>,
     ref: any
   ) => {
     return (
       <div className="w-full rounded mb-4 text-gray-600">
         <label className="block text-sm font-medium mb-1 text-gray-600">
-          {label} {rest.mandatory && <span>*</span>}
+          {label} {!!mandatory && <span>*</span>}
         </label>
         <select
           {...rest}

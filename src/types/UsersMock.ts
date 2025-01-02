@@ -52,7 +52,7 @@ export const memberDetails: Members = {
   personalDetails: personalDetails,
   presentAddress: memberAddress,
   permanentAddress: memberAddress,
-  officeAddress: memberAddress,
+  officeAddress: null,
   familyDetails: [familyDetails],
   proposedBy: '',
   secondedBy: '',

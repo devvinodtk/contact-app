@@ -69,9 +69,9 @@ export type PersonalDetails = {
 export type Members = {
   personalDetails: PersonalDetails;
   jobTitle?: string;
-  presentAddress: Address | null;
-  permanentAddress: Address | null;
-  officeAddress: Address | null;
+  presentAddress: Address;
+  permanentAddress: Address;
+  officeAddress?: Address | null;
   familyDetails?: FamilyDetails[];
   proposedBy: string;
   secondedBy: string;
@@ -122,4 +122,9 @@ export type GeoLocation = {
 export type AddressChangeType = {
   addressType: AddressType;
   operation: UserOps;
+};
+
+export const typographyProps = {
+  variant: 'small',
+  color: 'blue-gray',
 };
