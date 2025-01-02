@@ -48,9 +48,10 @@ const UserProfileForm: React.FC = () => {
     defaultValues: memberDetails,
   });
   const [open, setOpen] = useState(false); // Maintains open/close state of Family Details Popup
-  const [familyDetails, setFamilyDetails] = useState<
-    FamilyDetails[] | undefined
-  >(memberDetails.familyDetails);
+  const [familyDetails, setFamilyDetails] = useState<FamilyDetails[]>(
+    memberDetails.familyDetails
+  );
+  const [familyMemberToEdit, setFamilyMemberToEdit] = useState<FamilyDetails>();
   const [presentAddress, setPresentAddress] = useState<Address>(
     memberDetails.presentAddress
   );
@@ -79,6 +80,8 @@ const UserProfileForm: React.FC = () => {
     setPresentAddress(memberAddress);
     setPermanentAddress(memberAddress);
     setOfficeAddress(null);
+    setFamilyDetails([]);
+    setFamilyMemberToEdit(undefined);
   };
 
   const handleCopyPresentAddressChange = (value: boolean) => {
@@ -91,10 +94,19 @@ const UserProfileForm: React.FC = () => {
   };
 
   const handlSaveFamilyDetails = (family_details: FamilyDetails) => {
-    setFamilyDetails((prevFamilyMembers) => [
-      ...(prevFamilyMembers ?? []),
-      family_details,
-    ]);
+    setFamilyDetails((prevDetails) => {
+      const updateRecordIndx = prevDetails.findIndex(
+        (detail) => detail.familyMemberId === family_details.familyMemberId
+      );
+      if (updateRecordIndx > -1) {
+        return prevDetails.map((detail, index) =>
+          index === updateRecordIndx ? family_details : detail
+        );
+      } else {
+        return [...prevDetails, family_details];
+      }
+    });
+    setFamilyMemberToEdit(undefined);
     setOpen(false);
   };
 
@@ -174,6 +186,25 @@ const UserProfileForm: React.FC = () => {
           });
         });
     }
+  };
+
+  const handleEditFamilyMember = (familyMemberId: string) => {
+    const memberToEdit = familyDetails.find((member) => {
+      return member.familyMemberId === familyMemberId;
+    });
+
+    if (memberToEdit) {
+      setFamilyMemberToEdit(memberToEdit);
+      setOpen(true);
+    }
+  };
+
+  const handleDeleteFamilyMember = (familyMemberId: string) => {
+    const updatedFamilyDetails = familyDetails.filter((member) => {
+      return member.familyMemberId !== familyMemberId;
+    });
+    setFamilyDetails(updatedFamilyDetails);
+    setFamilyMemberToEdit(undefined);
   };
 
   return (
@@ -462,7 +493,11 @@ const UserProfileForm: React.FC = () => {
                 </Button>
               </div>
             </div>
-            <FamilyDetailsTable familyMembers={familyDetails} />
+            <FamilyDetailsTable
+              onEditFamilyMember={handleEditFamilyMember}
+              onDeleteFamilyMember={handleDeleteFamilyMember}
+              familyMembers={familyDetails}
+            />
           </div>
 
           <div className="flex flex-col mt-6 gap-4 md:flex-row">
@@ -534,7 +569,10 @@ const UserProfileForm: React.FC = () => {
         header="Add Family Member"
         onClose={handleClose}
       >
-        <FamilyDetailsForm onSaveDetails={handlSaveFamilyDetails} />
+        <FamilyDetailsForm
+          familyDetails={familyMemberToEdit}
+          onSaveDetails={handlSaveFamilyDetails}
+        />
       </PopupContainer>
       <ToastContainer />
     </>

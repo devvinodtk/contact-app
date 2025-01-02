@@ -44,6 +44,7 @@ export const personalDetails: PersonalDetails = {
 };
 
 export const familyDetails: FamilyDetails = {
+  familyMemberId: '',
   memberPersonalDetails: personalDetails,
   relationship: '',
 };
@@ -53,7 +54,7 @@ export const memberDetails: Members = {
   presentAddress: memberAddress,
   permanentAddress: memberAddress,
   officeAddress: null,
-  familyDetails: [familyDetails],
+  familyDetails: [],
   proposedBy: '',
   secondedBy: '',
   communicationPreference: '',

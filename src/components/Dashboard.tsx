@@ -30,6 +30,7 @@ const Dashboard = () => {
     "Blood Group",
     "Occupation",
     "Area",
+    "Verified",
     "",
   ];
 
@@ -231,6 +232,19 @@ const Dashboard = () => {
                                   className="font-normal"
                                 >
                                   {member.presentAddress?.postOffice}
+                                </Typography>
+                              </td>
+
+                              <td className={classes}>
+                                <Typography
+                                  {...(typographyProps as React.ComponentProps<
+                                    typeof Typography
+                                  >)}
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {member.verified ? "Yes" : "No"}
                                 </Typography>
                               </td>
 

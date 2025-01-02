@@ -8,6 +8,7 @@ import {
   setTodayDate,
 } from "../utils/Utility_Functions";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
 
 interface FamilyDetailsFormProps {
   familyDetails?: FamilyDetails;
@@ -31,6 +32,9 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
   const today = setTodayDate();
 
   const onSubmitHandler: SubmitHandler<FamilyDetails> = (data) => {
+    if (!data.familyMemberId) {
+      data.familyMemberId = uuidv4();
+    }
     onSaveDetails(data);
   };
 

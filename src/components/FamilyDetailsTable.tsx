@@ -1,6 +1,12 @@
 import React from "react";
-import { Card, Typography } from "@material-tailwind/react";
+import {
+  Card,
+  IconButton,
+  Tooltip,
+  Typography,
+} from "@material-tailwind/react";
 import { FamilyDetails, typographyProps } from "../types/Users";
+import { PencilIcon, Trash2 } from "lucide-react";
 
 const TABLE_HEADER = [
   "Name",
@@ -11,14 +17,19 @@ const TABLE_HEADER = [
   "Specialization",
   "Job Title",
   "Date of Birth",
+  "",
 ];
 
 interface FamilyDetailsTableProps {
   familyMembers: FamilyDetails[] | undefined;
+  onEditFamilyMember: (uuid: string) => void;
+  onDeleteFamilyMember: (uuid: string) => void;
 }
 
 const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
   familyMembers,
+  onEditFamilyMember,
+  onDeleteFamilyMember,
 }) => {
   return (
     <Card
@@ -58,7 +69,7 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                   : "p-4 border-b border-blue-gray-50";
 
                 return (
-                  <tr key={index}>
+                  <tr key={member.familyMemberId}>
                     <td className={classes}>
                       <Typography
                         variant="small"
@@ -160,6 +171,34 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                       >
                         {member.memberPersonalDetails.dateOfBirth}
                       </Typography>
+                    </td>
+                    <td className={classes}>
+                      <Tooltip content="Edit User">
+                        <IconButton
+                          onClick={() => {
+                            onEditFamilyMember(member.familyMemberId);
+                          }}
+                          variant="text"
+                          {...({
+                            variant: "text",
+                          } as React.ComponentProps<typeof IconButton>)}
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip content="Delete User">
+                        <IconButton
+                          onClick={() => {
+                            onDeleteFamilyMember(member.familyMemberId);
+                          }}
+                          variant="text"
+                          {...({
+                            variant: "text",
+                          } as React.ComponentProps<typeof IconButton>)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </IconButton>
+                      </Tooltip>
                     </td>
                   </tr>
                 );

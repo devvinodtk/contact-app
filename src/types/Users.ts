@@ -72,7 +72,7 @@ export type Members = {
   presentAddress: Address;
   permanentAddress: Address;
   officeAddress?: Address | null;
-  familyDetails?: FamilyDetails[];
+  familyDetails: FamilyDetails[];
   proposedBy: string;
   secondedBy: string;
   communicationPreference: CommunicationPreference;
@@ -93,6 +93,7 @@ export type PostalInfo = {
 };
 
 export type FamilyDetails = {
+  familyMemberId: string,
   memberPersonalDetails: PersonalDetails;
   relationship: RelationshipType;
 };
