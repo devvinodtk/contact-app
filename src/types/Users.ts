@@ -11,8 +11,8 @@ export enum BloodGroup {
 }
 
 export enum AddressType {
-  PresentAddress = 'Present Address',
-  PermanentAddress = 'Permanent Address',
+  PresentAddress = 'Present Address*',
+  PermanentAddress = 'Permanent Address*',
   OfficeAddress = 'Office Address',
 }
 
