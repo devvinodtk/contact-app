@@ -110,7 +110,7 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                       <Typography
                         variant="small"
                         color="blue-gray"
-                        className="font-medium"
+                        className="font-normal"
                         {...(typographyProps as React.ComponentProps<
                           typeof Typography
                         >)}
@@ -152,7 +152,7 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                       <Typography
                         variant="small"
                         color="blue-gray"
-                        className="font-medium"
+                        className="font-normal"
                         {...(typographyProps as React.ComponentProps<
                           typeof Typography
                         >)}
@@ -164,7 +164,7 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                       <Typography
                         variant="small"
                         color="blue-gray"
-                        className="font-medium"
+                        className="font-normal"
                         {...(typographyProps as React.ComponentProps<
                           typeof Typography
                         >)}

@@ -417,11 +417,12 @@ const UserProfileForm: React.FC = () => {
               <Typography
                 variant="small"
                 color="blue-gray"
+                className="text-gray-600"
                 {...(typographyProps as React.ComponentProps<
                   typeof Typography
                 >)}
               >
-                Both Present Address and Permanent Address are mandatory{" "}
+                * Present and Permanent Address are mandatory{" "}
               </Typography>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-3">

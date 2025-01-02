@@ -17,3 +17,10 @@ input[type="number"] {
 .noShadow{
   box-shadow: none !important;
 }
+
+select {
+  background-color: white;
+  appearance: none; /* Removes default styling */
+  -webkit-appearance: none; /* Removes default styling in Safari/Chrome */
+  -moz-appearance: none; /* Removes default styling in Firefox */
+}
