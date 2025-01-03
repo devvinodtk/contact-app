@@ -52,7 +52,7 @@ const AddressCard = ({
   return (
     <div className={style}>
       <div className="flex">
-        <div className="text-left mr-2">
+        <div className="text-left">
           <h2 className="text-lg font-semibold  text-gray-600">
             {addressType}
           </h2>
@@ -88,7 +88,7 @@ const AddressCard = ({
           </Button>
         </div>
       </div>
-      <div className="block w-full text-gray-600">
+      <div className="block w-full mt-2 text-gray-600">
         {address?.flatNumberName && (
           <>
             <p className="block w-full">{address?.flatNumberName},</p>
@@ -98,7 +98,11 @@ const AddressCard = ({
             </p>
             <p className="block">
               {" "}
-              {address?.postOffice}, {address?.city}, {address?.state} -{" "}
+              {address?.postOffice}, {address?.city} (D)
+            </p>
+            <p className="block">
+              {" "}
+              {address?.state} -{" "}
               {address?.pincode}
             </p>
             <p className="block"> {address.contactNumber}</p>

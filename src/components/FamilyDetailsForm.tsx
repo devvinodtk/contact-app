@@ -144,7 +144,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
             {...register(
               "memberPersonalDetails.educationalQualification.specialization"
             )}
-            className="w-full p-2 mb-4 border rounded text-gray-600"
+            className="w-full p-2 border rounded text-gray-600"
           />
         </label>
         <label className="w-full text-sm font-medium text-gray-600">
