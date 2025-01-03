@@ -20,7 +20,11 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Members, typographyProps } from "../types/Users";
-import { getAge, getMemberDataFromFirebase } from "../utils/Utility_Functions";
+import {
+  formatDate,
+  getAge,
+  getMemberDataFromFirebase,
+} from "../utils/Utility_Functions";
 
 const Dashboard = () => {
   const TABLE_HEAD = [
@@ -191,7 +195,9 @@ const Dashboard = () => {
                                     color="blue-gray"
                                     className="font-normal opacity-70"
                                   >
-                                    {member.personalDetails?.dateOfBirth}
+                                    {formatDate(
+                                      member.personalDetails?.dateOfBirth
+                                    )}
                                   </Typography>
                                 </div>
                               </td>

@@ -7,6 +7,7 @@ import {
 } from "@material-tailwind/react";
 import { FamilyDetails, typographyProps } from "../types/Users";
 import { PencilIcon, Trash2 } from "lucide-react";
+import { formatDate } from "../utils/Utility_Functions";
 
 const TABLE_HEADER = [
   "Name",
@@ -169,7 +170,7 @@ const FamilyDetailsTable: React.FC<FamilyDetailsTableProps> = ({
                           typeof Typography
                         >)}
                       >
-                        {member.memberPersonalDetails.dateOfBirth}
+                        {formatDate(member.memberPersonalDetails.dateOfBirth)}
                       </Typography>
                     </td>
                     <td className={classes}>

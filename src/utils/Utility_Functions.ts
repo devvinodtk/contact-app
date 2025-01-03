@@ -2,6 +2,7 @@ import { CommunicationPreference, EducationLevel, Gender, Members, RelationshipT
 import { db, push, ref, get, query, set, orderByChild, equalTo } from '../firebase/firebase';
 
 export function formatDate(inputDate: string) {
+  if(!inputDate) return '';
   const [year, month, date] = inputDate.split('-');
   return `${date}/${month}/${year}`;
 }

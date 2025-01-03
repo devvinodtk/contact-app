@@ -102,10 +102,9 @@ const AddressCard = ({
             </p>
             <p className="block">
               {" "}
-              {address?.state} -{" "}
-              {address?.pincode}
+              {address?.state} - {address?.pincode}
             </p>
-            <p className="block"> {address.contactNumber}</p>
+            <p className="block"> {address?.contactNumber}</p>
           </>
         )}
       </div>

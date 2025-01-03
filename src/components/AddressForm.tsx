@@ -172,6 +172,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
       <label className="text-sm font-medium text-gray-600">
         Land Phone
         <input
+          {...register("contactNumber")}
           type="text"
           placeholder="Land Phone"
           className="p-2 border mb-4 rounded w-full text-gray-600"
