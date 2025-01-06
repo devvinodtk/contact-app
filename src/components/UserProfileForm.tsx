@@ -7,6 +7,8 @@ import {
   FamilyDetails,
   AddressChangeType,
   typographyProps,
+  UserOps,
+  toastOptions,
 } from "../types/Users";
 
 import AddressForm from "./AddressForm";
@@ -17,23 +19,36 @@ import ProfilePicUploader from "./common/ProfilePicUploader";
 import PopupContainer from "./common/PopupContainer";
 import FamilyDetailsTable from "./FamilyDetailsTable";
 import { memberAddress, memberDetails } from "../types/UsersMock";
-import { useDispatch } from "react-redux";
-import { addMember } from "../store/MembersSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addMember,
+  selectMemberById,
+  updateMember,
+} from "../store/MembersSlice";
 import {
   communicationPreferenceOptions,
   educationLevelOptions,
   genderOptions,
   saveMemberDataToFiresbase,
   setTodayDate,
+  updateMemberToFiresbase,
 } from "../utils/Utility_Functions";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { Button, Typography } from "@material-tailwind/react";
 import { Plus } from "lucide-react";
 import FamilyDetailsForm from "./FamilyDetailsForm";
 import AddressCard from "./common/AddressCard";
-import { Slide, toast, ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import { v4 as uuidv4 } from "uuid";
+import { useParams } from "react-router-dom";
+import { RootState } from "../store/store";
 
-const UserProfileForm: React.FC = () => {
+interface UserProfileFormProps {
+  registeredMember?: Members;
+}
+const UserProfileForm: React.FC = ({
+  registeredMember,
+}: UserProfileFormProps) => {
   const {
     register,
     handleSubmit,
@@ -45,8 +60,12 @@ const UserProfileForm: React.FC = () => {
     formState: { errors, isValid },
   } = useForm<Members>({
     mode: "onSubmit",
-    defaultValues: memberDetails,
+    defaultValues: registeredMember ?? memberDetails,
   });
+  const { memberid } = useParams();
+  const member = useSelector((state: RootState) =>
+    selectMemberById(memberid)(state)
+  );
   const [open, setOpen] = useState(false); // Maintains open/close state of Family Details Popup
   const [familyDetails, setFamilyDetails] = useState<FamilyDetails[]>(
     memberDetails.familyDetails
@@ -127,6 +146,16 @@ const UserProfileForm: React.FC = () => {
     setToday(setTodayDate());
   }, []);
 
+  useEffect(() => {
+    if (memberid && member) {
+      reset(member);
+      setPresentAddress(member.presentAddress);
+      setPermanentAddress(member.permanentAddress);
+      setOfficeAddress(member.officeAddress);
+      setFamilyDetails(member.familyDetails);
+    }
+  }, [member, memberid]);
+
   const onHandleSaveMembersForm: SubmitHandler<Members> = (data) => {
     clearErrors();
     let error = false;
@@ -148,44 +177,46 @@ const UserProfileForm: React.FC = () => {
     if (error) return;
 
     if (isValid) {
+      const ops: UserOps = data.memberId ? UserOps.Edit : UserOps.Add;
       const userObj = {
         ...data,
+        verified: ops === UserOps.Edit ? true : false,
+        memberId: data.memberId ?? uuidv4(),
         presentAddress: presentAddress,
         permanentAddress: permanentAddress,
-        officeAddress: officeAddress,
+        officeAddress: officeAddress ?? null,
         familyDetails: familyDetails,
       };
-
-      saveMemberDataToFiresbase(userObj)
-        .then(() => {
-          toast.success("Member details saved successfully", {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-            transition: Slide,
-          });
-          dispatch(addMember(userObj));
-          handleResetForm();
-        })
-        .catch((error) => {
-          toast.error(error.message, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-            transition: Slide,
-          });
-        });
+      if (ops === UserOps.Add) {
+        addNewMemberDataToFiresbase(userObj);
+      } else if (ops === UserOps.Edit) {
+        updateMemberDataToFiresbase(userObj);
+      }
     }
+  };
+
+  const updateMemberDataToFiresbase = (userObj: Members) => {
+    updateMemberToFiresbase(userObj)
+      .then(() => {
+        toast.success("Member details updated successfully", toastOptions);
+        dispatch(updateMember(userObj));
+        handleResetForm();
+      })
+      .catch((error) => {
+        toast.error(error.message, toastOptions);
+      });
+  };
+
+  const addNewMemberDataToFiresbase = (userObj: Members) => {
+    saveMemberDataToFiresbase(userObj)
+      .then(() => {
+        toast.success("Member details saved successfully", toastOptions);
+        dispatch(addMember(userObj));
+        handleResetForm();
+      })
+      .catch((error) => {
+        toast.error(error.message, toastOptions);
+      });
   };
 
   const handleEditFamilyMember = (familyMemberId: string) => {
@@ -454,27 +485,6 @@ const UserProfileForm: React.FC = () => {
               />
             </div>
           </div>
-          <PopupContainer
-            header={`${currentAddressChange.operation} ${currentAddressChange.addressType}`}
-            open={openAddressDialog}
-            onClose={handleCloseAddress}
-          >
-            <AddressForm
-              addressType={currentAddressChange.addressType}
-              addressInfo={
-                (presentAddress || permanentAddress || officeAddress) &&
-                currentAddressChange.addressType === AddressType.PresentAddress
-                  ? presentAddress
-                  : currentAddressChange.addressType ===
-                    AddressType.PermanentAddress
-                  ? permanentAddress
-                  : officeAddress
-              }
-              onAddressChange={(addressType, value) =>
-                handleAddressChange(addressType, value)
-              }
-            />
-          </PopupContainer>
           <div className="p-4 border rounded-lg mt-6">
             <div className="flex flex-wrap gap-4">
               <div className="flex-1  text-left">
@@ -565,6 +575,27 @@ const UserProfileForm: React.FC = () => {
           </div>
         </div>
       </form>
+      <PopupContainer
+        header={`${currentAddressChange.operation} ${currentAddressChange.addressType}`}
+        open={openAddressDialog}
+        onClose={handleCloseAddress}
+      >
+        <AddressForm
+          addressType={currentAddressChange.addressType}
+          addressInfo={
+            (presentAddress || permanentAddress || officeAddress) &&
+            currentAddressChange.addressType === AddressType.PresentAddress
+              ? presentAddress
+              : currentAddressChange.addressType ===
+                AddressType.PermanentAddress
+              ? permanentAddress
+              : officeAddress
+          }
+          onAddressChange={(addressType, value) =>
+            handleAddressChange(addressType, value)
+          }
+        />
+      </PopupContainer>
       <PopupContainer
         open={open}
         header="Add Family Member"

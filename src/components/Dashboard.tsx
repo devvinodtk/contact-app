@@ -7,6 +7,7 @@ import {
   Input,
   Tooltip,
   Typography,
+  Badge,
 } from "@material-tailwind/react";
 import Header from "./common/Header";
 import {
@@ -18,13 +19,12 @@ import {
   Trash2,
   Mail,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Members, typographyProps } from "../types/Users";
-import {
-  formatDate,
-  getAge,
-  getMemberDataFromFirebase,
-} from "../utils/Utility_Functions";
+import { useEffect } from "react";
+import { typographyProps } from "../types/Users";
+import { fetchMembers, formatDate, getAge } from "../utils/Utility_Functions";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../store/store";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const TABLE_HEAD = [
@@ -38,15 +38,20 @@ const Dashboard = () => {
     "",
   ];
 
-  const [members, setMembers] = useState<Members[]>([]);
+  const dispatch = useDispatch<AppDispatch>();
+  const { members } = useSelector((state: RootState) => state.members);
+  const navigate = useNavigate();
   useEffect(() => {
-    const getMembers = async () => {
-      const existingMembers: Members[] = await getMemberDataFromFirebase();
-      setMembers(existingMembers);
-    };
+    dispatch(fetchMembers());
+  }, [dispatch]);
 
-    getMembers();
-  }, []);
+  const onEditMember = (memberId: string) => {
+    navigate(`/users/${memberId}`);
+  };
+
+  const onDeleteMember = (memberId: string) => {
+    console.log(memberId);
+  };
 
   return (
     <>
@@ -120,19 +125,25 @@ const Dashboard = () => {
                             <tr key={index} className="hover:bg-sky-50">
                               <td className={classes}>
                                 <div className="flex items-center gap-3">
-                                  <Avatar
-                                    {...({} as React.ComponentProps<
-                                      typeof Avatar
-                                    >)}
-                                    src={
-                                      member.personalDetails?.profilePhotoUrl
-                                        ? member.personalDetails.profilePhotoUrl
-                                        : `/assets/member_${member.personalDetails?.gender.toLocaleLowerCase()}.png`
-                                    }
-                                    alt={member.personalDetails?.name}
-                                    size="sm"
-                                    withBorder={true}
-                                  />
+                                  <Badge
+                                    overlap="circular"
+                                    color={member.verified ? "green" : "red"}
+                                  >
+                                    <Avatar
+                                      {...({} as React.ComponentProps<
+                                        typeof Avatar
+                                      >)}
+                                      src={
+                                        member.personalDetails?.profilePhotoUrl
+                                          ? member.personalDetails
+                                              .profilePhotoUrl
+                                          : `/assets/member_${member.personalDetails?.gender.toLocaleLowerCase()}.png`
+                                      }
+                                      alt={member.personalDetails?.name}
+                                      size="sm"
+                                      withBorder={true}
+                                    />
+                                  </Badge>
                                   <div className="flex flex-col">
                                     <Typography
                                       {...(typographyProps as React.ComponentProps<
@@ -257,6 +268,9 @@ const Dashboard = () => {
                               <td className={classes}>
                                 <Tooltip content="Edit User">
                                   <IconButton
+                                    onClick={() => {
+                                      onEditMember(member.memberId);
+                                    }}
                                     variant="text"
                                     {...({
                                       variant: "text",
@@ -282,6 +296,9 @@ const Dashboard = () => {
                                 <Tooltip content="Delete User">
                                   <IconButton
                                     variant="text"
+                                    onClick={() => {
+                                      onDeleteMember(member.memberId);
+                                    }}
                                     {...({
                                       variant: "text",
                                     } as React.ComponentProps<

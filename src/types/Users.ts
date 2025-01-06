@@ -1,3 +1,5 @@
+import { ToastOptions, Slide } from "react-toastify";
+
 export enum BloodGroup {
   SelectBloodGroup = '',
   APositive = 'A+',
@@ -67,6 +69,7 @@ export type PersonalDetails = {
 };
 
 export type Members = {
+  memberId: string,
   personalDetails: PersonalDetails;
   jobTitle?: string;
   presentAddress: Address;
@@ -129,3 +132,15 @@ export const typographyProps = {
   variant: 'small',
   color: 'blue-gray',
 };
+
+export const toastOptions: ToastOptions<unknown> = {
+  position: "top-right",
+  autoClose: 3000,
+  hideProgressBar: true,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+  theme: "colored",
+  transition: Slide,
+}

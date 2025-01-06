@@ -1,5 +1,6 @@
 import { CommunicationPreference, EducationLevel, Gender, Members, RelationshipType } from '../types/Users';
-import { db, push, ref, get, query, set, orderByChild, equalTo } from '../firebase/firebase';
+import { db, ref, get, query, set, orderByChild, equalTo, update } from '../firebase/firebase';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
 export function formatDate(inputDate: string) {
   if(!inputDate) return '';
@@ -12,11 +13,27 @@ export function setTodayDate() {
   return currentDate.toISOString().split('T')[0];
 }
 
+export async function updateMemberToFiresbase(updatedMember: Members) {
+  const getDocRef = ref(db, `kalakairali/members/${updatedMember.memberId}`);
+  const snapshot = await get(getDocRef);
+
+  if(snapshot.exists()) {
+    update(getDocRef, updatedMember).then(() => {
+      console.log('Member details successfully updated!');
+    })
+    .catch((error) => {
+      throw new Error('Error updating member details: '+ error);
+    });
+  } else {
+    throw new Error('The user with specified member id not found.');
+  }
+}
+
 export async function saveMemberDataToFiresbase(memberData: Members) {
   // Save data to firebase
 
   if (memberData?.personalDetails?.mobileNumber) {
-    const queryRef = ref(db, 'kalakairali/members');
+    const queryRef = ref(db, `kalakairali/members`);
     const mobileQuery = query(
       queryRef,
       orderByChild('personalDetails/mobileNumber'),
@@ -29,30 +46,25 @@ export async function saveMemberDataToFiresbase(memberData: Members) {
     }
   }
 
-  const newDocRef = push(ref(db, 'kalakairali/members'));
+  const newDocRef = ref(db, `kalakairali/members/${memberData.memberId}`);
   set(newDocRef, memberData)
     .then(() => {
-      console.log('Document successfully written!');
+      console.log('Member successfully registered!');
     })
     .catch((error) => {
-      console.error('Error writing document: ', error);
+      console.error('Error registering member: ', error);
     });
 }
 
-export async function getMemberDataFromFirebase() {
-  // Get data from firebase
-  const memberData: Members[] = [];
+export const fetchMembers = createAsyncThunk('', async()=>{
   const getDocRef = ref(db, 'kalakairali/members');
   const snapshot = await get(getDocRef);
   if (snapshot.exists()) {
-    snapshot.forEach((childSnapshot) => {
-      memberData.push(childSnapshot.val());
-    });
+    return snapshot.val();
   } else {
     console.log('No data available');
   }
-  return memberData;
-}
+});
 
 export function getAge(dob: string) {
   const today = new Date();
