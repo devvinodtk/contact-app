@@ -87,6 +87,8 @@ const UserProfileForm: React.FC = ({
   const [currentAddressChange, setCurrentAddressChange] =
     useState<AddressChangeType>({} as AddressChangeType);
 
+  const [profilePicUrl, setProfilePicUrl] = useState("");
+
   const handleClose = () => setOpen(false); // Callback function to close the Family Details Popup
   const handleAddMember = () => setOpen(true); // Callback function to open the Family Details Popup
   const handleAddAddress = ({ operation, addressType }: AddressChangeType) => {
@@ -183,6 +185,10 @@ const UserProfileForm: React.FC = ({
 
       const userObj = {
         ...data,
+        personalDetails: {
+          ...data.personalDetails,
+          profilePhotoUrl: profilePicUrl,
+        },
         memberId: data.memberId ? data.memberId : uuidv4(),
         presentAddress: presentAddress,
         permanentAddress: permanentAddress,
@@ -280,7 +286,12 @@ const UserProfileForm: React.FC = ({
               <div className="w-full sm:w-1/4">
                 <div className="bg-white">
                   <div className="bg-gray-50 min-h-56 flex w-full mt-1 border items-center rounded">
-                    <ProfilePicUploader />
+                    <ProfilePicUploader
+                      profilePicUrl={member?.personalDetails.profilePhotoUrl}
+                      onSaveImageSuccess={(imageUrl: string) => {
+                        setProfilePicUrl(imageUrl);
+                      }}
+                    />
                   </div>
                 </div>
               </div>

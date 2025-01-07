@@ -5,8 +5,21 @@ import "cropperjs/dist/cropper.css";
 import ProfilePicEditor from "./ProfilePicEditor";
 import { Crop, Upload, Save } from "lucide-react";
 import { Button } from "@material-tailwind/react";
+import { storage } from "../../firebase/firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { v4 as uuidv4 } from "uuid";
+import { toast } from "react-toastify";
+import { toastOptions } from "../../types/Users";
 
-const ProfilePicUploader: React.FC = () => {
+interface ProfilePicUploaderProps {
+  profilePicUrl?: string;
+  onSaveImageSuccess: (imageUrl: string) => void;
+}
+
+const ProfilePicUploader: React.FC<ProfilePicUploaderProps> = ({
+  profilePicUrl,
+  onSaveImageSuccess,
+}) => {
   const [image, setImage] = useState(null);
   const [croppedImage, setCroppedImage] = useState<any>(null);
   const imageRef = useRef<ReactCropperElement>(null);
@@ -32,12 +45,80 @@ const ProfilePicUploader: React.FC = () => {
     setImageString(image);
   };
 
-  const handleSave = () => {
-    console.log("Image saved", imageStrting);
+  const resizeImage = (base64: string): Promise<Blob | null> =>
+    new Promise((resolve, reject) => {
+      const maxWidth = 1024;
+      const maxHeight = 1024;
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        let width = img.width;
+        let height = img.height;
+
+        // Maintain aspect ratio
+        if (width > maxWidth || height > maxHeight) {
+          if (width / height > maxWidth / maxHeight) {
+            width = maxWidth;
+            height = Math.floor((img.height / img.width) * maxWidth);
+          } else {
+            height = maxHeight;
+            width = Math.floor((img.width / img.height) * maxHeight);
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Draw the resized image
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        // Convert to Blob
+        canvas.toBlob(
+          (blob) => {
+            resolve(blob);
+          },
+          "image/jpeg", // You can change the format (e.g., image/png)
+          0.8 // Quality (0.1 to 1.0)
+        );
+      };
+
+      img.onerror = reject;
+
+      img.src = base64;
+    });
+
+  const handleSave = async () => {
+    if (!imageStrting) return;
+    try {
+      const imgRef = ref(storage, `images/profile/${uuidv4()}`);
+      const blob = await resizeImage(imageStrting);
+      if (blob) {
+        await uploadBytes(imgRef, blob);
+        const downloadUrl = await getDownloadURL(imgRef);
+        if (downloadUrl) {
+          toast.success("Profile picture uploaded successfully", toastOptions);
+          onSaveImageSuccess(downloadUrl);
+        }
+      }
+    } catch (err: any) {
+      toast.error(
+        "Failed to uploaded profile picture: " + err.message,
+        toastOptions
+      );
+    }
   };
 
   return (
     <div className="w-full">
+      {profilePicUrl && !image && (
+        <img
+          src={profilePicUrl}
+          alt="Profile pic for member"
+          className="h-[150px] w-[150px] mb-2 mx-auto rounded-full border-4 border-white shadow-md"
+        />
+      )}
       {!croppedImage && image && (
         <Cropper
           height={150}
@@ -54,7 +135,7 @@ const ProfilePicUploader: React.FC = () => {
           className="flex justify-center"
         />
       )}
-      {!croppedImage && !image && (
+      {!profilePicUrl && !croppedImage && !image && (
         <img
           src="https://placehold.co/400x400?text=Upload Your\nPhoto"
           alt="Profile"
