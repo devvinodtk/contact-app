@@ -187,7 +187,8 @@ const UserProfileForm: React.FC = ({
         ...data,
         personalDetails: {
           ...data.personalDetails,
-          profilePhotoUrl: profilePicUrl,
+          profilePhotoUrl:
+            profilePicUrl || data.personalDetails.profilePhotoUrl,
         },
         memberId: data.memberId ? data.memberId : uuidv4(),
         presentAddress: presentAddress,
