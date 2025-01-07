@@ -34,7 +34,7 @@ import {
   updateMemberToFiresbase,
 } from "../utils/Utility_Functions";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { Button, Typography } from "@material-tailwind/react";
+import { Button, Checkbox, Typography } from "@material-tailwind/react";
 import { Plus } from "lucide-react";
 import FamilyDetailsForm from "./FamilyDetailsForm";
 import AddressCard from "./common/AddressCard";
@@ -42,6 +42,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import { useParams } from "react-router-dom";
 import { RootState } from "../store/store";
+import { useAuth, UserAuthValue } from "../context/AuthProvider";
 
 interface UserProfileFormProps {
   registeredMember?: Members;
@@ -62,6 +63,7 @@ const UserProfileForm: React.FC = ({
     mode: "onSubmit",
     defaultValues: registeredMember ?? memberDetails,
   });
+  const { userLoggedIn }: UserAuthValue = useAuth();
   const { memberid } = useParams();
   const member = useSelector((state: RootState) =>
     selectMemberById(memberid)(state)
@@ -181,11 +183,11 @@ const UserProfileForm: React.FC = ({
       const userObj = {
         ...data,
         verified: ops === UserOps.Edit ? true : false,
-        memberId: data.memberId ?? uuidv4(),
+        memberId: data.memberId ? data.memberId : uuidv4(),
         presentAddress: presentAddress,
         permanentAddress: permanentAddress,
         officeAddress: officeAddress ?? null,
-        familyDetails: familyDetails,
+        familyDetails: familyDetails ?? [],
       };
       if (ops === UserOps.Add) {
         addNewMemberDataToFiresbase(userObj);
@@ -238,6 +240,8 @@ const UserProfileForm: React.FC = ({
     setFamilyMemberToEdit(undefined);
   };
 
+  const handleVerifiedChange = () => {};
+
   return (
     <>
       <form
@@ -247,6 +251,27 @@ const UserProfileForm: React.FC = ({
       >
         <Header title="Add Members" />
         <div className="p-4 w-full mt-16 sm:mt-0">
+          {userLoggedIn && !member?.verified && (
+            <div className="p-4 flex sm:justify-end justify-start pr-4 border rounded-lg mt-6">
+              <Checkbox
+                onChange={handleVerifiedChange}
+                color="green"
+                checked={member?.verified}
+                label={
+                  <Typography
+                    color="blue-gray"
+                    className="flex font-medium"
+                    {...(typographyProps as React.ComponentProps<
+                      typeof Typography
+                    >)}
+                  >
+                    Mark this member verified.
+                  </Typography>
+                }
+                {...({} as React.ComponentProps<typeof Checkbox>)}
+              />
+            </div>
+          )}
           <div className="p-4 border rounded-lg mt-6">
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="w-full sm:w-1/4">
@@ -515,43 +540,45 @@ const UserProfileForm: React.FC = ({
             <div className="flex-1 p-4 border rounded">
               <GeoLocationDisplay geoLocation={memberDetails.geoLocation} />
             </div>
-            <div className="flex-1 p-4 border rounded">
-              <h2 className="text-lg font-semibold mb-4 text-gray-600">
-                Office Use
-              </h2>
-              <label className="text-gray-600 text-sm font-medium">
-                Proposed by
-              </label>
-              <input
-                {...register(`proposedBy`)}
-                type="text"
-                className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                  errors.proposedBy
-                    ? "focus:outline-none border-red-500 bg-red-50"
-                    : ""
-                }`}
-              />
-              <Controller
-                name="communicationPreference"
-                control={control}
-                render={({ field: { value, onChange } }) => (
-                  <DropdownSelect
-                    label="Communication Preference"
-                    value={value}
-                    onChange={onChange}
-                    options={communicationPreferenceOptions}
-                  />
-                )}
-              />
-              <label className="text-gray-600 text-sm font-medium">
-                Comments
-              </label>
-              <input
-                {...register(`comments`)}
-                type="text"
-                className="p-2 border mb-3 rounded w-full text-gray-600"
-              />
-            </div>
+            {userLoggedIn && (
+              <div className="flex-1 p-4 border rounded">
+                <h2 className="text-lg font-semibold mb-4 text-gray-600">
+                  Office Use
+                </h2>
+                <label className="text-gray-600 text-sm font-medium">
+                  Proposed by
+                </label>
+                <input
+                  {...register(`proposedBy`)}
+                  type="text"
+                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                    errors.proposedBy
+                      ? "focus:outline-none border-red-500 bg-red-50"
+                      : ""
+                  }`}
+                />
+                <Controller
+                  name="communicationPreference"
+                  control={control}
+                  render={({ field: { value, onChange } }) => (
+                    <DropdownSelect
+                      label="Communication Preference"
+                      value={value}
+                      onChange={onChange}
+                      options={communicationPreferenceOptions}
+                    />
+                  )}
+                />
+                <label className="text-gray-600 text-sm font-medium">
+                  Comments
+                </label>
+                <input
+                  {...register(`comments`)}
+                  type="text"
+                  className="p-2 border mb-3 rounded w-full text-gray-600"
+                />
+              </div>
+            )}
           </div>
         </div>
         <div className="p-4 w-full bg-gray-50 shadow-sm">

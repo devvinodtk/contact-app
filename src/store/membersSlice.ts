@@ -35,7 +35,9 @@ const membersSlice = createSlice({
         })
         .addCase(fetchMembers.fulfilled, (state, action) => {
             state.status= 'succeeded';
-            state.members = Object.values(action.payload)
+            if(action.payload){
+                state.members = Object.values(action.payload)
+            }
         })
         .addCase(fetchMembers.rejected, (state, action) => {
             state.status= 'failed';

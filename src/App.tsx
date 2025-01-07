@@ -59,7 +59,20 @@ function App() {
           </Provider>
         </div>
       ) : (
-        <LoginPage />
+        <Provider store={store}>
+          <Routes>
+            {/* <Route
+              path="/"
+              element={
+                <Suspense fallback={<div>Loading...</div>}>
+                  <LazyUserProfileForm />
+                </Suspense>
+              }
+            /> */}
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/login" element={<LoginPage />} />
+          </Routes>
+        </Provider>
       )}
     </>
   );
