@@ -31,7 +31,9 @@ function App() {
               <Route
                 path="/dashboard"
                 element={
-                  <Suspense fallback={<div>Loading...</div>}>
+                  <Suspense fallback={<div><div className="fixed inset-0 flex items-center justify-center bg-gray-100 z-50">
+                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div></div>}>
                     <LazyDashboard />
                   </Suspense>
                 }
@@ -39,7 +41,9 @@ function App() {
               <Route
                 path="/users"
                 element={
-                  <Suspense fallback={<div>Loading...</div>}>
+                  <Suspense fallback={<div><div className="fixed inset-0 flex items-center justify-center bg-gray-100 z-50">
+                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div></div>}>
                     <LazyUserProfileForm />
                   </Suspense>
                 }
@@ -47,7 +51,9 @@ function App() {
               <Route
                 path="/users/:memberid"
                 element={
-                  <Suspense fallback={<div>Loading...</div>}>
+                  <Suspense fallback={<div><div className="fixed inset-0 flex items-center justify-center bg-gray-100 z-50">
+                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div></div>}>
                     <LazyUserProfileForm />
                   </Suspense>
                 }
