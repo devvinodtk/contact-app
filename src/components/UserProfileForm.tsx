@@ -180,9 +180,9 @@ const UserProfileForm: React.FC = ({
 
     if (isValid) {
       const ops: UserOps = data.memberId ? UserOps.Edit : UserOps.Add;
+
       const userObj = {
         ...data,
-        verified: ops === UserOps.Edit ? true : false,
         memberId: data.memberId ? data.memberId : uuidv4(),
         presentAddress: presentAddress,
         permanentAddress: permanentAddress,
@@ -240,8 +240,6 @@ const UserProfileForm: React.FC = ({
     setFamilyMemberToEdit(undefined);
   };
 
-  const handleVerifiedChange = () => {};
-
   return (
     <>
       <form
@@ -249,14 +247,19 @@ const UserProfileForm: React.FC = ({
         className="flex-1 overflow-auto relative z-10"
         onSubmit={handleSubmit(onHandleSaveMembersForm)}
       >
-        <Header title="Add Members" />
+        <Header
+          title={
+            userLoggedIn
+              ? "Add Members"
+              : "Register to Kalakairali Member Management System"
+          }
+        />
         <div className="p-4 w-full mt-16 sm:mt-0">
           {userLoggedIn && !member?.verified && (
             <div className="p-4 flex sm:justify-end justify-start pr-4 border rounded-lg mt-6">
               <Checkbox
-                onChange={handleVerifiedChange}
+                {...register("verified")}
                 color="green"
-                checked={member?.verified}
                 label={
                   <Typography
                     color="blue-gray"

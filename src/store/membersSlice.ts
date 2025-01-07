@@ -18,6 +18,7 @@ const membersSlice = createSlice({
     name: 'members',
     initialState,
     reducers: {
+        resetMember: ()=> initialState,
         addMember: (state, action: PayloadAction<Members>) =>{
             state.members.push(action.payload);
         },
@@ -53,5 +54,5 @@ export const selectMemberById = (memberId: string | undefined) =>
     );
 
 
-export const { addMember, updateMember } = membersSlice.actions;
+export const { addMember, updateMember, resetMember } = membersSlice.actions;
 export default membersSlice.reducer;

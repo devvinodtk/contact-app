@@ -50,7 +50,13 @@ function Sidebar() {
           <div className="absolute h-full h-full bg-sky-700 h-screen z-40">
             <nav className="mt-16 flex-grow">
               {SIDEBAR_ITEMS.map((item) => (
-                <Link key={item.href} to={item.href}>
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  onClick={() => {
+                    setMobileIsSideBarOpen(false);
+                  }}
+                >
                   {isMobileSideBarOpen && (
                     <motion.div className="flex items-center p-4 text-sm font-medium rounded-lg hover:bg-sky-600 transition-colors mb-2">
                       <item.icon

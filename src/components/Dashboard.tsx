@@ -19,11 +19,10 @@ import {
   Trash2,
   Mail,
 } from "lucide-react";
-import { useEffect } from "react";
 import { typographyProps } from "../types/Users";
-import { fetchMembers, formatDate, getAge } from "../utils/Utility_Functions";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState, AppDispatch } from "../store/store";
+import { formatDate, getAge } from "../utils/Utility_Functions";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
@@ -38,12 +37,8 @@ const Dashboard = () => {
     "",
   ];
 
-  const dispatch = useDispatch<AppDispatch>();
   const { members } = useSelector((state: RootState) => state.members);
   const navigate = useNavigate();
-  useEffect(() => {
-    dispatch(fetchMembers());
-  }, [dispatch]);
 
   const onEditMember = (memberId: string) => {
     navigate(`/users/${memberId}`);

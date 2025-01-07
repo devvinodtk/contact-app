@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import LoginPage from "./components/LoginPage";
 import Sidebar from "./components/Sidebar";
@@ -7,15 +7,27 @@ import { useAuth, UserAuthValue } from "./context/AuthProvider";
 import Dashboard from "./components/Dashboard";
 import AddressList from "./components/AddressList";
 import MembershipCard from "./components/MembershipCard";
-import { Provider } from "react-redux";
-import store from "./store/store";
+import { Provider, useDispatch } from "react-redux";
+import store, { AppDispatch } from "./store/store";
 import "./App.css";
+import { fetchMembers } from "./utils/Utility_Functions";
+import { resetMember } from "./store/MembersSlice";
 
 const LazyUserProfileForm = lazy(() => import("./components/UserProfileForm"));
 const LazyDashboard = lazy(() => import("./components/Dashboard"));
 
 function App() {
   const { userLoggedIn }: UserAuthValue = useAuth();
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    if (userLoggedIn) {
+      dispatch(fetchMembers());
+    } else {
+      dispatch(resetMember());
+    }
+  }, [userLoggedIn, dispatch]);
+
   return (
     <>
       {userLoggedIn ? (
@@ -25,51 +37,49 @@ function App() {
             <div className="absolute inset-0 backdrop-blur-sm" />
           </div>
           <Sidebar />
-          <Provider store={store}>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route
-                path="/dashboard"
-                element={
-                  <Suspense fallback={<div>Loading...</div>}>
-                    <LazyDashboard />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/users"
-                element={
-                  <Suspense fallback={<div>Loading...</div>}>
-                    <LazyUserProfileForm />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/users/:memberid"
-                element={
-                  <Suspense fallback={<div>Loading...</div>}>
-                    <LazyUserProfileForm />
-                  </Suspense>
-                }
-              />
-              <Route path="/logout" element={<LogoutPage />} />
-              <Route path="/address" element={<AddressList />} />
-              <Route path="/idcards" element={<MembershipCard />} />
-            </Routes>
-          </Provider>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route
+              path="/dashboard"
+              element={
+                <Suspense fallback={<div>Loading...</div>}>
+                  <LazyDashboard />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/users"
+              element={
+                <Suspense fallback={<div>Loading...</div>}>
+                  <LazyUserProfileForm />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/users/:memberid"
+              element={
+                <Suspense fallback={<div>Loading...</div>}>
+                  <LazyUserProfileForm />
+                </Suspense>
+              }
+            />
+            <Route path="/logout" element={<LogoutPage />} />
+            <Route path="/address" element={<AddressList />} />
+            <Route path="/idcards" element={<MembershipCard />} />
+          </Routes>
         </div>
       ) : (
         <Provider store={store}>
           <Routes>
-            {/* <Route
+            <Route
               path="/"
               element={
                 <Suspense fallback={<div>Loading...</div>}>
                   <LazyUserProfileForm />
                 </Suspense>
               }
-            /> */}
-            <Route path="/" element={<LoginPage />} />
+            />
+            {/* <Route path="/" element={<LoginPage />} /> */}
             <Route path="/login" element={<LoginPage />} />
           </Routes>
         </Provider>
