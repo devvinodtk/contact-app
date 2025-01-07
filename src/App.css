@@ -20,7 +20,31 @@ input[type="number"] {
 
 select {
   background-color: white;
-  appearance: none; /* Removes default styling */
-  -webkit-appearance: none; /* Removes default styling in Safari/Chrome */
-  -moz-appearance: none; /* Removes default styling in Firefox */
+  appearance: none; 
+  -webkit-appearance: none; 
+  -moz-appearance: none; 
+}
+.blue-circle-icon {
+
+  background-color: #007bff; 
+  color: white; 
+  font-size: 8px;
+  font-weight: bold; 
+  align-items: center; 
+  border-radius: 50%; 
+  text-align: center; 
+  padding: 3px 5px; 
+  vertical-align: middle;
+  margin-left: 2px;
+}
+.rose-circle-icon {  
+  background-color: #f113ea; 
+  color: white; 
+  font-size: 10px;
+  font-weight: bold; 
+  align-items: center; 
+  border-radius: 50%; 
+  text-align: center; 
+  padding: 2px 6px; 
+  margin-left: 2px;
 }
