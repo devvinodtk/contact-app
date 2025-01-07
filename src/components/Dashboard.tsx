@@ -26,15 +26,7 @@ import { RootState } from "../store/store";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
-  const TABLE_HEAD = [
-    "Member",
-    "Age",
-    "Blood Group",
-    "Occupation",
-    "Area",
-    "Verified",
-    "",
-  ];
+  const TABLE_HEAD = ["Member", "Age", "Blood Group", "Occupation", "Area", ""];
 
   const { members } = useSelector((state: RootState) => state.members);
   const navigate = useNavigate();
@@ -130,7 +122,7 @@ const Dashboard = () => {
                                       src={
                                         member.personalDetails?.profilePhotoUrl
                                           ? member.personalDetails
-                                            .profilePhotoUrl
+                                              .profilePhotoUrl
                                           : `/assets/member_${member.personalDetails?.gender.toLocaleLowerCase()}.png`
                                       }
                                       alt={member.personalDetails?.name}
@@ -147,7 +139,17 @@ const Dashboard = () => {
                                       color="blue-gray"
                                       className="font-normal"
                                     >
-                                      {member.personalDetails?.name} {member.personalDetails?.gender == "Male" ? <span className="blue-circle-icon">M</span> : <span className="rose-circle-icon">F</span>}
+                                      {member.personalDetails?.name}{" "}
+                                      {member.personalDetails?.gender ==
+                                      "Male" ? (
+                                        <span className="blue-circle-icon">
+                                          M
+                                        </span>
+                                      ) : (
+                                        <span className="rose-circle-icon">
+                                          F
+                                        </span>
+                                      )}
                                     </Typography>
                                     <Typography
                                       {...(typographyProps as React.ComponentProps<
@@ -160,7 +162,9 @@ const Dashboard = () => {
                                       <Mail className="inline size-5 pr-2" />
                                       {member.personalDetails?.emailId} |{" "}
                                       <Phone className="inline size-5 pr-2" />
-                                      <a href={`tel:${member.personalDetails?.mobileNumber}`}>
+                                      <a
+                                        href={`tel:${member.personalDetails?.mobileNumber}`}
+                                      >
                                         {member.personalDetails?.mobileNumber}
                                       </a>
                                     </Typography>
@@ -235,20 +239,6 @@ const Dashboard = () => {
                                   {member.presentAddress?.postOffice}
                                 </Typography>
                               </td>
-
-                              <td className={classes}>
-                                <Typography
-                                  {...(typographyProps as React.ComponentProps<
-                                    typeof Typography
-                                  >)}
-                                  variant="small"
-                                  color="blue-gray"
-                                  className="font-normal"
-                                >
-                                  {member.verified ? "Yes" : "No"}
-                                </Typography>
-                              </td>
-
                               <td className={classes}>
                                 <Tooltip content="Edit User">
                                   <IconButton
