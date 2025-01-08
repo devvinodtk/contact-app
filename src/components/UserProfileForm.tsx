@@ -29,9 +29,11 @@ import {
   communicationPreferenceOptions,
   educationLevelOptions,
   genderOptions,
+  removeProfilePicFromFirebase,
   saveMemberDataToFiresbase,
   setTodayDate,
   updateMemberToFiresbase,
+  uploadProfilePicToFirebase,
 } from "../utils/Utility_Functions";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { Button, Checkbox, Typography } from "@material-tailwind/react";
@@ -86,8 +88,7 @@ const UserProfileForm: React.FC = ({
   const [openAddressDialog, setOpenAddressDialog] = useState(false);
   const [currentAddressChange, setCurrentAddressChange] =
     useState<AddressChangeType>({} as AddressChangeType);
-
-  const [profilePicUrl, setProfilePicUrl] = useState("");
+  const [imageString, setImageString] = useState<string | null>(null);
 
   const handleClose = () => setOpen(false); // Callback function to close the Family Details Popup
   const handleAddMember = () => setOpen(true); // Callback function to open the Family Details Popup
@@ -160,7 +161,7 @@ const UserProfileForm: React.FC = ({
     }
   }, [member, memberid]);
 
-  const onHandleSaveMembersForm: SubmitHandler<Members> = (data) => {
+  const onHandleSaveMembersForm: SubmitHandler<Members> = async (data) => {
     clearErrors();
     let error = false;
     if (!presentAddress?.flatNumberName) {
@@ -182,7 +183,12 @@ const UserProfileForm: React.FC = ({
 
     if (isValid) {
       const ops: UserOps = data.memberId ? UserOps.Edit : UserOps.Add;
-
+      let profilePicUrl = !!imageString
+        ? await handleSaveProfilePic(data.personalDetails.name)
+        : "";
+      if (profilePicUrl && data.personalDetails.profilePhotoUrl) {
+        removeProfilePicFromFirebase(data.personalDetails.profilePhotoUrl);
+      }
       const userObj = {
         ...data,
         personalDetails: {
@@ -247,6 +253,24 @@ const UserProfileForm: React.FC = ({
     setFamilyMemberToEdit(undefined);
   };
 
+  const handleSaveProfilePic = async (
+    memberName: string
+  ): Promise<string | undefined> => {
+    if (!imageString) return;
+    try {
+      const downloadUrl = await uploadProfilePicToFirebase(
+        imageString,
+        memberName
+      );
+      return downloadUrl;
+    } catch (err: any) {
+      toast.error(
+        "Failed to uploaded profile picture: " + err.message,
+        toastOptions
+      );
+    }
+  };
+
   return (
     <>
       <form
@@ -289,8 +313,8 @@ const UserProfileForm: React.FC = ({
                   <div className="bg-gray-50 min-h-56 flex w-full mt-1 border items-center rounded">
                     <ProfilePicUploader
                       profilePicUrl={member?.personalDetails.profilePhotoUrl}
-                      onSaveImageSuccess={(imageUrl: string) => {
-                        setProfilePicUrl(imageUrl);
+                      onCropProfilePic={(imgString) => {
+                        setImageString(imgString);
                       }}
                     />
                   </div>
