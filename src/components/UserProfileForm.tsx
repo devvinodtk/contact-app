@@ -45,7 +45,6 @@ import { v4 as uuidv4 } from "uuid";
 import { useParams } from "react-router-dom";
 import { RootState } from "../store/store";
 import { useAuth, UserAuthValue } from "../context/AuthProvider";
-import { div } from "framer-motion/client";
 
 interface UserProfileFormProps {
   registeredMember?: Members;
@@ -291,7 +290,9 @@ const UserProfileForm: React.FC = ({
             <div className="p-4 flex sm:justify-between items-center border rounded-lg mt-6">
               {/* First Div: Label and Input on a Single Line */}
               <div className="flex items-center">
-                <label className="block text-sm font-medium mb-1 mr-0 text-gray-600">Member ID : KK2025</label>
+                <label className="block text-sm font-medium mb-1 mr-0 text-gray-600">
+                  Member ID : KK2025
+                </label>
                 <input type="text" className="border rounded p-2 ml-0" />
               </div>
 
@@ -304,7 +305,9 @@ const UserProfileForm: React.FC = ({
                     <Typography
                       color="blue-gray"
                       className="flex font-medium"
-                      {...(typographyProps as React.ComponentProps<typeof Typography>)}
+                      {...(typographyProps as React.ComponentProps<
+                        typeof Typography
+                      >)}
                     >
                       Mark this member verified.
                     </Typography>
@@ -313,8 +316,6 @@ const UserProfileForm: React.FC = ({
                 />
               </div>
             </div>
-
-
           )}
 
           <div className="p-4 border rounded-lg mt-6">
@@ -344,10 +345,11 @@ const UserProfileForm: React.FC = ({
                       {...register(`personalDetails.name`, {
                         required: "Name is required",
                       })}
-                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.personalDetails?.name
+                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                        errors.personalDetails?.name
                           ? "focus:outline-none border-red-500 bg-red-50"
                           : ""
-                        }`}
+                      }`}
                     />
                   </div>
                   <div className="w-full sm:w-1/3 sm:pl-4">
@@ -363,10 +365,11 @@ const UserProfileForm: React.FC = ({
                         minLength: 10,
                         maxLength: 10,
                       })}
-                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.personalDetails?.mobileNumber
+                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                        errors.personalDetails?.mobileNumber
                           ? "focus:outline-none border-red-500 bg-red-50"
                           : ""
-                        }`}
+                      }`}
                     />
                   </div>
                   <div className="w-full sm:w-1/3 sm:pl-4">
@@ -382,10 +385,11 @@ const UserProfileForm: React.FC = ({
                           /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i,
                       })}
                       placeholder="Email ID"
-                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.personalDetails?.emailId
+                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                        errors.personalDetails?.emailId
                           ? "focus:outline-none border-red-500 bg-red-50"
                           : ""
-                        }`}
+                      }`}
                     />
                   </div>
                   <div className="w-full sm:w-1/3">
@@ -400,10 +404,11 @@ const UserProfileForm: React.FC = ({
                         required: "Date of birth is required",
                       })}
                       placeholder="Date of Birth"
-                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.personalDetails?.dateOfBirth
+                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                        errors.personalDetails?.dateOfBirth
                           ? "focus:outline-none border-red-500 bg-red-50"
                           : ""
-                        }`}
+                      }`}
                     />
                   </div>
                   <div className="w-full sm:w-1/3 sm:pl-4">
@@ -465,10 +470,11 @@ const UserProfileForm: React.FC = ({
                       {...register(`personalDetails.jobTitle`, {
                         required: "Occupation is required",
                       })}
-                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.personalDetails?.jobTitle
+                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                        errors.personalDetails?.jobTitle
                           ? "focus:outline-none border-red-500 bg-red-50"
                           : ""
-                        }`}
+                      }`}
                     />
                   </div>
                   <div className="w-full sm:w-1/3 sm:pl-4">
@@ -596,10 +602,11 @@ const UserProfileForm: React.FC = ({
                 <input
                   {...register(`proposedBy`)}
                   type="text"
-                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.proposedBy
+                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                    errors.proposedBy
                       ? "focus:outline-none border-red-500 bg-red-50"
                       : ""
-                    }`}
+                  }`}
                 />
                 <Controller
                   name="communicationPreference"
@@ -655,12 +662,12 @@ const UserProfileForm: React.FC = ({
           addressType={currentAddressChange.addressType}
           addressInfo={
             (presentAddress || permanentAddress || officeAddress) &&
-              currentAddressChange.addressType === AddressType.PresentAddress
+            currentAddressChange.addressType === AddressType.PresentAddress
               ? presentAddress
               : currentAddressChange.addressType ===
                 AddressType.PermanentAddress
-                ? permanentAddress
-                : officeAddress
+              ? permanentAddress
+              : officeAddress
           }
           onAddressChange={(addressType, value) =>
             handleAddressChange(addressType, value)
