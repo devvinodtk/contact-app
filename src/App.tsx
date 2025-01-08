@@ -12,6 +12,7 @@ import store, { AppDispatch } from "./store/store";
 import "./App.css";
 import { fetchMembers } from "./utils/Utility_Functions";
 import { resetMember } from "./store/MembersSlice";
+import LoaderComponent from "./components/common/Loader";
 
 const LazyUserProfileForm = lazy(() => import("./components/UserProfileForm"));
 const LazyDashboard = lazy(() => import("./components/Dashboard"));
@@ -42,7 +43,7 @@ function App() {
             <Route
               path="/dashboard"
               element={
-                <Suspense fallback={<div>Loading...</div>}>
+                <Suspense fallback={<LoaderComponent />}>
                   <LazyDashboard />
                 </Suspense>
               }
@@ -50,7 +51,7 @@ function App() {
             <Route
               path="/users"
               element={
-                <Suspense fallback={<div>Loading...</div>}>
+                <Suspense fallback={<LoaderComponent />}>
                   <LazyUserProfileForm />
                 </Suspense>
               }
@@ -58,7 +59,7 @@ function App() {
             <Route
               path="/users/:memberid"
               element={
-                <Suspense fallback={<div>Loading...</div>}>
+                <Suspense fallback={<LoaderComponent />}>
                   <LazyUserProfileForm />
                 </Suspense>
               }
