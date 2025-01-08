@@ -267,9 +267,17 @@ const UserProfileForm: React.FC = ({
             <div className="p-4 flex sm:justify-between items-center border rounded-lg mt-6">
               {/* First Div: Label and Input on a Single Line */}
               <div className="flex items-center">
-                <label className="block text-sm font-medium mb-1 mr-0 text-gray-600">Member ID : KK2025</label>
-                <input type="text" className="border rounded p-2 ml-0" />
-              </div>
+  {/* Label */}
+  <label className="block text-sm font-medium mb-1 mr-2 text-gray-600">Member ID:</label>
+  
+  {/* Input */}
+  <input
+    type="text"
+    className="border rounded p-2 text-gray-600"
+    defaultValue="KK20250001"
+  />
+</div>
+
 
               {/* Second Div: Checkbox for Verification */}
               <div className="flex items-center">
