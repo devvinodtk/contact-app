@@ -34,23 +34,27 @@ const AddressForm: React.FC<AddressFormProps> = ({
   const pincode = useWatch({ control, name: "pincode" });
 
   useEffect(() => {
-    if (pincode?.length === 6) {
-      const postalInfo: PostalInfo[] = pincodeDirectory.lookup(pincode);
-      const officeNames = [""];
-      if (postalInfo?.length) {
-        officeNames.push(...postalInfo.map((info) => info.officeName));
-        const postalInfoByPIN = postalInfo[0];
-        setValue("city", postalInfoByPIN.districtName);
-        setValue("state", postalInfoByPIN.stateName);
-        setValue("postOffice", postalInfoByPIN.officeName);
-      } else {
-        setValue("city", "");
-        setValue("state", "");
-        setValue("postOffice", "");
+    const fetchPostalInfo = async () => {
+      if (pincode?.length === 6) {
+        const postalInfo: PostalInfo[] = pincodeDirectory.lookup(pincode);
+        const officeNames = [""];
+        if (postalInfo?.length) {
+          officeNames.push(...postalInfo.map((info) => info.officeName));
+          const postalInfoByPIN = postalInfo[0];
+          setValue("city", postalInfoByPIN.districtName);
+          setValue("state", postalInfoByPIN.stateName);
+          setValue("postOffice", postalInfoByPIN.officeName);
+        } else {
+          setValue("city", "");
+          setValue("state", "");
+          setValue("postOffice", "");
+        }
+        setPostOfficeNames(officeNames);
+        trigger(["city", "state", "postOffice"]);
       }
-      setPostOfficeNames(officeNames);
-      trigger(["city", "state", "postOffice"]);
-    }
+    };
+
+    fetchPostalInfo();
   }, [pincode, setValue, trigger]);
 
   const onSubmitHandler: SubmitHandler<Address> = (data) => {

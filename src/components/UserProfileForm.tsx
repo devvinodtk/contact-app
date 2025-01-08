@@ -29,9 +29,11 @@ import {
   communicationPreferenceOptions,
   educationLevelOptions,
   genderOptions,
+  removeProfilePicFromFirebase,
   saveMemberDataToFiresbase,
   setTodayDate,
   updateMemberToFiresbase,
+  uploadProfilePicToFirebase,
 } from "../utils/Utility_Functions";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { Button, Checkbox, Typography } from "@material-tailwind/react";
@@ -43,7 +45,6 @@ import { v4 as uuidv4 } from "uuid";
 import { useParams } from "react-router-dom";
 import { RootState } from "../store/store";
 import { useAuth, UserAuthValue } from "../context/AuthProvider";
-import { div } from "framer-motion/client";
 
 interface UserProfileFormProps {
   registeredMember?: Members;
@@ -87,8 +88,7 @@ const UserProfileForm: React.FC = ({
   const [openAddressDialog, setOpenAddressDialog] = useState(false);
   const [currentAddressChange, setCurrentAddressChange] =
     useState<AddressChangeType>({} as AddressChangeType);
-
-  const [profilePicUrl, setProfilePicUrl] = useState("");
+  const [imageString, setImageString] = useState<string | null>(null);
 
   const handleClose = () => setOpen(false); // Callback function to close the Family Details Popup
   const handleAddMember = () => setOpen(true); // Callback function to open the Family Details Popup
@@ -161,7 +161,7 @@ const UserProfileForm: React.FC = ({
     }
   }, [member, memberid]);
 
-  const onHandleSaveMembersForm: SubmitHandler<Members> = (data) => {
+  const onHandleSaveMembersForm: SubmitHandler<Members> = async (data) => {
     clearErrors();
     let error = false;
     if (!presentAddress?.flatNumberName) {
@@ -183,7 +183,12 @@ const UserProfileForm: React.FC = ({
 
     if (isValid) {
       const ops: UserOps = data.memberId ? UserOps.Edit : UserOps.Add;
-
+      let profilePicUrl = !!imageString
+        ? await handleSaveProfilePic(data.personalDetails.name)
+        : "";
+      if (profilePicUrl && data.personalDetails.profilePhotoUrl) {
+        removeProfilePicFromFirebase(data.personalDetails.profilePhotoUrl);
+      }
       const userObj = {
         ...data,
         personalDetails: {
@@ -248,6 +253,24 @@ const UserProfileForm: React.FC = ({
     setFamilyMemberToEdit(undefined);
   };
 
+  const handleSaveProfilePic = async (
+    memberName: string
+  ): Promise<string | undefined> => {
+    if (!imageString) return;
+    try {
+      const downloadUrl = await uploadProfilePicToFirebase(
+        imageString,
+        memberName
+      );
+      return downloadUrl;
+    } catch (err: any) {
+      toast.error(
+        "Failed to uploaded profile picture: " + err.message,
+        toastOptions
+      );
+    }
+  };
+
   return (
     <>
       <form
@@ -264,41 +287,36 @@ const UserProfileForm: React.FC = ({
         />
         <div className="p-4 w-full mt-16 sm:mt-0">
           {userLoggedIn && !member?.verified && (
-            <div className="p-4 flex sm:justify-between items-center border rounded-lg mt-6">
-              {/* First Div: Label and Input on a Single Line */}
-              <div className="flex items-center">
-  {/* Label */}
-  <label className="block text-sm font-medium mb-1 mr-2 text-gray-600">Member ID:</label>
-  
-  {/* Input */}
-  <input
-    type="text"
-    className="border rounded p-2 text-gray-600"
-    defaultValue="KK20250001"
-  />
-</div>
-
-
-              {/* Second Div: Checkbox for Verification */}
-              <div className="flex items-center">
-                <Checkbox
-                  {...register("verified")}
-                  color="green"
-                  label={
-                    <Typography
-                      color="blue-gray"
-                      className="flex font-medium"
-                      {...(typographyProps as React.ComponentProps<typeof Typography>)}
-                    >
-                      Mark this member verified.
-                    </Typography>
-                  }
-                  {...({} as React.ComponentProps<typeof Checkbox>)}
-                />
-              </div>
-            </div>
-
-
+           <div className="p-4 flex flex-col sm:flex-row sm:justify-between items-center border rounded-lg mt-6">
+           {/* Member ID Section */}
+           <div className="flex items-center mb-4 sm:mb-0 sm:mr-4">
+             <label className="block text-sm font-medium mr-2 text-gray-600">Member ID:</label>
+             <input
+               type="text"
+               className="border rounded p-2 text-gray-600"
+               defaultValue="KK20250001"
+             />
+           </div>
+         
+           {/* Checkbox Section */}
+           <div className="flex items-center">
+             <Checkbox
+               {...register("verified")}
+               color="green"
+               label={
+                 <Typography
+                   color="blue-gray"
+                   className="flex font-medium"
+                   {...(typographyProps as React.ComponentProps<typeof Typography>)}
+                 >
+                   Mark this member verified.
+                 </Typography>
+               }
+               {...({} as React.ComponentProps<typeof Checkbox>)}
+             />
+           </div>
+         </div>
+         
           )}
 
           <div className="p-4 border rounded-lg mt-6">
@@ -308,8 +326,8 @@ const UserProfileForm: React.FC = ({
                   <div className="bg-gray-50 min-h-56 flex w-full mt-1 border items-center rounded">
                     <ProfilePicUploader
                       profilePicUrl={member?.personalDetails.profilePhotoUrl}
-                      onSaveImageSuccess={(imageUrl: string) => {
-                        setProfilePicUrl(imageUrl);
+                      onCropProfilePic={(imgString) => {
+                        setImageString(imgString);
                       }}
                     />
                   </div>
