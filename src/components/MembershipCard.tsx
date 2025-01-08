@@ -31,7 +31,7 @@ function MembershipCard() {
                     {/* Card Content */}
                     <div className="text-center">
                       <h2 className="text-xl font-semibold text-gray-800">Suresh Kumar P R</h2>
-                      <p className="text-gray-600  font-semibold">Member ID: 12345</p>
+                      <p className="text-gray-600  font-semibold">Member ID: KK20250001</p>
                       <div className="my-2">
                         <p className="text-gray-500 text-sm">Blood Group: O +ve</p>
                       </div>
