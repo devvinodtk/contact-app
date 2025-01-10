@@ -98,7 +98,7 @@ const AddressCard = ({
             </p>
             <p className="block">
               {" "}
-              {address?.postOffice}, {address?.city} (D)
+              {address?.postOffice}(PO), {address?.city} (Dist.)
             </p>
             <p className="block">
               {" "}

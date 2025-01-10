@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Address, AddressType, PostalInfo } from "../types/Users";
+import { Address, AddressType, PostOfficesInfo } from "../types/Users";
 import { Button } from "@material-tailwind/react";
-// @ts-ignore
-import pincodeDirectory from "india-pincode-lookup";
 import DropdownSelect from "./common/DropdownSelect";
 import { memberAddress } from "../types/UsersMock";
 import { useForm, SubmitHandler, Controller, useWatch } from "react-hook-form";
+import { pincodeLookup } from "../utils/Utility_Functions";
 
 interface AddressFormProps {
   addressType: AddressType;
@@ -36,20 +35,20 @@ const AddressForm: React.FC<AddressFormProps> = ({
   useEffect(() => {
     const fetchPostalInfo = async () => {
       if (pincode?.length === 6) {
-        const postalInfo: PostalInfo[] = pincodeDirectory.lookup(pincode);
-        const officeNames = [""];
-        if (postalInfo?.length) {
-          officeNames.push(...postalInfo.map((info) => info.officeName));
-          const postalInfoByPIN = postalInfo[0];
-          setValue("city", postalInfoByPIN.districtName);
-          setValue("state", postalInfoByPIN.stateName);
-          setValue("postOffice", postalInfoByPIN.officeName);
+        const postalInfo: PostOfficesInfo | undefined = await pincodeLookup(
+          pincode
+        );
+        if (postalInfo) {
+          setPostOfficeNames(postalInfo.postOffices);
+          setValue("city", postalInfo.district);
+          setValue("state", postalInfo.state);
+          setValue("postOffice", postalInfo.postOffices[0]);
         } else {
           setValue("city", "");
           setValue("state", "");
           setValue("postOffice", "");
         }
-        setPostOfficeNames(officeNames);
+
         trigger(["city", "state", "postOffice"]);
       }
     };

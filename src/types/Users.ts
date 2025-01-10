@@ -87,14 +87,6 @@ export type Members = {
   verified: boolean;
 };
 
-export type PostalInfo = {
-  districtName: string;
-  officeName: string;
-  pincode: number;
-  stateName: string;
-  taluk: string;
-};
-
 export type FamilyDetails = {
   familyMemberId: string,
   memberPersonalDetails: PersonalDetails;
@@ -143,4 +135,25 @@ export const toastOptions: ToastOptions<unknown> = {
   progress: undefined,
   theme: "colored",
   transition: Slide,
+}
+
+export type PostOfficesInfo ={
+  postOffices:string[]
+  district: string,
+  state: string
+}
+
+export type PostalData = {
+  Block:  string,
+  BranchType : string,
+  Circle : string,
+  Country : string,
+  DeliveryStatus : string,
+  Description :  string | null,
+  District :  string,
+  Division :  string,
+  Name : string,
+  Pincode : string,
+  Region :  string,
+  State : string
 }

@@ -1,4 +1,4 @@
-import { CommunicationPreference, EducationLevel, Gender, Members, RelationshipType } from '../types/Users';
+import { CommunicationPreference, EducationLevel, Gender, Members, PostalData, PostOfficesInfo, RelationshipType } from '../types/Users';
 import { db, ref, get, query, set, orderByChild, equalTo, update, storage } from '../firebase/firebase';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
@@ -7,6 +7,24 @@ import {
   ref as storageRef,
   uploadBytes,
 } from "firebase/storage";
+import axios from 'axios';
+
+export const pincodeLookup = async (pincode: string): Promise<PostOfficesInfo | undefined> => {
+  try{
+    const response = await axios.get(`https://api.postalpincode.in/pincode/${pincode}`);
+    const PostOfficesList: PostalData[] = response.data[0].PostOffice;
+    
+    if(PostOfficesList && PostOfficesList.length > 0) {
+      return {
+          district: PostOfficesList[0].District,
+          state: PostOfficesList[0].State,
+          postOffices: PostOfficesList.map((postOffice)=> postOffice?.Name)
+      }
+    }
+  } catch(err: any) {
+    throw new Error('Error while fetching the postal info: '+ err);
+  }
+}
 
 export function formatDate(inputDate: string) {
   if(!inputDate) return '';
