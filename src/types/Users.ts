@@ -39,7 +39,7 @@ export type EducationLevel =
 export type RelationshipType =
   | ''
   | 'Spouse'
-  | 'Kid'
+  | 'Child'
   | 'Father'
   | 'Mother'
   | 'Father In Law'

@@ -63,7 +63,7 @@ const AddressCard = ({
               checked={isCopyAddressChecked}
               onChange={handleCopyAddressCheckedChange}
               label="Copy Present Address"
-              className="border bg-gray-100 "
+              className="border bg-gray-100 z-0"
               {...({
                 checked: isCopyAddressChecked,
                 onChange: handleCopyAddressCheckedChange,

@@ -287,11 +287,7 @@ const UserProfileForm: React.FC = ({
         onSubmit={handleSubmit(onHandleSaveMembersForm)}
       >
         <Header
-          title={
-            userLoggedIn
-              ? "Add Members"
-              : "Register to Kalakairali Member Management System"
-          }
+          title={userLoggedIn ? "Add Members" : "Register to Kalakairali MMS"}
         />
         <div className="p-4 w-full mt-16 sm:mt-0">
           {userLoggedIn && !member?.verified && (
@@ -416,7 +412,7 @@ const UserProfileForm: React.FC = ({
                         required: "Date of birth is required",
                       })}
                       placeholder="Date of Birth"
-                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                      className={`w-full block p-2 border rounded mb-4 text-gray-600 ${
                         errors.personalDetails?.dateOfBirth
                           ? "focus:outline-none border-red-500 bg-red-50"
                           : ""

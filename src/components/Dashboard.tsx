@@ -18,6 +18,7 @@ import {
   Eye,
   Trash2,
   Mail,
+  Download,
 } from "lucide-react";
 import { typographyProps } from "../types/Users";
 import { formatDate, getAge } from "../utils/Utility_Functions";
@@ -109,6 +110,7 @@ const Dashboard = () => {
 
                           return (
                             <tr key={index} className="hover:bg-sky-50">
+                             
                               <td className={classes}>
                                 <div className="flex items-center gap-3">
                                   <Badge
@@ -139,7 +141,7 @@ const Dashboard = () => {
                                       color="blue-gray"
                                       className="font-normal"
                                     >
-                                      {member.personalDetails?.name}{" "}
+                                      <span className="text-gray text-base">{member.personalDetails?.name}</span> {" "} <span className="text-gray"> ({member.memberId})</span>{" "}
                                       {member.personalDetails?.gender ==
                                       "Male" ? (
                                         <span className="blue-circle-icon">
@@ -255,7 +257,7 @@ const Dashboard = () => {
                                     <PencilIcon className="h-4 w-4" />
                                   </IconButton>
                                 </Tooltip>
-                                <Tooltip content="View User">
+                                <Tooltip content="Download Membership Card">
                                   <IconButton
                                     variant="text"
                                     {...({
@@ -264,7 +266,7 @@ const Dashboard = () => {
                                       typeof IconButton
                                     >)}
                                   >
-                                    <Eye className="h-4 w-4" />
+                                    <Download className="h-4 w-4" />
                                   </IconButton>
                                 </Tooltip>
                                 <Tooltip content="Delete User">
@@ -274,7 +276,7 @@ const Dashboard = () => {
                                       onDeleteMember(member.memberId);
                                     }}
                                     {...({
-                                      variant: "text",
+                                     
                                     } as React.ComponentProps<
                                       typeof IconButton
                                     >)}
