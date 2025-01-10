@@ -282,7 +282,7 @@ const UserProfileForm: React.FC = ({
           title={
             userLoggedIn
               ? "Add Members"
-              : "Register to Kalakairali Member Management System"
+              : "Register to Kalakairali MMS"
           }
         />
         <div className="p-4 w-full mt-16 sm:mt-0">
@@ -402,7 +402,7 @@ const UserProfileForm: React.FC = ({
                         required: "Date of birth is required",
                       })}
                       placeholder="Date of Birth"
-                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.personalDetails?.dateOfBirth
+                      className={`w-full block p-2 border rounded mb-4 text-gray-600 ${errors.personalDetails?.dateOfBirth
                           ? "focus:outline-none border-red-500 bg-red-50"
                           : ""
                         }`}

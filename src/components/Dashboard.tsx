@@ -18,6 +18,7 @@ import {
   Eye,
   Trash2,
   Mail,
+  Download,
 } from "lucide-react";
 import { typographyProps } from "../types/Users";
 import { formatDate, getAge } from "../utils/Utility_Functions";
@@ -26,7 +27,7 @@ import { RootState } from "../store/store";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
-  const TABLE_HEAD = ["Member", "Age", "Blood Group", "Occupation", "Area", ""];
+  const TABLE_HEAD = ["ID", "Member", "Age", "Blood Group", "Occupation", "Area", ""];
 
   const { members } = useSelector((state: RootState) => state.members);
   const navigate = useNavigate();
@@ -109,6 +110,18 @@ const Dashboard = () => {
 
                           return (
                             <tr key={index} className="hover:bg-sky-50">
+                              <td className={classes}>
+                              <Typography
+                                  {...(typographyProps as React.ComponentProps<
+                                    typeof Typography
+                                  >)}
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {/* {member.personalDetails?.gender} */}KL20250001
+                                </Typography>
+                              </td>
                               <td className={classes}>
                                 <div className="flex items-center gap-3">
                                   <Badge
@@ -255,7 +268,7 @@ const Dashboard = () => {
                                     <PencilIcon className="h-4 w-4" />
                                   </IconButton>
                                 </Tooltip>
-                                <Tooltip content="View User">
+                                <Tooltip content="Download Membership Card">
                                   <IconButton
                                     variant="text"
                                     {...({
@@ -264,7 +277,7 @@ const Dashboard = () => {
                                       typeof IconButton
                                     >)}
                                   >
-                                    <Eye className="h-4 w-4" />
+                                    <Download className="h-4 w-4" />
                                   </IconButton>
                                 </Tooltip>
                                 <Tooltip content="Delete User">
@@ -274,7 +287,7 @@ const Dashboard = () => {
                                       onDeleteMember(member.memberId);
                                     }}
                                     {...({
-                                      variant: "text",
+                                     
                                     } as React.ComponentProps<
                                       typeof IconButton
                                     >)}

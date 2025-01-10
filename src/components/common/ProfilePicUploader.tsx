@@ -92,7 +92,7 @@ const ProfilePicUploader: React.FC<ProfilePicUploaderProps> = ({
           disabled={!image}
           color="blue"
           {...({} as React.ComponentProps<typeof Button>)}
-          className="cursor-pointer mr-3 text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg text-xs px-2 py-1 text-center"
+          className="cursor-pointertext-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg text-xs px-2 py-1 text-center"
         >
           <div>
             <Crop

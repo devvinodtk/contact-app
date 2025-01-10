@@ -163,7 +163,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
             max={today}
             placeholder="Date of Birth"
             {...register("memberPersonalDetails.dateOfBirth")}
-            className="w-full p-2 border rounded text-gray-600"
+            className="w-full block p-2 border rounded text-gray-600"
           />
         </label>
         <Button
