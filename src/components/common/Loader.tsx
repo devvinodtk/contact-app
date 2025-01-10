@@ -2,7 +2,7 @@ import React from 'react';
 
 const LoaderComponent = () => {
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-white-100 bg-opacity-50 z-50">
             <div className="flex flex-col items-center">
                 {/* Icon Animation */}
                 <svg
@@ -26,7 +26,7 @@ const LoaderComponent = () => {
                     ></path>
                 </svg>
                 {/* Optional Loading Text */}
-                <span className="mt-4 text-white font-medium text-lg">Loading...</span>
+                <span className="mt-4 font-medium text-lg text-gray-600  bg-opacity-20">Loading...</span>
             </div>
         </div>
 
