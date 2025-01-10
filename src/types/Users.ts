@@ -48,7 +48,7 @@ export type CommunicationPreference = '' | 'In Person' | 'Postal';
 
 export enum AreaCode {
   SNPS = 'Sanjay Nagar Police Station',
-  SNPO = 'Sanjay nagar Post Office',
+  SNPO = 'Sanjay Nagar Post Office',
   NGSH = 'Nagashetty Halli',
   AN = 'Aswath Nagar',
   NBR = 'New BEL Road',
@@ -59,7 +59,7 @@ export enum AreaCode {
 export type PersonalDetails = {
   name: string;
   profilePhotoUrl?: string;
-  mobileNumber?: string;
+  mobileNumber: string;
   emailId?: string;
   dateOfBirth: string;
   bloodGroup: BloodGroup;

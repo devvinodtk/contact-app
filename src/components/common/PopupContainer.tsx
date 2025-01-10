@@ -23,7 +23,7 @@ const PopupContainer: React.FC<PopupContainerProps> = ({
   return (
     <Dialog
       size="sm"
-      className="items-center justify-center overflow-y-auto max-h-[95vh]"
+      className="items-center justify-center overflow-y-auto max-w-[95%] max-h-[95vh]"
       dismiss={{ outsidePress: false }}
       {...({ open, handler: onClose } as React.ComponentProps<typeof Dialog>)}
     >
@@ -44,12 +44,6 @@ const PopupContainer: React.FC<PopupContainerProps> = ({
           {children}
         </DialogBody>
       </div>
-      <DialogFooter
-        className="w-full"
-        {...({} as React.ComponentProps<typeof DialogHeader>)}
-      >
-        <p></p>
-      </DialogFooter>
     </Dialog>
   );
 };

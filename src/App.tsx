@@ -75,7 +75,7 @@ function App() {
             <Route
               path="/"
               element={
-                <Suspense fallback={<div>Loading...</div>}>
+                <Suspense fallback={<LoaderComponent />}>
                   <LazyUserProfileForm />
                 </Suspense>
               }

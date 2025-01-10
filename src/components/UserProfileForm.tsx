@@ -45,6 +45,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useParams } from "react-router-dom";
 import { RootState } from "../store/store";
 import { useAuth, UserAuthValue } from "../context/AuthProvider";
+import LoaderComponent from "./common/Loader";
 
 interface UserProfileFormProps {
   registeredMember?: Members;
@@ -70,6 +71,8 @@ const UserProfileForm: React.FC = ({
   const member = useSelector((state: RootState) =>
     selectMemberById(memberid)(state)
   );
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [open, setOpen] = useState(false); // Maintains open/close state of Family Details Popup
   const [familyDetails, setFamilyDetails] = useState<FamilyDetails[]>(
     memberDetails.familyDetails
@@ -182,30 +185,37 @@ const UserProfileForm: React.FC = ({
     if (error) return;
 
     if (isValid) {
-      const ops: UserOps = data.memberId ? UserOps.Edit : UserOps.Add;
-      let profilePicUrl = !!imageString
-        ? await handleSaveProfilePic(data.personalDetails.name)
-        : "";
-      if (profilePicUrl && data.personalDetails.profilePhotoUrl) {
-        removeProfilePicFromFirebase(data.personalDetails.profilePhotoUrl);
-      }
-      const userObj = {
-        ...data,
-        personalDetails: {
-          ...data.personalDetails,
-          profilePhotoUrl:
-            profilePicUrl || data.personalDetails.profilePhotoUrl,
-        },
-        memberId: data.memberId ? data.memberId : uuidv4(),
-        presentAddress: presentAddress,
-        permanentAddress: permanentAddress,
-        officeAddress: officeAddress ?? null,
-        familyDetails: familyDetails ?? [],
-      };
-      if (ops === UserOps.Add) {
-        addNewMemberDataToFiresbase(userObj);
-      } else if (ops === UserOps.Edit) {
-        updateMemberDataToFiresbase(userObj);
+      try {
+        setIsLoading(true);
+        const ops: UserOps = data.memberId ? UserOps.Edit : UserOps.Add;
+        let profilePicUrl = !!imageString
+          ? await handleSaveProfilePic(data.personalDetails.name)
+          : "";
+        if (profilePicUrl && data.personalDetails.profilePhotoUrl) {
+          removeProfilePicFromFirebase(data.personalDetails.profilePhotoUrl);
+        }
+        const userObj = {
+          ...data,
+          personalDetails: {
+            ...data.personalDetails,
+            profilePhotoUrl:
+              profilePicUrl || data.personalDetails.profilePhotoUrl,
+          },
+          memberId: data.memberId ? data.memberId : uuidv4(),
+          presentAddress: presentAddress,
+          permanentAddress: permanentAddress,
+          officeAddress: officeAddress ?? null,
+          familyDetails: familyDetails ?? [],
+        };
+        if (ops === UserOps.Add) {
+          addNewMemberDataToFiresbase(userObj);
+        } else if (ops === UserOps.Edit) {
+          updateMemberDataToFiresbase(userObj);
+        }
+      } catch (err: any) {
+        toast.error(err.message, toastOptions);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -218,7 +228,7 @@ const UserProfileForm: React.FC = ({
         handleResetForm();
       })
       .catch((error) => {
-        toast.error(error.message, toastOptions);
+        throw new Error(error);
       });
   };
 
@@ -230,7 +240,7 @@ const UserProfileForm: React.FC = ({
         handleResetForm();
       })
       .catch((error) => {
-        toast.error(error.message, toastOptions);
+        throw new Error(error);
       });
   };
 
@@ -264,15 +274,13 @@ const UserProfileForm: React.FC = ({
       );
       return downloadUrl;
     } catch (err: any) {
-      toast.error(
-        "Failed to uploaded profile picture: " + err.message,
-        toastOptions
-      );
+      throw new Error("Failed to uploaded profile picture: " + err.message);
     }
   };
 
   return (
     <>
+      {isLoading && <LoaderComponent />}
       <form
         autoComplete="off"
         className="flex-1 overflow-auto relative z-10"
@@ -287,36 +295,39 @@ const UserProfileForm: React.FC = ({
         />
         <div className="p-4 w-full mt-16 sm:mt-0">
           {userLoggedIn && !member?.verified && (
-           <div className="p-4 flex flex-col sm:flex-row sm:justify-between items-center border rounded-lg mt-6">
-           {/* Member ID Section */}
-           <div className="flex items-center mb-4 sm:mb-0 sm:mr-4">
-             <label className="block text-sm font-medium mr-2 text-gray-600">Member ID:</label>
-             <input
-               type="text"
-               className="border rounded p-2 text-gray-600"
-               defaultValue="KK20250001"
-             />
-           </div>
-         
-           {/* Checkbox Section */}
-           <div className="flex items-center">
-             <Checkbox
-               {...register("verified")}
-               color="green"
-               label={
-                 <Typography
-                   color="blue-gray"
-                   className="flex font-medium"
-                   {...(typographyProps as React.ComponentProps<typeof Typography>)}
-                 >
-                   Mark this member verified.
-                 </Typography>
-               }
-               {...({} as React.ComponentProps<typeof Checkbox>)}
-             />
-           </div>
-         </div>
-         
+            <div className="p-4 flex flex-col sm:flex-row sm:justify-between items-center border rounded-lg mt-6">
+              {/* Member ID Section */}
+              <div className="flex items-center mb-4 sm:mb-0 sm:mr-4">
+                <label className="block text-sm font-medium mr-2 text-gray-600">
+                  Member ID:
+                </label>
+                <input
+                  type="text"
+                  className="border rounded p-2 text-gray-600"
+                  placeholder="KK2025XXXX"
+                />
+              </div>
+
+              {/* Checkbox Section */}
+              <div className="flex items-center">
+                <Checkbox
+                  {...register("verified")}
+                  color="green"
+                  label={
+                    <Typography
+                      color="blue-gray"
+                      className="flex font-medium"
+                      {...(typographyProps as React.ComponentProps<
+                        typeof Typography
+                      >)}
+                    >
+                      Mark this member verified.
+                    </Typography>
+                  }
+                  {...({} as React.ComponentProps<typeof Checkbox>)}
+                />
+              </div>
+            </div>
           )}
 
           <div className="p-4 border rounded-lg mt-6">
@@ -346,10 +357,11 @@ const UserProfileForm: React.FC = ({
                       {...register(`personalDetails.name`, {
                         required: "Name is required",
                       })}
-                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.personalDetails?.name
+                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                        errors.personalDetails?.name
                           ? "focus:outline-none border-red-500 bg-red-50"
                           : ""
-                        }`}
+                      }`}
                     />
                   </div>
                   <div className="w-full sm:w-1/3 sm:pl-4">
@@ -365,10 +377,11 @@ const UserProfileForm: React.FC = ({
                         minLength: 10,
                         maxLength: 10,
                       })}
-                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.personalDetails?.mobileNumber
+                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                        errors.personalDetails?.mobileNumber
                           ? "focus:outline-none border-red-500 bg-red-50"
                           : ""
-                        }`}
+                      }`}
                     />
                   </div>
                   <div className="w-full sm:w-1/3 sm:pl-4">
@@ -384,10 +397,11 @@ const UserProfileForm: React.FC = ({
                           /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i,
                       })}
                       placeholder="Email ID"
-                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.personalDetails?.emailId
+                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                        errors.personalDetails?.emailId
                           ? "focus:outline-none border-red-500 bg-red-50"
                           : ""
-                        }`}
+                      }`}
                     />
                   </div>
                   <div className="w-full sm:w-1/3">
@@ -402,10 +416,11 @@ const UserProfileForm: React.FC = ({
                         required: "Date of birth is required",
                       })}
                       placeholder="Date of Birth"
-                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.personalDetails?.dateOfBirth
+                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                        errors.personalDetails?.dateOfBirth
                           ? "focus:outline-none border-red-500 bg-red-50"
                           : ""
-                        }`}
+                      }`}
                     />
                   </div>
                   <div className="w-full sm:w-1/3 sm:pl-4">
@@ -467,10 +482,11 @@ const UserProfileForm: React.FC = ({
                       {...register(`personalDetails.jobTitle`, {
                         required: "Occupation is required",
                       })}
-                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.personalDetails?.jobTitle
+                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                        errors.personalDetails?.jobTitle
                           ? "focus:outline-none border-red-500 bg-red-50"
                           : ""
-                        }`}
+                      }`}
                     />
                   </div>
                   <div className="w-full sm:w-1/3 sm:pl-4">
@@ -598,10 +614,11 @@ const UserProfileForm: React.FC = ({
                 <input
                   {...register(`proposedBy`)}
                   type="text"
-                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${errors.proposedBy
+                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                    errors.proposedBy
                       ? "focus:outline-none border-red-500 bg-red-50"
                       : ""
-                    }`}
+                  }`}
                 />
                 <Controller
                   name="communicationPreference"
@@ -657,12 +674,12 @@ const UserProfileForm: React.FC = ({
           addressType={currentAddressChange.addressType}
           addressInfo={
             (presentAddress || permanentAddress || officeAddress) &&
-              currentAddressChange.addressType === AddressType.PresentAddress
+            currentAddressChange.addressType === AddressType.PresentAddress
               ? presentAddress
               : currentAddressChange.addressType ===
                 AddressType.PermanentAddress
-                ? permanentAddress
-                : officeAddress
+              ? permanentAddress
+              : officeAddress
           }
           onAddressChange={(addressType, value) =>
             handleAddressChange(addressType, value)
