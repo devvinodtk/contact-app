@@ -18,12 +18,12 @@ input[type="number"] {
   box-shadow: none !important;
 }
 
-select {
+/* select {
   background-color: white;
   appearance: none; 
   -webkit-appearance: none; 
   -moz-appearance: none; 
-}
+} */
 .blue-circle-icon {
 
   background-color: #007bff; 

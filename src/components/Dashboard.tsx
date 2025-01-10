@@ -27,7 +27,7 @@ import { RootState } from "../store/store";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
-  const TABLE_HEAD = ["ID", "Member", "Age", "Blood Group", "Occupation", "Area", ""];
+  const TABLE_HEAD = ["Member", "Age", "Blood Group", "Occupation", "Area", ""];
 
   const { members } = useSelector((state: RootState) => state.members);
   const navigate = useNavigate();
@@ -110,18 +110,7 @@ const Dashboard = () => {
 
                           return (
                             <tr key={index} className="hover:bg-sky-50">
-                              <td className={classes}>
-                              <Typography
-                                  {...(typographyProps as React.ComponentProps<
-                                    typeof Typography
-                                  >)}
-                                  variant="small"
-                                  color="blue-gray"
-                                  className="font-normal"
-                                >
-                                  {/* {member.personalDetails?.gender} */}KL20250001
-                                </Typography>
-                              </td>
+                             
                               <td className={classes}>
                                 <div className="flex items-center gap-3">
                                   <Badge
@@ -152,7 +141,7 @@ const Dashboard = () => {
                                       color="blue-gray"
                                       className="font-normal"
                                     >
-                                      {member.personalDetails?.name}{" "}
+                                      <span className="text-gray text-base">{member.personalDetails?.name}</span> {" "} <span className="text-gray"> ({member.memberId})</span>{" "}
                                       {member.personalDetails?.gender ==
                                       "Male" ? (
                                         <span className="blue-circle-icon">
