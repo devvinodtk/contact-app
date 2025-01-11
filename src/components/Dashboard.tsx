@@ -15,29 +15,94 @@ import {
   Search,
   ChevronsUpDown,
   Phone,
-  Eye,
   Trash2,
   Mail,
   Download,
 } from "lucide-react";
-import { typographyProps } from "../types/Users";
-import { formatDate, getAge } from "../utils/Utility_Functions";
-import { useSelector } from "react-redux";
-import { RootState } from "../store/store";
+import { DeleteAction, toastOptions, typographyProps } from "../types/Users";
+import {
+  deleteMemberFromFiresbase,
+  formatDate,
+  getAge,
+  updateMemberToFiresbase,
+} from "../utils/Utility_Functions";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import PopupContainer from "./common/PopupContainer";
+import ConfirmDeleteMember from "./ConfirmDeleteMember";
+import { deleteMember, updateMember } from "../store/MembersSlice";
+import { toast, ToastContainer } from "react-toastify";
+import { selectActiveMembers } from "../store/MemberSelector";
 
 const Dashboard = () => {
   const TABLE_HEAD = ["Member", "Age", "Blood Group", "Occupation", "Area", ""];
+  const [selectedMemberForDelete, setSelectedMemberForDelete] = useState<{
+    memberId: string;
+    memberName: string;
+  } | null>(null);
 
-  const { members } = useSelector((state: RootState) => state.members);
+  const activeMembers = useSelector(selectActiveMembers);
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const onEditMember = (memberId: string) => {
     navigate(`/users/${memberId}`);
   };
+  const [open, setOpen] = useState(false);
+  const handleClose = () => setOpen(false);
+  const onDeleteMember = (memberId: string, memberName: string) => {
+    setSelectedMemberForDelete({ memberId, memberName });
+    setOpen(true);
+  };
 
-  const onDeleteMember = (memberId: string) => {
-    console.log(memberId);
+  const handleConfirmDelete = (
+    memberId: string,
+    deleteAction: DeleteAction
+  ) => {
+    if (deleteAction === "soft_delete") {
+      const currentMember = activeMembers.find(
+        (member) => member.memberId === memberId
+      );
+      if (currentMember) {
+        updateMemberToFiresbase({ ...currentMember, isInactive: true })
+          .then(() => {
+            dispatch(updateMember(currentMember));
+            toast.success(
+              `Member ${currentMember.personalDetails.name} marked inactive`,
+              toastOptions
+            );
+          })
+          .catch((err: any) => {
+            toast.error(
+              `Error while marking the member ${currentMember.personalDetails.name} inactive: ` +
+                err?.message,
+              toastOptions
+            );
+          })
+          .finally(() => {
+            setOpen(false);
+          });
+      }
+    } else if (deleteAction === "hard_delete") {
+      deleteMemberFromFiresbase(memberId)
+        .then(() => {
+          dispatch(deleteMember(memberId));
+          toast.success(
+            `Deleted the member ${selectedMemberForDelete?.memberName} successfully.`,
+            toastOptions
+          );
+        })
+        .catch((err: any) => {
+          toast.error(
+            `Error while deleting the member ${selectedMemberForDelete?.memberName}: ` +
+              err?.message,
+            toastOptions
+          );
+        })
+        .finally(() => {
+          setOpen(false);
+        });
+    }
   };
 
   return (
@@ -100,17 +165,15 @@ const Dashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {members &&
-                        members.length > 0 &&
-                        members.map((member, index) => {
-                          const isLast = index === members.length - 1;
+                      {activeMembers?.length > 0 &&
+                        activeMembers.map((member, index) => {
+                          const isLast = index === activeMembers.length - 1;
                           const classes = isLast
                             ? "p-4"
                             : "p-4 border-b border-blue-gray-100";
 
                           return (
                             <tr key={index} className="hover:bg-sky-50">
-                             
                               <td className={classes}>
                                 <div className="flex items-center gap-3">
                                   <Badge
@@ -141,7 +204,14 @@ const Dashboard = () => {
                                       color="blue-gray"
                                       className="font-normal"
                                     >
-                                      <span className="text-gray text-base">{member.personalDetails?.name}</span> {" "} <span className="text-gray"> ({member.memberId})</span>{" "}
+                                      <span className="text-gray text-base">
+                                        {member.personalDetails?.name}
+                                      </span>{" "}
+                                      <span className="text-gray">
+                                        {" "}
+                                        {member.displayId &&
+                                          `(${member.displayId})`}
+                                      </span>{" "}
                                       {member.personalDetails?.gender ==
                                       "Male" ? (
                                         <span className="blue-circle-icon">
@@ -273,11 +343,12 @@ const Dashboard = () => {
                                   <IconButton
                                     variant="text"
                                     onClick={() => {
-                                      onDeleteMember(member.memberId);
+                                      onDeleteMember(
+                                        member.memberId,
+                                        member.personalDetails.name
+                                      );
                                     }}
-                                    {...({
-                                     
-                                    } as React.ComponentProps<
+                                    {...({} as React.ComponentProps<
                                       typeof IconButton
                                     >)}
                                   >
@@ -296,9 +367,19 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      {/* <div className="max-w-80 mr-1 w-full text-gray-700 bg-white rounded-lg shadow-md overflow-hidden">
-        Hello
-      </div> */}
+      {selectedMemberForDelete && (
+        <PopupContainer
+          header={`Delete ${selectedMemberForDelete.memberName}`}
+          open={open}
+          onClose={handleClose}
+        >
+          <ConfirmDeleteMember
+            memberId={selectedMemberForDelete.memberId}
+            onConfirmDelete={handleConfirmDelete}
+          />
+        </PopupContainer>
+      )}
+      <ToastContainer />
     </>
   );
 };

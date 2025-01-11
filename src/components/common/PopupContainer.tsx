@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Dialog,
-  DialogBody,
-  DialogHeader,
-  DialogFooter,
-} from "@material-tailwind/react";
+import { Dialog, DialogBody, DialogHeader } from "@material-tailwind/react";
 import { X } from "lucide-react";
 
 interface PopupContainerProps {
@@ -19,13 +14,15 @@ const PopupContainer: React.FC<PopupContainerProps> = ({
   onClose,
   header,
   children,
-}: any) => {
+}: PopupContainerProps) => {
   return (
     <Dialog
       size="sm"
       className="items-center justify-center overflow-y-auto max-w-[95%] max-h-[95vh]"
       dismiss={{ outsidePress: false }}
-      {...({ open, handler: onClose } as React.ComponentProps<typeof Dialog>)}
+      {...({ open, handler: onClose } as unknown as React.ComponentProps<
+        typeof Dialog
+      >)}
     >
       <DialogHeader
         className="w-full justify-between border-b"

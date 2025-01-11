@@ -1,5 +1,5 @@
 import { CommunicationPreference, EducationLevel, Gender, Members, PostalData, PostOfficesInfo, RelationshipType } from '../types/Users';
-import { db, ref, get, query, set, orderByChild, equalTo, update, storage } from '../firebase/firebase';
+import { db, ref, get, query, set, orderByChild, equalTo, update, remove, storage } from '../firebase/firebase';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
   deleteObject,
@@ -47,6 +47,22 @@ export async function updateMemberToFiresbase(updatedMember: Members) {
     })
     .catch((error) => {
       throw new Error('Error updating member details: '+ error);
+    });
+  } else {
+    throw new Error('The user with specified member id not found.');
+  }
+}
+
+export async function deleteMemberFromFiresbase(memberId: string) {
+  const getDocRef = ref(db, `kalakairali/members/${memberId}`);
+  const snapshot = await get(getDocRef);
+
+  if(snapshot.exists()) {
+    remove(getDocRef).then(() => {
+      console.log('Member successfully deleted!');
+    })
+    .catch((error) => {
+      throw new Error('Error deleting member details: '+ error);
     });
   } else {
     throw new Error('The user with specified member id not found.');

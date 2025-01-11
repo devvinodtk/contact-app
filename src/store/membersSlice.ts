@@ -1,7 +1,6 @@
-import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Members } from "../types/Users";
 import { fetchMembers } from "../utils/Utility_Functions";
-import { RootState } from "./store";
 
 interface MembersState {
     members: Members[],
@@ -28,6 +27,9 @@ const membersSlice = createSlice({
             if(index >= 0) {
                 state.members[index] = updatedMember;
             }
+        },
+        deleteMember: (state, action: PayloadAction<string>) => {
+            state.members = state.members.filter((member) => member.memberId !== action.payload)
         }
     }, extraReducers: (builder) => {
         builder
@@ -47,12 +49,5 @@ const membersSlice = createSlice({
     }
 });
 
-export const selectMemberById = (memberId: string | undefined) => 
-    createSelector(
-        (state: RootState) => state.members.members,
-        (members)=> members.find((member)=>member.memberId === memberId)
-    );
-
-
-export const { addMember, updateMember, resetMember } = membersSlice.actions;
+export const { addMember, updateMember, resetMember, deleteMember } = membersSlice.actions;
 export default membersSlice.reducer;

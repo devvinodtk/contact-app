@@ -26,6 +26,8 @@ export enum UserOps {
 }
 
 export type Gender = ''| 'Male' | 'Female' | 'Other' | 'Prefer Not To Say';
+
+export type DeleteAction = 'soft_delete' | 'hard_delete'
 export type EducationLevel =
   | ''
   | 'Nursery'
@@ -69,6 +71,7 @@ export type PersonalDetails = {
 };
 
 export type Members = {
+  displayId?: string
   memberId: string,
   personalDetails: PersonalDetails;
   jobTitle?: string;

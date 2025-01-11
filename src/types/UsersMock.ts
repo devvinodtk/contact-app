@@ -50,6 +50,7 @@ export const familyDetails: FamilyDetails = {
 };
 
 export const memberDetails: Members = {
+  displayId: '',
   memberId: '',
   personalDetails: personalDetails,
   presentAddress: memberAddress,

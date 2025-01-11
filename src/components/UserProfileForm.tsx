@@ -20,11 +20,7 @@ import PopupContainer from "./common/PopupContainer";
 import FamilyDetailsTable from "./FamilyDetailsTable";
 import { memberAddress, memberDetails } from "../types/UsersMock";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  addMember,
-  selectMemberById,
-  updateMember,
-} from "../store/MembersSlice";
+import { addMember, updateMember } from "../store/MembersSlice";
 import {
   communicationPreferenceOptions,
   educationLevelOptions,
@@ -43,9 +39,9 @@ import AddressCard from "./common/AddressCard";
 import { toast, ToastContainer } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import { useParams } from "react-router-dom";
-import { RootState } from "../store/store";
 import { useAuth, UserAuthValue } from "../context/AuthProvider";
 import LoaderComponent from "./common/Loader";
+import { selectMemberById } from "../store/MemberSelector";
 
 interface UserProfileFormProps {
   registeredMember?: Members;
@@ -68,9 +64,10 @@ const UserProfileForm: React.FC = ({
   });
   const { userLoggedIn }: UserAuthValue = useAuth();
   const { memberid } = useParams();
-  const member = useSelector((state: RootState) =>
-    selectMemberById(memberid)(state)
-  );
+  let member = null;
+  if (memberid) {
+    member = useSelector(selectMemberById(memberid));
+  }
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [open, setOpen] = useState(false); // Maintains open/close state of Family Details Popup
@@ -298,6 +295,7 @@ const UserProfileForm: React.FC = ({
                   Member ID:
                 </label>
                 <input
+                  {...register(`displayId`)}
                   type="text"
                   className="border rounded p-2 text-gray-600"
                   placeholder="KK2025XXXX"
