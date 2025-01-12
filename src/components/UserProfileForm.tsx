@@ -9,11 +9,12 @@ import {
   typographyProps,
   UserOps,
   toastOptions,
+  Coordinates,
+  blreCoordinates,
 } from "../types/Users";
 
 import AddressForm from "./AddressForm";
 import DropdownSelect from "./common/DropdownSelect";
-import GeoLocationDisplay from "./GeoLocationDisplay";
 import Header from "./common/Header";
 import ProfilePicUploader from "./common/ProfilePicUploader";
 import PopupContainer from "./common/PopupContainer";
@@ -42,6 +43,7 @@ import { useParams } from "react-router-dom";
 import { useAuth, UserAuthValue } from "../context/AuthProvider";
 import LoaderComponent from "./common/Loader";
 import { selectMemberById } from "../store/MemberSelector";
+import MapComponent from "./MapComponent";
 
 interface UserProfileFormProps {
   registeredMember?: Members;
@@ -86,6 +88,9 @@ const UserProfileForm: React.FC = ({
   const [openAddressDialog, setOpenAddressDialog] = useState(false);
   const [currentAddressChange, setCurrentAddressChange] =
     useState<AddressChangeType>({} as AddressChangeType);
+  const [memberLocation, setMemberLocation] = useState<Coordinates | null>(
+    null
+  );
   const [imageString, setImageString] = useState<string | null>(null);
   useEffect(() => {
     if (selectedMember) {
@@ -204,6 +209,7 @@ const UserProfileForm: React.FC = ({
             profilePhotoUrl:
               profilePicUrl || data.personalDetails.profilePhotoUrl,
           },
+          geoLocation: memberLocation ?? blreCoordinates,
           memberId: data.memberId ? data.memberId : uuidv4(),
           presentAddress: presentAddress,
           permanentAddress: permanentAddress,
@@ -607,7 +613,13 @@ const UserProfileForm: React.FC = ({
 
           <div className="flex flex-col mt-6 gap-4 md:flex-row">
             <div className="flex-1 p-4 border rounded">
-              <GeoLocationDisplay geoLocation={memberDetails.geoLocation} />
+              {/* <GeoLocationDisplay geoLocation={memberDetails.geoLocation} /> */}
+              <MapComponent
+                coordinates={member?.geoLocation}
+                onUpdateLocation={(coordinates: Coordinates) => {
+                  setMemberLocation(coordinates);
+                }}
+              />
             </div>
             {userLoggedIn && (
               <div className="flex-1 p-4 border rounded">

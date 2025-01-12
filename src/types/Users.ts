@@ -85,7 +85,7 @@ export type Members = {
   dateOfJoining: string;
   areaCode: AreaCode;
   isInactive: boolean;
-  geoLocation?: GeoLocation;
+  geoLocation?: Coordinates;
   comments?: string;
   verified: boolean;
 };
@@ -118,6 +118,11 @@ export type GeoLocation = {
   longitude: number;
 };
 
+export interface Coordinates {
+  lat: number;
+  lng: number;
+}
+
 export type AddressChangeType = {
   addressType: AddressType;
   operation: UserOps;
@@ -128,6 +133,10 @@ export const typographyProps = {
   color: 'blue-gray',
 };
 
+export const blreCoordinates = {
+  lat: 12.9716,
+  lng: 77.5946,
+};
 export const toastOptions: ToastOptions<unknown> = {
   position: "top-right",
   autoClose: 3000,

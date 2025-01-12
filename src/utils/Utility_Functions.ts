@@ -1,4 +1,4 @@
-import { CommunicationPreference, EducationLevel, Gender, Members, PostalData, PostOfficesInfo, RelationshipType } from '../types/Users';
+import { CommunicationPreference, Coordinates, EducationLevel, Gender, Members, PostalData, PostOfficesInfo, RelationshipType } from '../types/Users';
 import { db, ref, get, query, set, orderByChild, equalTo, update, remove, storage } from '../firebase/firebase';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
@@ -136,6 +136,15 @@ export const removeProfilePicFromFirebase = async(imageUrl: string) => {
   const imgRef = storageRef(storage, imageUrl);
   await deleteObject(imgRef);
 }
+
+export const createGoogleMapsUrl = (location: Coordinates): string => {
+  // For web view
+  const googleMapsUrl = `https://www.google.com/maps?q=${location.lat},${location.lng}`;
+  // For mobile view: Uncomment below line to use Google Maps app directly on mobile
+  // const googleMapsAppUrl = `google.maps://?q=${location.lat},${location.lng}`;
+  
+  return googleMapsUrl; // Return the Google Maps URL for web or app scheme
+};
 
 export const resizeImage = (base64: string): Promise<Blob | null> =>
   new Promise((resolve, reject) => {

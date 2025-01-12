@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@material-tailwind/react": "^2.1.10",
+    "@react-google-maps/api": "^2.20.5",
     "@reduxjs/toolkit": "^2.4.0",
     "axios": "^1.7.9",
     "cropperjs": "^1.6.2",

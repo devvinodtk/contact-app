@@ -16,11 +16,19 @@ import {
   ChevronsUpDown,
   Phone,
   Trash2,
+  MapPin,
   Mail,
   Download,
 } from "lucide-react";
-import { DeleteAction, toastOptions, typographyProps } from "../types/Users";
 import {
+  blreCoordinates,
+  Coordinates,
+  DeleteAction,
+  toastOptions,
+  typographyProps,
+} from "../types/Users";
+import {
+  createGoogleMapsUrl,
   deleteMemberFromFiresbase,
   formatDate,
   getAge,
@@ -103,6 +111,11 @@ const Dashboard = () => {
           setOpen(false);
         });
     }
+  };
+
+  const handleOpenMap = (location: Coordinates) => {
+    const url = createGoogleMapsUrl(location);
+    window.open(url, "_blank");
   };
 
   return (
@@ -355,6 +368,23 @@ const Dashboard = () => {
                                     <Trash2 className="h-4 w-4" />
                                   </IconButton>
                                 </Tooltip>
+                                {member?.geoLocation && (
+                                  <Tooltip content="Show Location">
+                                    <IconButton
+                                      variant="text"
+                                      onClick={() => {
+                                        handleOpenMap(
+                                          member.geoLocation || blreCoordinates
+                                        );
+                                      }}
+                                      {...({} as React.ComponentProps<
+                                        typeof IconButton
+                                      >)}
+                                    >
+                                      <MapPin className="h-4 w-4" />
+                                    </IconButton>
+                                  </Tooltip>
+                                )}
                               </td>
                             </tr>
                           );

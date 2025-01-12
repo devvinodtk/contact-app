@@ -2,16 +2,16 @@ import {
   Address,
   AreaCode,
   BloodGroup,
+  Coordinates,
   EducationalQualification,
   FamilyDetails,
-  GeoLocation,
   Members,
   PersonalDetails,
 } from './Users';
 
-export const geoLocation: GeoLocation = {
-  latitude: 12.9716,
-  longitude: 77.5946,
+export const geoLocation: Coordinates = {
+  lat: 12.9716,
+  lng: 77.5946,
 };
 
 export const memberAddress: Address = {
