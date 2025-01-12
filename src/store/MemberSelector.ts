@@ -1,10 +1,10 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "./store";
 
-export const selectMemberById = (memberId: string) => 
+export const selectMemberById = (memberId?: string) => 
     createSelector(
         [(state: RootState) => state.members.members],
-        (members)=> members.find((member)=>member.memberId === memberId) || null
+        (members)=> memberId ? members.find((member)=>member.memberId === memberId): null
     );
 
 export const selectActiveMembers = createSelector(

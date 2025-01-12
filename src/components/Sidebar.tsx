@@ -17,7 +17,12 @@ const SIDEBAR_ITEMS = [
     color: "#ff3aac",
     href: "/dashboard",
   },
-  { name: "Add Member", icon: UserPlus, color: "#f1bf00", href: "/users" },
+  {
+    name: "Add / Edit Member",
+    icon: UserPlus,
+    color: "#f1bf00",
+    href: "/users",
+  },
   {
     name: "Address List",
     icon: NotebookTabs,

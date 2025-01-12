@@ -64,10 +64,8 @@ const UserProfileForm: React.FC = ({
   });
   const { userLoggedIn }: UserAuthValue = useAuth();
   const { memberid } = useParams();
-  let member = null;
-  if (memberid) {
-    member = useSelector(selectMemberById(memberid));
-  }
+  const [member, setMember] = useState<Members | null>(null);
+  const selectedMember = useSelector(selectMemberById(memberid));
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [open, setOpen] = useState(false); // Maintains open/close state of Family Details Popup
@@ -89,6 +87,13 @@ const UserProfileForm: React.FC = ({
   const [currentAddressChange, setCurrentAddressChange] =
     useState<AddressChangeType>({} as AddressChangeType);
   const [imageString, setImageString] = useState<string | null>(null);
+  useEffect(() => {
+    if (selectedMember) {
+      setMember(selectedMember);
+    } else {
+      setMember(null);
+    }
+  }, [selectedMember]);
 
   const handleClose = () => setOpen(false); // Callback function to close the Family Details Popup
   const handleAddMember = () => setOpen(true); // Callback function to open the Family Details Popup
@@ -158,9 +163,10 @@ const UserProfileForm: React.FC = ({
       setPermanentAddress(member.permanentAddress);
       setOfficeAddress(member.officeAddress);
       setFamilyDetails(member.familyDetails);
+    } else if (!memberid || !member) {
+      handleResetForm();
     }
-  }, [member, memberid]);
-
+  }, [member, memberid, reset]);
   const onHandleSaveMembersForm: SubmitHandler<Members> = async (data) => {
     clearErrors();
     let error = false;
@@ -284,7 +290,13 @@ const UserProfileForm: React.FC = ({
         onSubmit={handleSubmit(onHandleSaveMembersForm)}
       >
         <Header
-          title={userLoggedIn ? "Add Members" : "Register to Kalakairali MMS"}
+          title={
+            userLoggedIn
+              ? memberid
+                ? "Edit Member"
+                : "Add Members"
+              : "Register to Kalakairali MMS"
+          }
         />
         <div className="p-4 w-full mt-16 sm:mt-0">
           {userLoggedIn && !member?.verified && (
