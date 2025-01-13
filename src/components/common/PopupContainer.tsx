@@ -1,5 +1,10 @@
 import React from "react";
-import { Dialog, DialogBody, DialogHeader } from "@material-tailwind/react";
+import {
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+} from "@material-tailwind/react";
 import { X } from "lucide-react";
 
 interface PopupContainerProps {
@@ -40,6 +45,12 @@ const PopupContainer: React.FC<PopupContainerProps> = ({
         <DialogBody {...({} as React.ComponentProps<typeof DialogHeader>)}>
           {children}
         </DialogBody>
+        <DialogFooter
+          className="w-full"
+          {...({} as React.ComponentProps<typeof DialogHeader>)}
+        >
+          <p></p>
+        </DialogFooter>
       </div>
     </Dialog>
   );
