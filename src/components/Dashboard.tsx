@@ -194,6 +194,11 @@ const Dashboard = () => {
                                     color={member.verified ? "green" : "red"}
                                   >
                                     <Avatar
+                                      className="cursor-pointer"
+                                      onClick={(event: React.MouseEvent) => {
+                                        event.stopPropagation();
+                                        onEditMember(member.memberId);
+                                      }}
                                       {...({} as React.ComponentProps<
                                         typeof Avatar
                                       >)}
