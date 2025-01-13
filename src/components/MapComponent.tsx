@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { GoogleMap, Marker, Autocomplete } from "@react-google-maps/api";
 import { blreCoordinates, Coordinates } from "../types/Users";
+import { LocateFixed } from "lucide-react";
 
 interface MapComponentProps {
   coordinates?: Coordinates;
@@ -85,7 +86,24 @@ const MapComponent: React.FC<MapComponentProps> = ({
   }, []);
 
   return (
-    <div className="p-4">
+    <div>
+      <h2 className="text-lg font-semibold mb-4 text-gray-600">
+        Share My Home Location
+      </h2>
+      <div className="flex flex-wrap justify-start items-left mb-2">
+        <div className="w-full sm:w-1/2 text-left">
+          <button
+            type="button"
+            onClick={locateUser}
+            className="px-4 py-2 text-white bg-blue-500 rounded"
+          >
+           <LocateFixed className="inline h-4 w-4"/> Use Current Location
+          </button>
+        </div>
+      </div>
+      <div className="w-full mx-auto mb-2 text-gray-600 text-sm font-medium">
+        <span className="font-bold">Or</span> search/locate your location on the map
+      </div>
       <div className="mb-4">
         <Autocomplete
           onLoad={handleAutocompleteLoad}
@@ -108,15 +126,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
       >
         {markerPosition && <Marker position={markerPosition} />}
       </GoogleMap>
-      <div className="flex justify- mt-4">
-        <button
-          type="button"
-          onClick={locateUser}
-          className="px-4 py-2 text-white bg-blue-500 rounded"
-        >
-          Use My Current Location
-        </button>
-      </div>
     </div>
   );
 };
