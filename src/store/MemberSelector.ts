@@ -12,3 +12,10 @@ export const selectActiveMembers = createSelector(
         (members) => members.filter((member)=> !member.isInactive)
         .sort((a, b) =>a.personalDetails.name.localeCompare(b.personalDetails.name)) // Output transformation
       );
+
+export const selectMemberIDMobileMap = createSelector(
+    [(state: RootState) => state.members.members],
+    (members) => members.map((member)=> ({
+        [member.personalDetails.mobileNumber]: member.memberId
+    }))
+);

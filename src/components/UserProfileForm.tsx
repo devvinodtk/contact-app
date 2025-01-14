@@ -42,7 +42,10 @@ import { v4 as uuidv4 } from "uuid";
 import { useParams } from "react-router-dom";
 import { useAuth, UserAuthValue } from "../context/AuthProvider";
 import LoaderComponent from "./common/Loader";
-import { selectMemberById } from "../store/MemberSelector";
+import {
+  selectMemberById,
+  selectMemberIDMobileMap,
+} from "../store/MemberSelector";
 import MapComponent from "./MapComponent";
 
 interface UserProfileFormProps {
@@ -68,6 +71,12 @@ const UserProfileForm: React.FC = ({
   const { memberid } = useParams();
   const [member, setMember] = useState<Members | null>(null);
   const selectedMember = useSelector(selectMemberById(memberid));
+  const memberIDMobileMap: { [key: string]: string }[] = useSelector(
+    selectMemberIDMobileMap
+  );
+  // const [memberIDMobileObj, setMemberIDMobileObj] = useState<
+  //   { [key: string]: string }[] | null
+  // >(null);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [open, setOpen] = useState(false); // Maintains open/close state of Family Details Popup
@@ -92,6 +101,17 @@ const UserProfileForm: React.FC = ({
     null
   );
   const [imageString, setImageString] = useState<string | null>(null);
+
+  // useEffect(() => {
+  //   if (memberIDMobileMap) {
+  //     setMemberIDMobileObj(
+  //       memberIDMobileMap as { [key: string]: string }[] | null
+  //     );
+  //   } else {
+  //     setMember(null);
+  //   }
+  // }, [memberIDMobileMap]);
+
   useEffect(() => {
     if (selectedMember) {
       setMember(selectedMember);
@@ -230,6 +250,18 @@ const UserProfileForm: React.FC = ({
   };
 
   const updateMemberDataToFiresbase = (userObj: Members) => {
+    if (memberIDMobileMap?.length) {
+      const currentMember = memberIDMobileMap.find(
+        (obj) => obj[userObj.personalDetails.mobileNumber]
+      );
+      if (
+        currentMember &&
+        currentMember[userObj.personalDetails.mobileNumber] !== userObj.memberId
+      ) {
+        throw new Error("This mobile number is already registered.");
+      }
+    }
+
     updateMemberToFiresbase(userObj)
       .then(() => {
         toast.success("Member details updated successfully", toastOptions);
@@ -313,9 +345,15 @@ const UserProfileForm: React.FC = ({
                   Member ID:
                 </label>
                 <input
-                  {...register(`displayId`)}
+                  {...register(`displayId`, {
+                    required: "Member ID is required",
+                  })}
                   type="text"
-                  className="border rounded p-2 text-gray-600"
+                  className={`p-2 border rounded text-gray-600 ${
+                    errors.displayId
+                      ? "focus:outline-none border-red-500 bg-red-50"
+                      : ""
+                  }`}
                   placeholder="KK2025XXXX"
                 />
               </div>
