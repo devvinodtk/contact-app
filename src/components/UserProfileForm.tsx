@@ -110,12 +110,12 @@ const UserProfileForm: React.FC = ({
   const dispatch = useDispatch();
 
   const handleResetForm = () => {
-    reset();
     setPresentAddress(memberAddress);
     setPermanentAddress(memberAddress);
     setOfficeAddress(null);
     setFamilyDetails([]);
     setFamilyMemberToEdit(undefined);
+    reset(memberDetails);
   };
 
   const handleCopyPresentAddressChange = (value: boolean) => {
