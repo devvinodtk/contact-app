@@ -30,7 +30,6 @@ import {
 import {
   createGoogleMapsUrl,
   deleteMemberFromFiresbase,
-  formatDate,
   getAge,
   updateMemberToFiresbase,
 } from "../utils/Utility_Functions";
@@ -284,9 +283,7 @@ const Dashboard = () => {
                                     color="blue-gray"
                                     className="font-normal opacity-70"
                                   >
-                                    {formatDate(
-                                      member.personalDetails?.dateOfBirth
-                                    )}
+                                    {member.personalDetails?.dateOfBirth}
                                   </Typography>
                                 </div>
                               </td>

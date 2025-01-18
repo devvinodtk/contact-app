@@ -13,10 +13,10 @@ const ConfirmDeleteMember = ({
   return (
     <>
       <p>
-        Are you sure you want to delete the member. Once deleted the operation
-        cannot be undone.
+        Are you sure you want to delete the member? Once deleted the records
+        cannot be retrieved again.
       </p>
-      <p>Optionally you may choose to soft delete the member. Please confirm</p>
+      <p>Optionally you may choose to deactivate the member. Please confirm</p>
       <div className="p-4 w-full">
         <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center">
           <Button
@@ -40,7 +40,7 @@ const ConfirmDeleteMember = ({
             className="mb-4 sm:mb-0 order-0 sm:order-1 cursor-pointer mr-0 sm:mr-2 text-blue-500 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             {...({} as React.ComponentProps<typeof Button>)}
           >
-            Soft Delete
+            Deactivate
           </Button>
         </div>
       </div>

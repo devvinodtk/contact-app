@@ -28,13 +28,50 @@ export const pincodeLookup = async (pincode: string): Promise<PostOfficesInfo | 
 
 export function formatDate(inputDate: string) {
   if(!inputDate) return '';
-  const [year, month, date] = inputDate.split('-');
-  return `${date}/${month}/${year}`;
+  let [year, month, date] = inputDate.split('-');
+  if(!month && !date) {
+    [year, month, date] = inputDate.split('/');
+  }
+  return (year && month && date) ?`${date}/${month}/${year}`: inputDate;
 }
 
 export function setTodayDate() {
   const currentDate = new Date();
   return currentDate.toISOString().split('T')[0];
+}
+
+export function isValidDate(dateStr: string, isPrimaryMember?: boolean) {
+  const regex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19[0-9][0-9]|20[0-9][0-9])$/;
+  const match = dateStr.match(regex);
+  
+  if (!match) return false; // Invalid format
+
+  // Extract day, month, and year
+  const day = parseInt(match[1], 10);
+  const month = parseInt(match[2], 10) - 1; // JavaScript months are 0-based
+  const year = parseInt(match[3], 10);
+
+  // Check if the date is valid using JavaScript's Date object
+  const today = new Date();
+  const ageCutOff= new Date(
+    today.getFullYear() - 18,
+    today.getMonth(),
+    today.getDate());
+  
+  const date = new Date(year, month, day);
+
+  if(
+    date.getFullYear() !== year ||
+
+    date.getMonth() !== month ||
+    date.getDate() !== day
+  ) {
+    return false;
+  } else if (isPrimaryMember && date > ageCutOff) {
+    return false;
+  }
+  
+  return true;
 }
 
 export async function updateMemberToFiresbase(updatedMember: Members) {
@@ -108,7 +145,11 @@ export const fetchMembers = createAsyncThunk('', async()=>{
 
 export function getAge(dob: string) {
   const today = new Date();
-  const birthDate = new Date(dob);
+  let [date, month, year] = dob.split('/');
+  if(!month || !date) {
+    [year, month, date] = dob.split('-');
+  }
+  const birthDate = new Date(`${year}-${month}-${date}`);
   let age = today.getFullYear() - birthDate.getFullYear();
   const m = today.getMonth() - birthDate.getMonth();
   if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {

@@ -4,8 +4,8 @@ import { Button } from "@material-tailwind/react";
 import {
   educationLevelOptions,
   genderOptions,
+  isValidDate,
   relationshipOptions,
-  setTodayDate,
 } from "../utils/Utility_Functions";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
@@ -28,8 +28,6 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
     mode: "all",
     defaultValues: familyDetails,
   });
-
-  const today = setTodayDate();
 
   const onSubmitHandler: SubmitHandler<FamilyDetails> = (data) => {
     if (!data.familyMemberId) {
@@ -137,7 +135,7 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
         />
 
         <label className="text-sm font-medium text-gray-600">
-          Specialization
+          Course / Specialization
           <input
             type="text"
             placeholder="Specialization"
@@ -159,11 +157,20 @@ const FamilyDetailsForm: React.FC<FamilyDetailsFormProps> = ({
         <label className="block text-sm font-medium mt-6 mb-1 text-gray-600">
           Date of Birth
           <input
-            type="date"
-            max={today}
-            placeholder="Date of Birth"
-            {...register("memberPersonalDetails.dateOfBirth")}
-            className="w-full block p-2 border rounded text-gray-600"
+            type="text"
+            placeholder="DD/MM/YYYY"
+            {...register("memberPersonalDetails.dateOfBirth", {
+              pattern:
+                /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19[0-9][0-9]|20[0-9][0-9])$/,
+              validate: (value) => {
+                return !value || isValidDate(value);
+              },
+            })}
+            className={`w-full block p-2 border rounded mb-4 text-gray-600 ${
+              errors.memberPersonalDetails?.dateOfBirth
+                ? "focus:outline-none border-red-500 bg-red-50"
+                : ""
+            }`}
           />
         </label>
         <Button

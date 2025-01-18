@@ -4,7 +4,8 @@ import Cropper, { ReactCropperElement } from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import ProfilePicEditor from "./ProfilePicEditor";
 import { Crop, Upload } from "lucide-react";
-import { Button } from "@material-tailwind/react";
+import { Button, Typography } from "@material-tailwind/react";
+import { typographyProps } from "../../types/Users";
 
 interface ProfilePicUploaderProps {
   profilePicUrl?: string;
@@ -49,21 +50,31 @@ const ProfilePicUploader: React.FC<ProfilePicUploaderProps> = ({
         />
       )}
       {!croppedImage && image && (
-        <Cropper
-          height={150}
-          width={150}
-          src={image}
-          ref={imageRef}
-          initialAspectRatio={1}
-          aspectRatio={1}
-          guides={false}
-          scalable={true}
-          background={false}
-          responsive={true}
-          checkOrientation={true}
-          className="flex justify-center"
-        />
+        <>
+          <Cropper
+            height={150}
+            width={150}
+            src={image}
+            ref={imageRef}
+            initialAspectRatio={1}
+            aspectRatio={1}
+            guides={false}
+            scalable={true}
+            background={false}
+            responsive={true}
+            checkOrientation={true}
+            className="flex justify-center"
+          />
+          <Typography
+            className="text-red-600 text-center mb-2 mx-2"
+            {...(typographyProps as React.ComponentProps<typeof Typography>)}
+          >
+            Please select the desired area and crop the image using crop (
+            <Crop className="inline h-4"></Crop>) button.
+          </Typography>
+        </>
       )}
+
       {!profilePicUrl && !croppedImage && !image && (
         <img
           src="https://placehold.co/400x400?text=Upload Your\nPhoto"

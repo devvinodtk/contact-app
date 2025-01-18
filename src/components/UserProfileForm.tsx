@@ -26,9 +26,9 @@ import {
   communicationPreferenceOptions,
   educationLevelOptions,
   genderOptions,
+  isValidDate,
   removeProfilePicFromFirebase,
   saveMemberDataToFiresbase,
-  setTodayDate,
   updateMemberToFiresbase,
   uploadProfilePicToFirebase,
 } from "../utils/Utility_Functions";
@@ -47,6 +47,7 @@ import {
   selectMemberIDMobileMap,
 } from "../store/MemberSelector";
 import MapComponent from "./MapComponent";
+import RegistrationInfo from "./RegistrationInfo";
 
 interface UserProfileFormProps {
   registeredMember?: Members;
@@ -64,7 +65,7 @@ const UserProfileForm: React.FC = ({
     trigger,
     formState: { errors, isValid },
   } = useForm<Members>({
-    mode: "onSubmit",
+    mode: "all",
     defaultValues: registeredMember ?? memberDetails,
   });
   const { userLoggedIn }: UserAuthValue = useAuth();
@@ -79,7 +80,8 @@ const UserProfileForm: React.FC = ({
   // >(null);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [open, setOpen] = useState(false); // Maintains open/close state of Family Details Popup
+  const [openAddFamily, setOpenAddFamily] = useState(false); // Maintains open/close state of Family Details Popup
+  const [openRegisterInfoPopUp, setOpenRegisterInfoPopUp] = useState(true);
   const [familyDetails, setFamilyDetails] = useState<FamilyDetails[]>(
     memberDetails.familyDetails
   );
@@ -93,7 +95,6 @@ const UserProfileForm: React.FC = ({
   const [officeAddress, setOfficeAddress] = useState<
     Address | null | undefined
   >(memberDetails.officeAddress);
-  const [today, setToday] = useState("");
   const [openAddressDialog, setOpenAddressDialog] = useState(false);
   const [currentAddressChange, setCurrentAddressChange] =
     useState<AddressChangeType>({} as AddressChangeType);
@@ -102,26 +103,20 @@ const UserProfileForm: React.FC = ({
   );
   const [imageString, setImageString] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   if (memberIDMobileMap) {
-  //     setMemberIDMobileObj(
-  //       memberIDMobileMap as { [key: string]: string }[] | null
-  //     );
-  //   } else {
-  //     setMember(null);
-  //   }
-  // }, [memberIDMobileMap]);
-
   useEffect(() => {
     if (selectedMember) {
       setMember(selectedMember);
+      if (selectedMember.geoLocation) {
+        setMemberLocation(selectedMember.geoLocation);
+      }
     } else {
       setMember(null);
     }
   }, [selectedMember]);
 
-  const handleClose = () => setOpen(false); // Callback function to close the Family Details Popup
-  const handleAddMember = () => setOpen(true); // Callback function to open the Family Details Popup
+  const handleClose = () => setOpenAddFamily(false); // Callback function to close the Family Details Popup
+  const handleAddMember = () => setOpenAddFamily(true); // Callback function to open the Family Details Popup
+  const handleRegisterInfoPopUpClose = () => setOpenRegisterInfoPopUp(false);
   const handleAddAddress = ({ operation, addressType }: AddressChangeType) => {
     setCurrentAddressChange({ operation, addressType });
     setOpenAddressDialog(true);
@@ -161,7 +156,7 @@ const UserProfileForm: React.FC = ({
       }
     });
     setFamilyMemberToEdit(undefined);
-    setOpen(false);
+    setOpenAddFamily(false);
   };
 
   const handleAddressChange = (addressType: AddressType, value: Address) => {
@@ -178,10 +173,6 @@ const UserProfileForm: React.FC = ({
   };
 
   useEffect(() => {
-    setToday(setTodayDate());
-  }, []);
-
-  useEffect(() => {
     if (memberid && member) {
       reset(member);
       setPresentAddress(member.presentAddress);
@@ -192,6 +183,7 @@ const UserProfileForm: React.FC = ({
       handleResetForm();
     }
   }, [member, memberid, reset]);
+
   const onHandleSaveMembersForm: SubmitHandler<Members> = async (data) => {
     clearErrors();
     let error = false;
@@ -209,6 +201,7 @@ const UserProfileForm: React.FC = ({
       });
       error = true;
     }
+
     trigger();
     if (error) return;
 
@@ -268,8 +261,8 @@ const UserProfileForm: React.FC = ({
         dispatch(updateMember(userObj));
         handleResetForm();
       })
-      .catch((error) => {
-        throw new Error(error);
+      .catch((err) => {
+        toast.error(err.message, toastOptions);
       });
   };
 
@@ -280,8 +273,8 @@ const UserProfileForm: React.FC = ({
         dispatch(addMember(userObj));
         handleResetForm();
       })
-      .catch((error) => {
-        throw new Error(error);
+      .catch((err) => {
+        toast.error(err.message, toastOptions);
       });
   };
 
@@ -292,7 +285,7 @@ const UserProfileForm: React.FC = ({
 
     if (memberToEdit) {
       setFamilyMemberToEdit(memberToEdit);
-      setOpen(true);
+      setOpenAddFamily(true);
     }
   };
 
@@ -459,13 +452,17 @@ const UserProfileForm: React.FC = ({
                       Date of Birth *
                     </label>
                     <input
-                      type="date"
+                      type="text"
                       autoComplete="off"
-                      max={today}
                       {...register(`personalDetails.dateOfBirth`, {
                         required: "Date of birth is required",
+                        pattern:
+                          /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19[0-9][0-9]|20[0-9][0-9])$/,
+                        validate: (value) => {
+                          return isValidDate(value, true);
+                        },
                       })}
-                      placeholder="Date of Birth"
+                      placeholder="DD/MM/YYYY"
                       className={`w-full block p-2 border rounded mb-4 text-gray-600 ${
                         errors.personalDetails?.dateOfBirth
                           ? "focus:outline-none border-red-500 bg-red-50"
@@ -566,7 +563,7 @@ const UserProfileForm: React.FC = ({
                   </div>
                   <div className="w-full sm:w-1/3 sm:pl-4">
                     <label className="block text-sm font-medium mb-1 text-gray-600">
-                      Specialization
+                      Course / Specialization
                     </label>
                     <input
                       type="text"
@@ -743,7 +740,7 @@ const UserProfileForm: React.FC = ({
         />
       </PopupContainer>
       <PopupContainer
-        open={open}
+        open={openAddFamily}
         header="Add Family Member"
         onClose={handleClose}
       >
@@ -752,6 +749,16 @@ const UserProfileForm: React.FC = ({
           onSaveDetails={handlSaveFamilyDetails}
         />
       </PopupContainer>
+      {!userLoggedIn && (
+        <PopupContainer
+          open={openRegisterInfoPopUp}
+          header="Kalakairali Member Management System"
+          onClose={handleRegisterInfoPopUpClose}
+        >
+          <RegistrationInfo onAgreeAndConfirm={handleRegisterInfoPopUpClose} />
+        </PopupContainer>
+      )}
+
       <ToastContainer />
     </>
   );

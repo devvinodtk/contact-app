@@ -18,7 +18,7 @@ const SIDEBAR_ITEMS = [
     href: "/dashboard",
   },
   {
-    name: "Add / Edit Member",
+    name: "Add Member",
     icon: UserPlus,
     color: "#f1bf00",
     href: "/users",
