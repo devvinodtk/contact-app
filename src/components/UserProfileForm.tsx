@@ -28,8 +28,8 @@ import {
   genderOptions,
   isValidDate,
   removeProfilePicFromFirebase,
-  saveMemberDataToFiresbase,
-  updateMemberToFiresbase,
+  saveMemberDataToFirebase,
+  updateMemberToFirebase,
   uploadProfilePicToFirebase,
 } from "../utils/Utility_Functions";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
@@ -209,7 +209,7 @@ const UserProfileForm: React.FC = ({
       try {
         setIsLoading(true);
         const ops: UserOps = data.memberId ? UserOps.Edit : UserOps.Add;
-        let profilePicUrl = !!imageString
+        const profilePicUrl = imageString
           ? await handleSaveProfilePic(data.personalDetails.name)
           : "";
         if (profilePicUrl && data.personalDetails.profilePhotoUrl) {
@@ -230,9 +230,9 @@ const UserProfileForm: React.FC = ({
           familyDetails: familyDetails ?? [],
         };
         if (ops === UserOps.Add) {
-          addNewMemberDataToFiresbase(userObj);
+          addNewMemberDataToFirebase(userObj);
         } else if (ops === UserOps.Edit) {
-          updateMemberDataToFiresbase(userObj);
+          updateMemberDataToFirebase(userObj);
         }
       } catch (err: any) {
         toast.error(err.message, toastOptions);
@@ -242,7 +242,7 @@ const UserProfileForm: React.FC = ({
     }
   };
 
-  const updateMemberDataToFiresbase = (userObj: Members) => {
+  const updateMemberDataToFirebase = (userObj: Members) => {
     if (memberIDMobileMap?.length) {
       const currentMember = memberIDMobileMap.find(
         (obj) => obj[userObj.personalDetails.mobileNumber]
@@ -255,7 +255,7 @@ const UserProfileForm: React.FC = ({
       }
     }
 
-    updateMemberToFiresbase(userObj)
+    updateMemberToFirebase(userObj)
       .then(() => {
         toast.success("Member details updated successfully", toastOptions);
         dispatch(updateMember(userObj));
@@ -266,8 +266,8 @@ const UserProfileForm: React.FC = ({
       });
   };
 
-  const addNewMemberDataToFiresbase = (userObj: Members) => {
-    saveMemberDataToFiresbase(userObj)
+  const addNewMemberDataToFirebase = (userObj: Members) => {
+    saveMemberDataToFirebase(userObj)
       .then(() => {
         toast.success("Member details saved successfully", toastOptions);
         dispatch(addMember(userObj));

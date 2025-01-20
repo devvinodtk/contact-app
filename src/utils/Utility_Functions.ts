@@ -13,7 +13,7 @@ export const pincodeLookup = async (pincode: string): Promise<PostOfficesInfo | 
   try{
     const response = await axios.get(`https://api.postalpincode.in/pincode/${pincode}`);
     const PostOfficesList: PostalData[] = response.data[0].PostOffice;
-    
+
     if(PostOfficesList && PostOfficesList.length > 0) {
       return {
           district: PostOfficesList[0].District,
@@ -43,7 +43,7 @@ export function setTodayDate() {
 export function isValidDate(dateStr: string, isPrimaryMember?: boolean) {
   const regex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19[0-9][0-9]|20[0-9][0-9])$/;
   const match = dateStr.match(regex);
-  
+
   if (!match) return false; // Invalid format
 
   // Extract day, month, and year
@@ -57,7 +57,7 @@ export function isValidDate(dateStr: string, isPrimaryMember?: boolean) {
     today.getFullYear() - 18,
     today.getMonth(),
     today.getDate());
-  
+
   const date = new Date(year, month, day);
 
   if(
@@ -70,11 +70,11 @@ export function isValidDate(dateStr: string, isPrimaryMember?: boolean) {
   } else if (isPrimaryMember && date > ageCutOff) {
     return false;
   }
-  
+
   return true;
 }
 
-export async function updateMemberToFiresbase(updatedMember: Members) {
+export async function updateMemberToFirebase(updatedMember: Members) {
   const getDocRef = ref(db, `kalakairali/members/${updatedMember.memberId}`);
   const snapshot = await get(getDocRef);
 
@@ -90,7 +90,7 @@ export async function updateMemberToFiresbase(updatedMember: Members) {
   }
 }
 
-export async function deleteMemberFromFiresbase(memberId: string) {
+export async function deleteMemberFromFirebase(memberId: string) {
   const getDocRef = ref(db, `kalakairali/members/${memberId}`);
   const snapshot = await get(getDocRef);
 
@@ -106,7 +106,7 @@ export async function deleteMemberFromFiresbase(memberId: string) {
   }
 }
 
-export async function saveMemberDataToFiresbase(memberData: Members) {
+export async function saveMemberDataToFirebase(memberData: Members) {
   // Save data to firebase
 
   if (memberData?.personalDetails?.mobileNumber) {
@@ -183,7 +183,7 @@ export const createGoogleMapsUrl = (location: Coordinates): string => {
   const googleMapsUrl = `https://www.google.com/maps?q=${location.lat},${location.lng}`;
   // For mobile view: Uncomment below line to use Google Maps app directly on mobile
   // const googleMapsAppUrl = `google.maps://?q=${location.lat},${location.lng}`;
-  
+
   return googleMapsUrl; // Return the Google Maps URL for web or app scheme
 };
 
@@ -231,6 +231,22 @@ export const resizeImage = (base64: string): Promise<Blob | null> =>
     img.src = base64;
   });
 
+function getNestedValue<T>(member: T, path: string): any {
+    return path.split('.').reduce((acc: any, key: string) => acc && acc[key], member);
+}
+
+export const searchFilterData = (filterText: string, members: Members[]) => {
+  return members.filter((member) => {
+    return searchKeys.some((key) => {
+      const value = getNestedValue(member, key);
+      return (
+        value &&
+        value.toString().toLowerCase().includes(filterText.toLowerCase())
+      );
+    });
+  });
+}
+
 export const relationshipOptions = [
   '',
   'Spouse',
@@ -262,3 +278,12 @@ export const communicationPreferenceOptions = [
   'In Person',
   'Postal',
 ] as CommunicationPreference[];
+
+const searchKeys = [
+  'personalDetails.mobileNumber',
+  'personalDetails.name',
+  'personalDetails.bloodGroup',
+  'personalDetails.emailId',
+  'personalDetails.jobTitle',
+  'presentAddress.postOffice',
+];

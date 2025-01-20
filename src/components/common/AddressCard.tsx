@@ -64,11 +64,7 @@ const AddressCard = ({
               onChange={handleCopyAddressCheckedChange}
               label="Copy Present Address"
               className="border bg-gray-100 z-0"
-              {...({
-                checked: isCopyAddressChecked,
-                onChange: handleCopyAddressCheckedChange,
-                label: "Copy Present Address",
-              } as React.ComponentProps<typeof Switch>)}
+              {...({} as React.ComponentProps<typeof Switch>)}
             />
           )}
         </div>
