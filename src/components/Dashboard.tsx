@@ -216,7 +216,7 @@ const Dashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredResult?.length &&
+                      {filteredResult?.length ?
                         filteredResult.map((member, index) => {
                           const isLast = index === filteredResult.length - 1;
                           const classes = isLast
@@ -429,7 +429,7 @@ const Dashboard = () => {
                               </td>
                             </tr>
                           );
-                        })}
+                        }): <tr><td colSpan={6}><span className="w-full text-center p-2 text-sm leading-normal text-blue-gray-900 font-normal opacity-70 block">No members found</span></td></tr>}
                     </tbody>
                   </table>
                 </CardBody>
