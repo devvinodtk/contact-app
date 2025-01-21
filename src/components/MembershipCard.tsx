@@ -31,41 +31,49 @@ function MembershipCard() {
                         return (
                           <div
                             key={member.memberId}
-                            className="bg-white shadow-sm rounded-lg border border-gray-200 p-6"
+                            className="bg-white shadow-sm rounded-lg border border-gray-200 p-4"
                           >
                             {/* Logo */}
-                            <div className="flex justify-center mb-3">
+                            <div className="flex justify-start">
                               <img
-                                className=" h-16 mr-2"
+                                className=" h-12 mr-2"
                                 src="/assets/Logo-full.png"
                                 alt="Kalakairali"
                               />
+
                             </div>
+                            <div className="flex justify-end items-center pt-2 pb-2 mb-2 max-w-md border-b-[3px] border-[#3c3b98]">
+                              <div className="text-right mr-4">
+                                <p className="text-xl font-semibold text-gray-800">{member.personalDetails.name}</p>
+                                <p className="text-gray-600  font-semibold">Member ID: {member.displayId}</p>
+                              </div>
+                              <div>
+                              <img
+                                className=" h-20 rounded border-2 border-gray-200"
+                                src={
+                                  member.personalDetails?.profilePhotoUrl
+                                    ? member.personalDetails
+                                        .profilePhotoUrl
+                                    : `/assets/member_${member.personalDetails?.gender.toLocaleLowerCase()}.png`
+                                }
+                                alt="Kalakairali"
+                              />
+                              </div>
+                            </div>                           
 
                             {/* Card Content */}
-                            <div className="text-center">
-                              <h2 className="text-xl font-semibold text-gray-800">
-                                {member.personalDetails.name}
-                              </h2>
-                              <p className="text-gray-600  font-semibold">
-                                Member ID: {member.displayId}
-                              </p>
-                              <div className="my-2">
-                                <p className="text-gray-500 text-sm">
-                                  Blood Group:{" "}
-                                  {member.personalDetails.bloodGroup}
-                                </p>
-                              </div>
+                            <div className="text-center py-2">                       
 
                               <div className="flex justify-between text-sm text-gray-500">
                                 <span>
-                                  Mobile: {member.personalDetails.mobileNumber}
+                                  {member.personalDetails.mobileNumber}
                                 </span>
                                 <span>
-                                  Location: {member.presentAddress.postOffice}
+                                  Blood Group: {member.personalDetails.bloodGroup}
                                 </span>
                               </div>
                             </div>
+                            
                           </div>
                         );
                       })}
