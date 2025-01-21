@@ -9,6 +9,7 @@ import {
   Badge,
   Switch,
   SwitchProps,
+  Chip,
 } from "@material-tailwind/react";
 import Header from "./common/Header";
 import {
@@ -119,12 +120,16 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    if (activeMembers?.length && searchText) {
-      setFilteredResult(searchFilterData(searchText, activeMembers));
-    } else {
-      setFilteredResult(activeMembers);
+    if (activeMembers?.length) {
+      const result = activeMembers.filter((member) =>
+        showUnverifiedUsers ? member.verified === false : member
+      );
+      const filteredMembers = searchText
+        ? searchFilterData(searchText, result)
+        : result;
+      setFilteredResult(filteredMembers);
     }
-  }, [activeMembers, searchText]);
+  }, [activeMembers, searchText, showUnverifiedUsers]);
 
   const handleOpenMap = (location: Coordinates) => {
     const url = createGoogleMapsUrl(location);
@@ -149,7 +154,7 @@ const Dashboard = () => {
                 <CardHeader
                   floated={false}
                   shadow={false}
-                  className="rounded-none"
+                  className="rounded-none mx-0"
                   {...({} as React.ComponentProps<typeof CardHeader>)}
                 >
                   <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
@@ -160,13 +165,22 @@ const Dashboard = () => {
                         }}
                       />
                     </div>
-                    <Switch
-                      checked={showUnverifiedUsers}
-                      onChange={handleShowUnverifiedUsers}
-                      label="Show Unverified Users Only"
-                      className="border bg-gray-100 z-0"
-                      {...({} as React.ComponentProps<typeof Switch>)}
-                    />
+                    <div className="flex flex-row justify-end gap-x-5 text-sm">
+                      <Switch
+                        checked={showUnverifiedUsers}
+                        onChange={handleShowUnverifiedUsers}
+                        label="Show Unverified Users"
+                        className="border bg-gray-100 z-0 "
+                        {...({} as React.ComponentProps<typeof Switch>)}
+                      />
+                      <Chip
+                        variant="ghost"
+                        color="blue"
+                        value={`${
+                          filteredResult?.length ? filteredResult.length : 0
+                        } Members`}
+                      />
+                    </div>
                   </div>
                 </CardHeader>
                 <CardBody
@@ -203,96 +217,40 @@ const Dashboard = () => {
                     </thead>
                     <tbody>
                       {filteredResult?.length &&
-                        filteredResult
-                          .filter((member) =>
-                            showUnverifiedUsers
-                              ? member.verified === false
-                              : member
-                          )
-                          .map((member, index) => {
-                            const isLast = index === filteredResult.length - 1;
-                            const classes = isLast
-                              ? "p-4"
-                              : "p-4 border-b border-blue-gray-100";
+                        filteredResult.map((member, index) => {
+                          const isLast = index === filteredResult.length - 1;
+                          const classes = isLast
+                            ? "p-4"
+                            : "p-4 border-b border-blue-gray-100";
 
-                            return (
-                              <tr key={index} className="hover:bg-sky-50">
-                                <td className={classes}>
-                                  <div className="flex items-center gap-3">
-                                    <Badge
-                                      overlap="circular"
-                                      color={member.verified ? "green" : "red"}
-                                    >
-                                      <Avatar
-                                        className="cursor-pointer"
-                                        onClick={(event: React.MouseEvent) => {
-                                          event.stopPropagation();
-                                          onEditMember(member.memberId);
-                                        }}
-                                        {...({} as React.ComponentProps<
-                                          typeof Avatar
-                                        >)}
-                                        src={
-                                          member.personalDetails
-                                            ?.profilePhotoUrl
-                                            ? member.personalDetails
-                                                .profilePhotoUrl
-                                            : `/assets/member_${member.personalDetails?.gender.toLocaleLowerCase()}.png`
-                                        }
-                                        alt={member.personalDetails?.name}
-                                        size="sm"
-                                        withBorder={true}
-                                      />
-                                    </Badge>
-                                    <div className="flex flex-col">
-                                      <Typography
-                                        {...(typographyProps as React.ComponentProps<
-                                          typeof Typography
-                                        >)}
-                                        variant="small"
-                                        color="blue-gray"
-                                        className="font-normal"
-                                      >
-                                        <span className="text-gray text-base">
-                                          {member.personalDetails?.name}
-                                        </span>{" "}
-                                        <span className="text-gray">
-                                          {" "}
-                                          {member.displayId &&
-                                            `(${member.displayId})`}
-                                        </span>{" "}
-                                        {member.personalDetails?.gender ==
-                                        "Male" ? (
-                                          <span className="blue-circle-icon">
-                                            M
-                                          </span>
-                                        ) : (
-                                          <span className="rose-circle-icon">
-                                            F
-                                          </span>
-                                        )}
-                                      </Typography>
-                                      <Typography
-                                        {...(typographyProps as React.ComponentProps<
-                                          typeof Typography
-                                        >)}
-                                        variant="small"
-                                        color="blue-gray"
-                                        className="font-normal opacity-70"
-                                      >
-                                        <Mail className="inline size-5 pr-2" />
-                                        {member.personalDetails?.emailId} |{" "}
-                                        <Phone className="inline size-5 pr-2" />
-                                        <a
-                                          href={`tel:${member.personalDetails?.mobileNumber}`}
-                                        >
-                                          {member.personalDetails?.mobileNumber}
-                                        </a>
-                                      </Typography>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td className={classes}>
+                          return (
+                            <tr key={index} className="hover:bg-sky-50">
+                              <td className={classes}>
+                                <div className="flex items-center gap-3">
+                                  <Badge
+                                    overlap="circular"
+                                    color={member.verified ? "green" : "red"}
+                                  >
+                                    <Avatar
+                                      className="cursor-pointer"
+                                      onClick={(event: React.MouseEvent) => {
+                                        event.stopPropagation();
+                                        onEditMember(member.memberId);
+                                      }}
+                                      {...({} as React.ComponentProps<
+                                        typeof Avatar
+                                      >)}
+                                      src={
+                                        member.personalDetails?.profilePhotoUrl
+                                          ? member.personalDetails
+                                              .profilePhotoUrl
+                                          : `/assets/member_${member.personalDetails?.gender.toLocaleLowerCase()}.png`
+                                      }
+                                      alt={member.personalDetails?.name}
+                                      size="sm"
+                                      withBorder={true}
+                                    />
+                                  </Badge>
                                   <div className="flex flex-col">
                                     <Typography
                                       {...(typographyProps as React.ComponentProps<
@@ -302,10 +260,24 @@ const Dashboard = () => {
                                       color="blue-gray"
                                       className="font-normal"
                                     >
-                                      {getAge(
-                                        member.personalDetails?.dateOfBirth
-                                      )}{" "}
-                                      Years
+                                      <span className="text-gray text-base">
+                                        {member.personalDetails?.name}
+                                      </span>{" "}
+                                      <span className="text-gray">
+                                        {" "}
+                                        {member.displayId &&
+                                          `(${member.displayId})`}
+                                      </span>{" "}
+                                      {member.personalDetails?.gender ==
+                                      "Male" ? (
+                                        <span className="blue-circle-icon">
+                                          M
+                                        </span>
+                                      ) : (
+                                        <span className="rose-circle-icon">
+                                          F
+                                        </span>
+                                      )}
                                     </Typography>
                                     <Typography
                                       {...(typographyProps as React.ComponentProps<
@@ -315,12 +287,20 @@ const Dashboard = () => {
                                       color="blue-gray"
                                       className="font-normal opacity-70"
                                     >
-                                      {member.personalDetails?.dateOfBirth}
+                                      <Mail className="inline size-5 pr-2" />
+                                      {member.personalDetails?.emailId} |{" "}
+                                      <Phone className="inline size-5 pr-2" />
+                                      <a
+                                        href={`tel:${member.personalDetails?.mobileNumber}`}
+                                      >
+                                        {member.personalDetails?.mobileNumber}
+                                      </a>
                                     </Typography>
                                   </div>
-                                </td>
-
-                                <td className={classes}>
+                                </div>
+                              </td>
+                              <td className={classes}>
+                                <div className="flex flex-col">
                                   <Typography
                                     {...(typographyProps as React.ComponentProps<
                                       typeof Typography
@@ -329,101 +309,127 @@ const Dashboard = () => {
                                     color="blue-gray"
                                     className="font-normal"
                                   >
-                                    {member.personalDetails?.bloodGroup}
+                                    {getAge(
+                                      member.personalDetails?.dateOfBirth
+                                    )}{" "}
+                                    Years
                                   </Typography>
-                                </td>
-
-                                <td className={classes}>
                                   <Typography
                                     {...(typographyProps as React.ComponentProps<
                                       typeof Typography
                                     >)}
                                     variant="small"
                                     color="blue-gray"
-                                    className="font-normal"
+                                    className="font-normal opacity-70"
                                   >
-                                    {member.personalDetails?.jobTitle}
+                                    {member.personalDetails?.dateOfBirth}
                                   </Typography>
-                                </td>
+                                </div>
+                              </td>
 
-                                <td className={classes}>
-                                  <Typography
-                                    {...(typographyProps as React.ComponentProps<
-                                      typeof Typography
+                              <td className={classes}>
+                                <Typography
+                                  {...(typographyProps as React.ComponentProps<
+                                    typeof Typography
+                                  >)}
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {member.personalDetails?.bloodGroup}
+                                </Typography>
+                              </td>
+
+                              <td className={classes}>
+                                <Typography
+                                  {...(typographyProps as React.ComponentProps<
+                                    typeof Typography
+                                  >)}
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {member.personalDetails?.jobTitle}
+                                </Typography>
+                              </td>
+
+                              <td className={classes}>
+                                <Typography
+                                  {...(typographyProps as React.ComponentProps<
+                                    typeof Typography
+                                  >)}
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {member.presentAddress?.postOffice}
+                                </Typography>
+                              </td>
+                              <td className={classes}>
+                                <Tooltip content="Edit User">
+                                  <IconButton
+                                    onClick={() => {
+                                      onEditMember(member.memberId);
+                                    }}
+                                    variant="text"
+                                    {...({
+                                      variant: "text",
+                                    } as React.ComponentProps<
+                                      typeof IconButton
                                     >)}
-                                    variant="small"
-                                    color="blue-gray"
-                                    className="font-normal"
                                   >
-                                    {member.presentAddress?.postOffice}
-                                  </Typography>
-                                </td>
-                                <td className={classes}>
-                                  <Tooltip content="Edit User">
+                                    <PencilIcon className="h-4 w-4" />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip content="Download Membership Card">
+                                  <IconButton
+                                    variant="text"
+                                    {...({
+                                      variant: "text",
+                                    } as React.ComponentProps<
+                                      typeof IconButton
+                                    >)}
+                                  >
+                                    <Download className="h-4 w-4" />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip content="Delete User">
+                                  <IconButton
+                                    variant="text"
+                                    onClick={() => {
+                                      onDeleteMember(
+                                        member.memberId,
+                                        member.personalDetails.name
+                                      );
+                                    }}
+                                    {...({} as React.ComponentProps<
+                                      typeof IconButton
+                                    >)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </IconButton>
+                                </Tooltip>
+                                {member?.geoLocation && (
+                                  <Tooltip content="Show Location">
                                     <IconButton
+                                      variant="text"
                                       onClick={() => {
-                                        onEditMember(member.memberId);
-                                      }}
-                                      variant="text"
-                                      {...({
-                                        variant: "text",
-                                      } as React.ComponentProps<
-                                        typeof IconButton
-                                      >)}
-                                    >
-                                      <PencilIcon className="h-4 w-4" />
-                                    </IconButton>
-                                  </Tooltip>
-                                  <Tooltip content="Download Membership Card">
-                                    <IconButton
-                                      variant="text"
-                                      {...({
-                                        variant: "text",
-                                      } as React.ComponentProps<
-                                        typeof IconButton
-                                      >)}
-                                    >
-                                      <Download className="h-4 w-4" />
-                                    </IconButton>
-                                  </Tooltip>
-                                  <Tooltip content="Delete User">
-                                    <IconButton
-                                      variant="text"
-                                      onClick={() => {
-                                        onDeleteMember(
-                                          member.memberId,
-                                          member.personalDetails.name
+                                        handleOpenMap(
+                                          member.geoLocation || blreCoordinates
                                         );
                                       }}
                                       {...({} as React.ComponentProps<
                                         typeof IconButton
                                       >)}
                                     >
-                                      <Trash2 className="h-4 w-4" />
+                                      <MapPin className="h-4 w-4" />
                                     </IconButton>
                                   </Tooltip>
-                                  {member?.geoLocation && (
-                                    <Tooltip content="Show Location">
-                                      <IconButton
-                                        variant="text"
-                                        onClick={() => {
-                                          handleOpenMap(
-                                            member.geoLocation ||
-                                              blreCoordinates
-                                          );
-                                        }}
-                                        {...({} as React.ComponentProps<
-                                          typeof IconButton
-                                        >)}
-                                      >
-                                        <MapPin className="h-4 w-4" />
-                                      </IconButton>
-                                    </Tooltip>
-                                  )}
-                                </td>
-                              </tr>
-                            );
-                          })}
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
                     </tbody>
                   </table>
                 </CardBody>

@@ -46,7 +46,11 @@ const AddressForm: React.FC<AddressFormProps> = ({
             setPostOfficeNames(postalInfo.postOffices);
             setValue("city", postalInfo.district);
             setValue("state", postalInfo.state);
-            setValue("postOffice", postalInfo.postOffices[0]);
+            if (addressInfo?.postOffice) {
+              setValue("postOffice", addressInfo.postOffice);
+            } else {
+              setValue("postOffice", postalInfo.postOffices[0]);
+            }
           } else {
             setValue("city", "");
             setValue("state", "");
