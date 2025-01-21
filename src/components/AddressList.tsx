@@ -49,6 +49,10 @@ const AddressList = () => {
                               {member.presentAddress.state} -{" "}
                               {member.presentAddress.pincode}{" "}
                             </p>
+                            <p className="text-gray-600">
+                              Phone: {"+91 - "}{" "}
+                              {member.personalDetails.mobileNumber}
+                            </p>
                           </div>
                         );
                       })}
@@ -94,6 +98,10 @@ const AddressList = () => {
                               {member.presentAddress.city},{" "}
                               {member.presentAddress.state} -{" "}
                               {member.presentAddress.pincode}{" "}
+                            </p>
+                            <p className="text-gray-600">
+                              Phone: {"+91 -"}{" "}
+                              {member.personalDetails.mobileNumber}
                             </p>
                           </div>
                         );

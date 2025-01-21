@@ -75,9 +75,6 @@ const UserProfileForm: React.FC = ({
   const memberIDMobileMap: { [key: string]: string }[] = useSelector(
     selectMemberIDMobileMap
   );
-  // const [memberIDMobileObj, setMemberIDMobileObj] = useState<
-  //   { [key: string]: string }[] | null
-  // >(null);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [openAddFamily, setOpenAddFamily] = useState(false); // Maintains open/close state of Family Details Popup
@@ -102,18 +99,6 @@ const UserProfileForm: React.FC = ({
     null
   );
   const [imageString, setImageString] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (selectedMember) {
-      setMember(selectedMember);
-      if (selectedMember.geoLocation) {
-        setMemberLocation(selectedMember.geoLocation);
-      }
-    } else {
-      setMember(null);
-    }
-  }, [selectedMember]);
-
   const handleClose = () => setOpenAddFamily(false); // Callback function to close the Family Details Popup
   const handleAddMember = () => setOpenAddFamily(true); // Callback function to open the Family Details Popup
   const handleRegisterInfoPopUpClose = () => setOpenRegisterInfoPopUp(false);
@@ -130,6 +115,7 @@ const UserProfileForm: React.FC = ({
     setOfficeAddress(null);
     setFamilyDetails([]);
     setFamilyMemberToEdit(undefined);
+    setMember(memberDetails);
     reset(memberDetails);
   };
 
@@ -173,16 +159,20 @@ const UserProfileForm: React.FC = ({
   };
 
   useEffect(() => {
-    if (memberid && member) {
-      reset(member);
-      setPresentAddress(member.presentAddress);
-      setPermanentAddress(member.permanentAddress);
-      setOfficeAddress(member.officeAddress);
-      setFamilyDetails(member.familyDetails);
-    } else if (!memberid || !member) {
+    if (selectedMember) {
+      reset(selectedMember);
+      setMember(selectedMember);
+      setPresentAddress(selectedMember.presentAddress);
+      setPermanentAddress(selectedMember.permanentAddress);
+      setOfficeAddress(selectedMember.officeAddress);
+      setFamilyDetails(selectedMember.familyDetails);
+      if (selectedMember.geoLocation) {
+        setMemberLocation(selectedMember.geoLocation);
+      }
+    } else {
       handleResetForm();
     }
-  }, [member, memberid, reset]);
+  }, [selectedMember, reset]);
 
   const onHandleSaveMembersForm: SubmitHandler<Members> = async (data) => {
     clearErrors();
