@@ -1,0 +1,9 @@
+{
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "files.encoding": "utf8",
+  "files.trimTrailingWhitespace": true, // remove trailing white spaces from all lines
+  "files.trimFinalNewlines": true, // Ensures there's only one blank line at the end of the file
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
