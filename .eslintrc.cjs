@@ -9,7 +9,7 @@ module.exports = {
     'eslint:recommended',
     'plugin:react/recommended',
     'plugin:jsx-a11y/recommended',
-    'plugin:prettier/recommended', // Enables Prettier rules as ESLint rules
+    'plugin:@typescript-eslint/recommended',
   ],
   parserOptions: {
     ecmaFeatures: {
@@ -25,7 +25,6 @@ module.exports = {
     'prettier', // Ensures Prettier rules are respected
   ],
   rules: {
-    'prettier/prettier': 'error', // Marks Prettier issues as errors
     'react/react-in-jsx-scope': 'off', // React 17+ does not require importing React in scope
     'react/prop-types': 'off', // Disable prop-types (use TypeScript for type checking if needed)
     'import/prefer-default-export': 'off', // Allow named exports
