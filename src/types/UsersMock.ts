@@ -1,3 +1,4 @@
+import { formatDate } from '../utils/Utility_Functions.ts';
 import {
   Address,
   AreaCode,
@@ -7,7 +8,7 @@ import {
   FamilyDetails,
   Members,
   PersonalDetails,
-} from './Users';
+} from './Users.ts';
 
 export const geoLocation: Coordinates = {
   lat: 12.9716,
@@ -39,7 +40,7 @@ export const personalDetails: PersonalDetails = {
   dateOfBirth: '',
   bloodGroup: BloodGroup.SelectBloodGroup,
   gender: '',
-  educationalQualification: educationalQualification,
+  educationalQualification,
   jobTitle: '',
 };
 
@@ -52,7 +53,7 @@ export const familyDetails: FamilyDetails = {
 export const memberDetails: Members = {
   displayId: '',
   memberId: '',
-  personalDetails: personalDetails,
+  personalDetails,
   presentAddress: memberAddress,
   permanentAddress: memberAddress,
   officeAddress: null,
@@ -60,10 +61,10 @@ export const memberDetails: Members = {
   proposedBy: '',
   secondedBy: '',
   communicationPreference: '',
-  dateOfJoining: new Date().toISOString().split('T')[0],
+  dateOfJoining: formatDate(new Date().toISOString().split('T')[0]),
   areaCode: AreaCode.SNPS,
   isInactive: false,
-  geoLocation: geoLocation,
+  geoLocation,
   comments: '',
   verified: false,
 };

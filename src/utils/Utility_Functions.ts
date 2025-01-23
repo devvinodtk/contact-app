@@ -1,38 +1,63 @@
-import { CommunicationPreference, Coordinates, EducationLevel, Gender, Members, PostalData, PostOfficesInfo, RelationshipType } from '../types/Users';
-import { db, ref, get, query, set, orderByChild, equalTo, update, remove, storage } from '../firebase/firebase';
+import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
   deleteObject,
   getDownloadURL,
   ref as storageRef,
   uploadBytes,
-} from "firebase/storage";
-import axios from 'axios';
+} from 'firebase/storage';
+import {
+  CommunicationPreference,
+  Coordinates,
+  EducationLevel,
+  Gender,
+  Members,
+  PostalData,
+  PostOfficesInfo,
+  RelationshipType,
+} from '../types/Users.ts';
+import {
+  db,
+  ref,
+  get,
+  query,
+  set,
+  orderByChild,
+  equalTo,
+  update,
+  remove,
+  storage,
+} from '../firebase/firebase.ts';
 
-export const pincodeLookup = async (pincode: string): Promise<PostOfficesInfo | undefined> => {
-  try{
-    const response = await axios.get(`https://api.postalpincode.in/pincode/${pincode}`);
+export const pincodeLookup = async (
+  pincode: string,
+): Promise<PostOfficesInfo | undefined> => {
+  try {
+    const response = await axios.get(
+      `https://api.postalpincode.in/pincode/${pincode}`,
+    );
     const PostOfficesList: PostalData[] = response.data[0].PostOffice;
 
-    if(PostOfficesList && PostOfficesList.length > 0) {
+    if (PostOfficesList && PostOfficesList.length > 0) {
       return {
-          district: PostOfficesList[0].District,
-          state: PostOfficesList[0].State,
-          postOffices: PostOfficesList.map((postOffice)=> postOffice?.Name)
-      }
+        district: PostOfficesList[0].District,
+        state: PostOfficesList[0].State,
+        postOffices: PostOfficesList.map((postOffice) => postOffice?.Name),
+      };
     }
-  } catch(err: any) {
-    throw new Error('Error while fetching the postal info: '+ err);
+    return Promise.resolve(undefined);
+  } catch (err) {
+    throw new Error(`Error while fetching the postal info: ${err}`);
   }
-}
+};
 
 export function formatDate(inputDate: string) {
-  if(!inputDate) return '';
+  if (!inputDate) return '';
   let [year, month, date] = inputDate.split('-');
-  if(!month && !date) {
+  if (!month && !date) {
     [year, month, date] = inputDate.split('/');
   }
-  return (year && month && date) ?`${date}/${month}/${year}`: inputDate;
+  return year && month && date ? `${date}/${month}/${year}` : inputDate;
 }
 
 export function setTodayDate() {
@@ -53,24 +78,24 @@ export function isValidDate(dateStr: string, isPrimaryMember?: boolean) {
 
   // Check if the date is valid using JavaScript's Date object
   const today = new Date();
-  const ageCutOff= new Date(
+  const ageCutOff = new Date(
     today.getFullYear() - 18,
     today.getMonth(),
-    today.getDate());
+    today.getDate(),
+  );
 
   const date = new Date(year, month, day);
 
-  if(
-    date.getFullYear() !== year ||
-
-    date.getMonth() !== month ||
-    date.getDate() !== day
+  if (
+    date.getFullYear() !== year
+    || date.getMonth() !== month
+    || date.getDate() !== day
   ) {
     return false;
-  } else if (isPrimaryMember && date > ageCutOff) {
+  }
+  if (isPrimaryMember && date > ageCutOff) {
     return false;
   }
-
   return true;
 }
 
@@ -78,13 +103,14 @@ export async function updateMemberToFirebase(updatedMember: Members) {
   const getDocRef = ref(db, `kalakairali/members/${updatedMember.memberId}`);
   const snapshot = await get(getDocRef);
 
-  if(snapshot.exists()) {
-    update(getDocRef, updatedMember).then(() => {
-      console.log('Member details successfully updated!');
-    })
-    .catch((error) => {
-      throw new Error('Error updating member details: '+ error);
-    });
+  if (snapshot.exists()) {
+    update(getDocRef, updatedMember)
+      .then(() => {
+        console.log('Member details successfully updated!');
+      })
+      .catch((error) => {
+        throw new Error(`Error updating member details: ${error}`);
+      });
   } else {
     throw new Error('The user with specified member id not found.');
   }
@@ -94,13 +120,14 @@ export async function deleteMemberFromFirebase(memberId: string) {
   const getDocRef = ref(db, `kalakairali/members/${memberId}`);
   const snapshot = await get(getDocRef);
 
-  if(snapshot.exists()) {
-    remove(getDocRef).then(() => {
-      console.log('Member successfully deleted!');
-    })
-    .catch((error) => {
-      throw new Error('Error deleting member details: '+ error);
-    });
+  if (snapshot.exists()) {
+    remove(getDocRef)
+      .then(() => {
+        console.log('Member successfully deleted!');
+      })
+      .catch((error) => {
+        throw new Error(`Error deleting member details: ${error}`);
+      });
   } else {
     throw new Error('The user with specified member id not found.');
   }
@@ -110,7 +137,7 @@ export async function saveMemberDataToFirebase(memberData: Members) {
   // Save data to firebase
 
   if (memberData?.personalDetails?.mobileNumber) {
-    const queryRef = ref(db, `kalakairali/members`);
+    const queryRef = ref(db, 'kalakairali/members');
     const mobileQuery = query(
       queryRef,
       orderByChild('personalDetails/mobileNumber'),
@@ -133,50 +160,98 @@ export async function saveMemberDataToFirebase(memberData: Members) {
     });
 }
 
-export const fetchMembers = createAsyncThunk('', async()=>{
+export const fetchMembers = createAsyncThunk('', async () => {
   const getDocRef = ref(db, 'kalakairali/members');
   const snapshot = await get(getDocRef);
   if (snapshot.exists()) {
     return snapshot.val();
-  } else {
-    console.log('No data available');
   }
+  console.log('No data available');
 });
 
 export function getAge(dob: string) {
   const today = new Date();
   let [date, month, year] = dob.split('/');
-  if(!month || !date) {
+  if (!month || !date) {
     [year, month, date] = dob.split('-');
   }
   const birthDate = new Date(`${year}-${month}-${date}`);
   let age = today.getFullYear() - birthDate.getFullYear();
   const m = today.getMonth() - birthDate.getMonth();
   if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
+    age -= 1;
   }
   return age;
 }
 
-export const uploadProfilePicToFirebase = async(imageStrting: string, name: string) => {
-  if (!imageStrting) return;
+export const resizeImage = (base64: string): Promise<Blob | null> => new Promise((resolve, reject) => {
+  const maxWidth = 1024;
+  const maxHeight = 1024;
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    let { width, height } = img;
+
+    // Maintain aspect ratio
+    if (width > maxWidth || height > maxHeight) {
+      if (width / height > maxWidth / maxHeight) {
+        width = maxWidth;
+        height = Math.floor((img.height / img.width) * maxWidth);
+      } else {
+        height = maxHeight;
+        width = Math.floor((img.width / img.height) * maxHeight);
+      }
+    }
+
+    canvas.width = width;
+    canvas.height = height;
+
+    // Draw the resized image
+    ctx?.drawImage(img, 0, 0, width, height);
+
+    // Convert to Blob
+    canvas.toBlob(
+      (blob) => {
+        resolve(blob);
+      },
+      'image/jpeg', // You can change the format (e.g., image/png)
+      0.8, // Quality (0.1 to 1.0)
+    );
+  };
+
+  img.onerror = reject;
+
+  img.src = base64;
+});
+
+export const uploadProfilePicToFirebase = async (
+  imageString: string,
+  name: string,
+) => {
+  if (!imageString) return undefined;
   try {
     const fileName = name?.trim().toLowerCase().replace(' ', '-');
-    const imgRef = storageRef(storage, `images/profile/${fileName}_${new Date().getTime()}`);
-      const blob = await resizeImage(imageStrting);
-      if(blob) {
-        await uploadBytes(imgRef, blob);
-        return await getDownloadURL(imgRef);
-      }
-  } catch(err: any) {
-    throw new Error('Failed to upload image: '+err);
+    const imgRef = storageRef(
+      storage,
+      `images/profile/${fileName}_${new Date().getTime()}`,
+    );
+    const blob = await resizeImage(imageString);
+    if (blob) {
+      await uploadBytes(imgRef, blob);
+      return getDownloadURL(imgRef);
+    }
+    return undefined;
+  } catch (err) {
+    throw new Error(`Failed to upload image: ${err}`);
   }
-}
+};
 
-export const removeProfilePicFromFirebase = async(imageUrl: string) => {
+export const removeProfilePicFromFirebase = async (imageUrl: string) => {
   const imgRef = storageRef(storage, imageUrl);
   await deleteObject(imgRef);
-}
+};
 
 export const createGoogleMapsUrl = (location: Coordinates): string => {
   // For web view
@@ -187,70 +262,34 @@ export const createGoogleMapsUrl = (location: Coordinates): string => {
   return googleMapsUrl; // Return the Google Maps URL for web or app scheme
 };
 
-export const resizeImage = (base64: string): Promise<Blob | null> =>
-  new Promise((resolve, reject) => {
-    const maxWidth = 1024;
-    const maxHeight = 1024;
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-
-      let width = img.width;
-      let height = img.height;
-
-      // Maintain aspect ratio
-      if (width > maxWidth || height > maxHeight) {
-        if (width / height > maxWidth / maxHeight) {
-          width = maxWidth;
-          height = Math.floor((img.height / img.width) * maxWidth);
-        } else {
-          height = maxHeight;
-          width = Math.floor((img.width / img.height) * maxHeight);
-        }
-      }
-
-      canvas.width = width;
-      canvas.height = height;
-
-      // Draw the resized image
-      ctx?.drawImage(img, 0, 0, width, height);
-
-      // Convert to Blob
-      canvas.toBlob(
-        (blob) => {
-          resolve(blob);
-        },
-        "image/jpeg", // You can change the format (e.g., image/png)
-        0.8 // Quality (0.1 to 1.0)
-      );
-    };
-
-    img.onerror = reject;
-
-    img.src = base64;
-  });
-
 function getNestedValue<T>(member: T, path: string): any {
-    return path.split('.').reduce((acc: any, key: string) => acc && acc[key], member);
+  return path
+    .split('.')
+    .reduce((acc: any, key: string) => acc && acc[key], member);
 }
 
-export const searchFilterData = (filterText: string, members: Members[]) => {
-  return members.filter((member) => {
-    return searchKeys.some((key) => {
-      const value = getNestedValue(member, key);
-      return (
-        value &&
-        value.toString().toLowerCase().includes(filterText.toLowerCase())
-      );
-    });
-  });
-}
+const searchKeys = [
+  'personalDetails.mobileNumber',
+  'personalDetails.name',
+  'personalDetails.bloodGroup',
+  'personalDetails.emailId',
+  'personalDetails.jobTitle',
+  'presentAddress.postOffice',
+];
+
+export const searchFilterData = (filterText: string, members: Members[]) => members.filter((member) => searchKeys.some((key) => {
+  const value = getNestedValue(member, key);
+  return (
+    value
+        && value.toString().toLowerCase().includes(filterText.toLowerCase())
+  );
+}));
 
 export const relationshipOptions = [
   '',
   'Spouse',
-  'Kid',
+  'Son',
+  'Daughter',
   'Father',
   'Mother',
   'Father In Law',
@@ -259,7 +298,13 @@ export const relationshipOptions = [
 
 export const postOfficeOptions = [''] as string[];
 
-export const genderOptions = ['', 'Male', 'Female', 'Other', 'Prefer not to say'] as Gender[];
+export const genderOptions = [
+  '',
+  'Male',
+  'Female',
+  'Other',
+  'Prefer not to say',
+] as Gender[];
 
 export const educationLevelOptions = [
   '',
@@ -278,12 +323,3 @@ export const communicationPreferenceOptions = [
   'In Person',
   'Postal',
 ] as CommunicationPreference[];
-
-const searchKeys = [
-  'personalDetails.mobileNumber',
-  'personalDetails.name',
-  'personalDetails.bloodGroup',
-  'personalDetails.emailId',
-  'personalDetails.jobTitle',
-  'presentAddress.postOffice',
-];

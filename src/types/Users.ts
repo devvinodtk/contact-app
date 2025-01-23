@@ -1,4 +1,4 @@
-import { ToastOptions, Slide } from "react-toastify";
+import { ToastOptions, Slide } from 'react-toastify';
 
 export enum BloodGroup {
   SelectBloodGroup = '',
@@ -25,9 +25,9 @@ export enum UserOps {
   View = 'View',
 }
 
-export type Gender = ''| 'Male' | 'Female' | 'Other' | 'Prefer Not To Say';
+export type Gender = '' | 'Male' | 'Female' | 'Other' | 'Prefer Not To Say';
 
-export type DeleteAction = 'soft_delete' | 'hard_delete'
+export type DeleteAction = 'soft_delete' | 'hard_delete';
 export type EducationLevel =
   | ''
   | 'Nursery'
@@ -38,14 +38,7 @@ export type EducationLevel =
   | 'Bachelors Degree'
   | 'Masters Degree'
   | 'PhD';
-export type RelationshipType =
-  | ''
-  | 'Spouse'
-  | 'Child'
-  | 'Father'
-  | 'Mother'
-  | 'Father In Law'
-  | 'Mother In Law';
+export type RelationshipType = '' | 'Spouse' | 'Child' | 'Father' | 'Mother' | 'Father In Law' | 'Mother In Law';
 export type CommunicationPreference = '' | 'In Person' | 'Postal';
 
 export enum AreaCode {
@@ -71,8 +64,8 @@ export type PersonalDetails = {
 };
 
 export type Members = {
-  displayId?: string
-  memberId: string,
+  displayId?: string;
+  memberId: string;
   personalDetails: PersonalDetails;
   jobTitle?: string;
   presentAddress: Address;
@@ -91,7 +84,7 @@ export type Members = {
 };
 
 export type FamilyDetails = {
-  familyMemberId: string,
+  familyMemberId: string;
   memberPersonalDetails: PersonalDetails;
   relationship: RelationshipType;
 };
@@ -138,34 +131,34 @@ export const blreCoordinates = {
   lng: 77.5946,
 };
 export const toastOptions: ToastOptions<unknown> = {
-  position: "top-right",
+  position: 'top-right',
   autoClose: 3000,
   hideProgressBar: true,
   closeOnClick: true,
   pauseOnHover: true,
   draggable: true,
   progress: undefined,
-  theme: "colored",
+  theme: 'colored',
   transition: Slide,
-}
+};
 
-export type PostOfficesInfo ={
-  postOffices:string[]
-  district: string,
-  state: string
-}
+export type PostOfficesInfo = {
+  postOffices: string[];
+  district: string;
+  state: string;
+};
 
 export type PostalData = {
-  Block:  string,
-  BranchType : string,
-  Circle : string,
-  Country : string,
-  DeliveryStatus : string,
-  Description :  string | null,
-  District :  string,
-  Division :  string,
-  Name : string,
-  Pincode : string,
-  Region :  string,
-  State : string
-}
+  Block: string;
+  BranchType: string;
+  Circle: string;
+  Country: string;
+  DeliveryStatus: string;
+  Description: string | null;
+  District: string;
+  Division: string;
+  Name: string;
+  Pincode: string;
+  Region: string;
+  State: string;
+};
