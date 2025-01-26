@@ -10,8 +10,7 @@ import {
   Switch,
   SwitchProps,
   Chip,
-} from "@material-tailwind/react";
-import Header from "./common/Header";
+} from '@material-tailwind/react';
 import {
   PencilIcon,
   ChevronsUpDown,
@@ -20,7 +19,15 @@ import {
   MapPin,
   Mail,
   Download,
-} from "lucide-react";
+} from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import PopupContainer from './common/PopupContainer';
+import ConfirmDeleteMember from './ConfirmDeleteMember';
+import { deleteMember, updateMember } from '../store/MembersSlice';
+import Header from './common/Header';
 import {
   blreCoordinates,
   Coordinates,
@@ -28,32 +35,30 @@ import {
   Members,
   toastOptions,
   typographyProps,
-} from "../types/Users";
+} from '../types/Users';
 import {
   createGoogleMapsUrl,
   deleteMemberFromFirebase,
   getAge,
   updateMemberToFirebase,
   searchFilterData,
-} from "../utils/Utility_Functions";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import PopupContainer from "./common/PopupContainer";
-import ConfirmDeleteMember from "./ConfirmDeleteMember";
-import { deleteMember, updateMember } from "../store/MembersSlice";
-import { toast, ToastContainer } from "react-toastify";
-import { selectActiveMembers } from "../store/MemberSelector";
-import SearchFilter from "./common/SearchFilter";
+} from '../utils/Utility_Functions';
+import {
+  selectActiveMembers,
+  selectInActiveMembers,
+} from '../store/MemberSelector';
+import SearchFilter from './common/SearchFilter';
 
 const Dashboard = () => {
-  const TABLE_HEAD = ["Member", "Age", "Blood Group", "Occupation", "Area", ""];
+  const TABLE_HEAD = ['Member', 'Age', 'Blood Group', 'Occupation', 'Area', ''];
   const [selectedMemberForDelete, setSelectedMemberForDelete] = useState<{
     memberId: string;
     memberName: string;
   } | null>(null);
 
   const activeMembers = useSelector(selectActiveMembers);
+  const inActiveMembers = useSelector(selectInActiveMembers);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const onEditMember = (memberId: string) => {
@@ -61,7 +66,8 @@ const Dashboard = () => {
   };
   const [open, setOpen] = useState(false);
   const [showUnverifiedUsers, setShowUnverifiedUsers] = useState(false);
-  const [searchText, setSearchText] = useState("");
+  const [showInactiveUsers, setShowInactiveUsers] = useState(false);
+  const [searchText, setSearchText] = useState('');
   const [filteredResult, setFilteredResult] = useState<Members[] | null>(null);
   const handleClose = () => setOpen(false);
   const onDeleteMember = (memberId: string, memberName: string) => {
@@ -71,11 +77,11 @@ const Dashboard = () => {
 
   const handleConfirmDelete = (
     memberId: string,
-    deleteAction: DeleteAction
+    deleteAction: DeleteAction,
   ) => {
-    if (deleteAction === "soft_delete") {
+    if (deleteAction === 'soft_delete') {
       const currentMember = activeMembers.find(
-        (member) => member.memberId === memberId
+        (member) => member.memberId === memberId,
       );
       if (currentMember) {
         updateMemberToFirebase({ ...currentMember, isInactive: true })
@@ -83,34 +89,32 @@ const Dashboard = () => {
             dispatch(updateMember(currentMember));
             toast.success(
               `Member ${currentMember.personalDetails.name} marked inactive`,
-              toastOptions
+              toastOptions,
             );
           })
-          .catch((err: any) => {
+          .catch((err) => {
             toast.error(
-              `Error while marking the member ${currentMember.personalDetails.name} inactive: ` +
-                err?.message,
-              toastOptions
+              `Error while marking the member ${currentMember.personalDetails.name} inactive: ${err?.message}`,
+              toastOptions,
             );
           })
           .finally(() => {
             setOpen(false);
           });
       }
-    } else if (deleteAction === "hard_delete") {
+    } else if (deleteAction === 'hard_delete') {
       deleteMemberFromFirebase(memberId)
         .then(() => {
           dispatch(deleteMember(memberId));
           toast.success(
             `Deleted the member ${selectedMemberForDelete?.memberName} successfully.`,
-            toastOptions
+            toastOptions,
           );
         })
-        .catch((err: any) => {
+        .catch((err) => {
           toast.error(
-            `Error while deleting the member ${selectedMemberForDelete?.memberName}: ` +
-              err?.message,
-            toastOptions
+            `Error while deleting the member ${selectedMemberForDelete?.memberName}: ${err?.message}`,
+            toastOptions,
           );
         })
         .finally(() => {
@@ -120,24 +124,36 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    if (activeMembers?.length) {
+    if (!showInactiveUsers && activeMembers?.length) {
       const result = activeMembers.filter((member) =>
-        showUnverifiedUsers ? member.verified === false : member
+        showUnverifiedUsers ? member.verified === false : member,
+      );
+      const filteredMembers = searchText
+        ? searchFilterData(searchText, result)
+        : result;
+      setFilteredResult(filteredMembers);
+    } else if (showInactiveUsers && inActiveMembers?.length) {
+      const result = inActiveMembers.filter((member) =>
+        showUnverifiedUsers ? member.verified === false : member,
       );
       const filteredMembers = searchText
         ? searchFilterData(searchText, result)
         : result;
       setFilteredResult(filteredMembers);
     }
-  }, [activeMembers, searchText, showUnverifiedUsers]);
+  }, [activeMembers, searchText, showUnverifiedUsers, showInactiveUsers]);
 
   const handleOpenMap = (location: Coordinates) => {
     const url = createGoogleMapsUrl(location);
-    window.open(url, "_blank");
+    window.open(url, '_blank');
   };
 
-  const handleShowUnverifiedUsers: SwitchProps["onChange"] = (event) => {
+  const handleShowUnverifiedUsers: SwitchProps['onChange'] = (event) => {
     setShowUnverifiedUsers(event.target.checked);
+  };
+
+  const handleShowInactiveUsers: SwitchProps['onChange'] = (event) => {
+    setShowInactiveUsers(event.target.checked);
   };
 
   return (
@@ -166,6 +182,13 @@ const Dashboard = () => {
                       />
                     </div>
                     <div className="flex flex-row justify-end gap-x-5 text-sm">
+                      <Switch
+                        checked={showInactiveUsers}
+                        onChange={handleShowInactiveUsers}
+                        label="Show Inactive Users"
+                        className="border bg-gray-100 z-0 "
+                        {...({} as React.ComponentProps<typeof Switch>)}
+                      />
                       <Switch
                         checked={showUnverifiedUsers}
                         onChange={handleShowUnverifiedUsers}
@@ -203,7 +226,7 @@ const Dashboard = () => {
                               color="blue-gray"
                               className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
                             >
-                              {head}{" "}
+                              {head}{' '}
                               {index !== TABLE_HEAD.length - 1 && (
                                 <ChevronsUpDown
                                   strokeWidth={2}
@@ -216,12 +239,12 @@ const Dashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredResult?.length ?
+                      {filteredResult?.length ? (
                         filteredResult.map((member, index) => {
                           const isLast = index === filteredResult.length - 1;
                           const classes = isLast
-                            ? "p-4"
-                            : "p-4 border-b border-blue-gray-100";
+                            ? 'p-4'
+                            : 'p-4 border-b border-blue-gray-100';
 
                           return (
                             <tr key={index} className="hover:bg-sky-50">
@@ -229,7 +252,12 @@ const Dashboard = () => {
                                 <div className="flex items-center gap-3">
                                   <Badge
                                     overlap="circular"
-                                    color={member.verified ? "green" : "red"}
+                                    color={member.verified ? 'green' : 'red'}
+                                    className={
+                                      member.isInactive
+                                        ? `${member.verified ? 'color: bg-green-200' : 'color: bg-red-200'}`
+                                        : ''
+                                    }
                                   >
                                     <Avatar
                                       className="cursor-pointer"
@@ -262,14 +290,14 @@ const Dashboard = () => {
                                     >
                                       <span className="text-gray text-base">
                                         {member.personalDetails?.name}
-                                      </span>{" "}
+                                      </span>{' '}
                                       <span className="text-gray">
-                                        {" "}
+                                        {' '}
                                         {member.displayId &&
                                           `(${member.displayId})`}
-                                      </span>{" "}
+                                      </span>{' '}
                                       {member.personalDetails?.gender ==
-                                      "Male" ? (
+                                      'Male' ? (
                                         <span className="blue-circle-icon">
                                           M
                                         </span>
@@ -288,7 +316,7 @@ const Dashboard = () => {
                                       className="font-normal opacity-70"
                                     >
                                       <Mail className="inline size-5 pr-2" />
-                                      {member.personalDetails?.emailId} |{" "}
+                                      {member.personalDetails?.emailId} |{' '}
                                       <Phone className="inline size-5 pr-2" />
                                       <a
                                         href={`tel:${member.personalDetails?.mobileNumber}`}
@@ -310,8 +338,8 @@ const Dashboard = () => {
                                     className="font-normal"
                                   >
                                     {getAge(
-                                      member.personalDetails?.dateOfBirth
-                                    )}{" "}
+                                      member.personalDetails?.dateOfBirth,
+                                    )}{' '}
                                     Years
                                   </Typography>
                                   <Typography
@@ -373,7 +401,7 @@ const Dashboard = () => {
                                     }}
                                     variant="text"
                                     {...({
-                                      variant: "text",
+                                      variant: 'text',
                                     } as React.ComponentProps<
                                       typeof IconButton
                                     >)}
@@ -385,7 +413,7 @@ const Dashboard = () => {
                                   <IconButton
                                     variant="text"
                                     {...({
-                                      variant: "text",
+                                      variant: 'text',
                                     } as React.ComponentProps<
                                       typeof IconButton
                                     >)}
@@ -399,7 +427,7 @@ const Dashboard = () => {
                                     onClick={() => {
                                       onDeleteMember(
                                         member.memberId,
-                                        member.personalDetails.name
+                                        member.personalDetails.name,
                                       );
                                     }}
                                     {...({} as React.ComponentProps<
@@ -415,7 +443,7 @@ const Dashboard = () => {
                                       variant="text"
                                       onClick={() => {
                                         handleOpenMap(
-                                          member.geoLocation || blreCoordinates
+                                          member.geoLocation || blreCoordinates,
                                         );
                                       }}
                                       {...({} as React.ComponentProps<
@@ -429,7 +457,16 @@ const Dashboard = () => {
                               </td>
                             </tr>
                           );
-                        }): <tr><td colSpan={6}><span className="w-full text-center p-2 text-sm leading-normal text-blue-gray-900 font-normal opacity-70 block">No members found</span></td></tr>}
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan={6}>
+                            <span className="w-full text-center p-2 text-sm leading-normal text-blue-gray-900 font-normal opacity-70 block">
+                              No members found
+                            </span>
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </CardBody>

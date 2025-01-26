@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
   deleteObject,
   getDownloadURL,
@@ -159,15 +158,6 @@ export async function saveMemberDataToFirebase(memberData: Members) {
       console.error('Error registering member: ', error);
     });
 }
-
-export const fetchMembers = createAsyncThunk('', async () => {
-  const getDocRef = ref(db, 'kalakairali/members');
-  const snapshot = await get(getDocRef);
-  if (snapshot.exists()) {
-    return snapshot.val();
-  }
-  console.log('No data available');
-});
 
 export function getAge(dob: string) {
   const today = new Date();
