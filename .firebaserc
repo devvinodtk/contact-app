@@ -1,7 +1,6 @@
 {
   "projects": {
-    "default": "kalakairali-mms",
-    ":q!": "kk-contact-app"
+    "default": "kk-contact-app"
   },
   "targets": {},
   "etags": {}

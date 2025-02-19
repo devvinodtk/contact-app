@@ -1,7 +1,7 @@
-import { Download } from "lucide-react";
-import Header from "./common/Header";
-import { useSelector } from "react-redux";
-import { selectActiveMembers } from "../store/MemberSelector";
+import { Download } from 'lucide-react';
+import Header from './common/Header';
+import { useSelector } from 'react-redux';
+import { selectActiveMembers } from '../store/MemberSelector';
 
 const AddressList = () => {
   // return <Header title="Address List" />;
@@ -25,7 +25,7 @@ const AddressList = () => {
                     activeMembers
                       .filter(
                         (member) =>
-                          member.communicationPreference != "In Person"
+                          member.communicationPreference != 'In Person',
                       )
                       .map((member) => {
                         return (
@@ -41,16 +41,16 @@ const AddressList = () => {
                               {member.presentAddress.flatNumberName}
                             </p>
                             <p className="text-gray-600">
-                              {member.presentAddress.addressLine1},{" "}
+                              {member.presentAddress.addressLine1},{' '}
                               {member.presentAddress.addressLine2}
                             </p>
                             <p className="text-gray-600">
-                              {member.presentAddress.city},{" "}
-                              {member.presentAddress.state} -{" "}
-                              {member.presentAddress.pincode}{" "}
+                              {member.presentAddress.city},{' '}
+                              {member.presentAddress.state} -{' '}
+                              {member.presentAddress.pincode}{' '}
                             </p>
                             <p className="text-gray-600">
-                              Phone: {"+91 - "}{" "}
+                              Phone: {'+91 - '}{' '}
                               {member.personalDetails.mobileNumber}
                             </p>
                           </div>
@@ -75,7 +75,7 @@ const AddressList = () => {
                     activeMembers
                       .filter(
                         (member) =>
-                          member.communicationPreference === "In Person"
+                          member.communicationPreference === 'In Person',
                       )
                       .map((member) => {
                         return (
@@ -91,16 +91,16 @@ const AddressList = () => {
                               {member.presentAddress.flatNumberName}
                             </p>
                             <p className="text-gray-600">
-                              {member.presentAddress.addressLine1},{" "}
+                              {member.presentAddress.addressLine1},{' '}
                               {member.presentAddress.addressLine2}
                             </p>
                             <p className="text-gray-600">
-                              {member.presentAddress.city},{" "}
-                              {member.presentAddress.state} -{" "}
-                              {member.presentAddress.pincode}{" "}
+                              {member.presentAddress.city},{' '}
+                              {member.presentAddress.state} -{' '}
+                              {member.presentAddress.pincode}{' '}
                             </p>
                             <p className="text-gray-600">
-                              Phone: {"+91 -"}{" "}
+                              Phone: {'+91 -'}{' '}
                               {member.personalDetails.mobileNumber}
                             </p>
                           </div>

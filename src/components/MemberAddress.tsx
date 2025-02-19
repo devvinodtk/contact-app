@@ -88,6 +88,7 @@ const MemberAddress = ({
   const handleCopyPresentAddressChange = (value: boolean) => {
     if (value && presentAddress?.flatNumberName) {
       setPermanentAddress(presentAddress);
+      onMemberAddressChange(AddressType.PermanentAddress, presentAddress);
       clearErrors('permanentAddress');
     } else {
       setPermanentAddress(memberAddress);
