@@ -1,12 +1,12 @@
-import { Button, Switch, SwitchProps } from "@material-tailwind/react";
-import { Plus, Pencil } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { Button, Switch, SwitchProps } from '@material-tailwind/react';
+import { Plus, Pencil } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import {
   Address,
   AddressChangeType,
   AddressType,
   UserOps,
-} from "../../types/Users";
+} from '../../types/Users';
 
 interface AddressCardProps {
   copyAddress?: boolean;
@@ -15,6 +15,7 @@ interface AddressCardProps {
   onEdit?: (addressChange: AddressChangeType) => void;
   onCopyPresentAddress?: (status: boolean) => void;
   error: boolean;
+  showActionButton: boolean;
 }
 
 const AddressCard = ({
@@ -24,6 +25,7 @@ const AddressCard = ({
   onEdit,
   error,
   onCopyPresentAddress,
+  showActionButton,
 }: AddressCardProps) => {
   const handleAddAddress = () => {
     const operation: UserOps = address?.flatNumberName
@@ -34,12 +36,12 @@ const AddressCard = ({
     }
   };
 
-  let style = "p-4 border rounded";
-  style = error ? " focus:outline-none border-red-500 bg-red-50" : style;
+  let style = 'p-4 border rounded';
+  style = error ? ' focus:outline-none border-red-500 bg-red-50' : style;
 
   const [isCopyAddressChecked, setIsCopyAddressChecked] = useState(false);
 
-  const handleCopyAddressCheckedChange: SwitchProps["onChange"] = (event) => {
+  const handleCopyAddressCheckedChange: SwitchProps['onChange'] = (event) => {
     setIsCopyAddressChecked(event.target.checked);
   };
 
@@ -58,7 +60,7 @@ const AddressCard = ({
           </h2>
         </div>
         <div className="font10 ml-2">
-          {copyAddress && (
+          {showActionButton && copyAddress && (
             <Switch
               checked={isCopyAddressChecked}
               onChange={handleCopyAddressCheckedChange}
@@ -69,19 +71,21 @@ const AddressCard = ({
           )}
         </div>
         <div className="flex-1 text-right">
-          <Button
-            type="button"
-            color="blue"
-            onClick={handleAddAddress}
-            {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
-            className="cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg text-xs px-2 py-1 text-center"
-          >
-            {address?.flatNumberName ? (
-              <Pencil className="inline size-4" />
-            ) : (
-              <Plus className="inline size-4" />
-            )}
-          </Button>
+          {showActionButton && (
+            <Button
+              type="button"
+              color="blue"
+              onClick={handleAddAddress}
+              {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
+              className="cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg text-xs px-2 py-1 text-center"
+            >
+              {address?.flatNumberName ? (
+                <Pencil className="inline size-4" />
+              ) : (
+                <Plus className="inline size-4" />
+              )}
+            </Button>
+          )}
         </div>
       </div>
       <div className="block w-full mt-2 text-gray-600">
@@ -90,14 +94,14 @@ const AddressCard = ({
             <p className="block w-full">{address?.flatNumberName},</p>
             <p className="block">
               {address?.addressLine1}, {address?.addressLine2}
-              {address?.addressLine2 ? "," : ""}
+              {address?.addressLine2 ? ',' : ''}
             </p>
             <p className="block">
-              {" "}
+              {' '}
               {address?.postOffice}(PO), {address?.city} (Dist.)
             </p>
             <p className="block">
-              {" "}
+              {' '}
               {address?.state} - {address?.pincode}
             </p>
             <p className="block"> {address?.contactNumber}</p>

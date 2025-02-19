@@ -13,7 +13,11 @@ interface AddressFormProps {
   onAddressChange: (addressType: AddressType, value: Address) => void;
 }
 
-const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onAddressChange }: AddressFormProps) => {
+const AddressForm: React.FC<AddressFormProps> = ({
+  addressType,
+  addressInfo,
+  onAddressChange,
+}: AddressFormProps) => {
   const [postOfficeNames, setPostOfficeNames] = useState<string[]>(['']);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const {
@@ -35,7 +39,8 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
       if (pincode?.length === 6) {
         try {
           setIsLoading(true);
-          const postalInfo: PostOfficesInfo | undefined = await pincodeLookup(pincode);
+          const postalInfo: PostOfficesInfo | undefined =
+            await pincodeLookup(pincode);
           if (postalInfo) {
             setPostOfficeNames(postalInfo.postOffices);
             setValue('city', postalInfo.district);
@@ -71,7 +76,14 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
   return (
     <>
       {isLoading && <LoaderComponent />}
-      <form onSubmit={handleSubmit(onSubmitHandler)} autoComplete="off">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleSubmit(onSubmitHandler)();
+        }}
+        autoComplete="off"
+      >
         <div className="w-full">
           <label className="text-sm font-medium text-gray-600">
             Flat Number / Name *
@@ -82,7 +94,9 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
                 required: 'Flat Number / Name',
               })}
               className={`w-full p-2 mb-4 border rounded text-gray-600 ${
-                errors.flatNumberName ? 'focus:outline-none border-red-500 bg-red-50' : ''
+                errors.flatNumberName
+                  ? 'focus:outline-none border-red-500 bg-red-50'
+                  : ''
               }`}
             />
           </label>
@@ -95,7 +109,9 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
                 required: 'Address Line 1',
               })}
               className={`w-full p-2 mb-4 border rounded text-gray-600 ${
-                errors.addressLine1 ? 'focus:outline-none border-red-500 bg-red-50' : ''
+                errors.addressLine1
+                  ? 'focus:outline-none border-red-500 bg-red-50'
+                  : ''
               }`}
             />
           </label>
@@ -120,7 +136,9 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
                 maxLength: 6,
               })}
               className={`w-full p-2 mb-4 border rounded text-gray-600 appearance-none${
-                errors.pincode ? 'focus:outline-none border-red-500 bg-red-50' : ''
+                errors.pincode
+                  ? 'focus:outline-none border-red-500 bg-red-50'
+                  : ''
               }`}
             />
           </label>
@@ -161,7 +179,9 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
                 required: 'State',
               })}
               className={`w-full p-2 mb-4 border rounded text-gray-600 ${
-                errors.state ? 'focus:outline-none border-red-500 bg-red-50' : ''
+                errors.state
+                  ? 'focus:outline-none border-red-500 bg-red-50'
+                  : ''
               }`}
             />
           </label>
@@ -174,7 +194,9 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressType, addressInfo, onA
               })}
               placeholder="Country"
               className={`w-full p-2 mb-4 border rounded text-gray-600 ${
-                errors.country ? 'focus:outline-none border-red-500 bg-red-50' : ''
+                errors.country
+                  ? 'focus:outline-none border-red-500 bg-red-50'
+                  : ''
               }`}
             />
           </label>

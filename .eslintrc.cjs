@@ -39,6 +39,12 @@ module.exports = {
         unnamedComponents: 'arrow-function', // Allow arrow functions for unnamed components
       },
     ],
+    'import/extensions': 'off',
+    'import/no-unresolved': 'off',
+    'react/jsx-filename-extension': [
+      'error',
+      { extensions: ['.tsx', '.jsx'] }, // Allow JSX in both TSX and JSX files
+    ],
   },
   settings: {
     react: {
