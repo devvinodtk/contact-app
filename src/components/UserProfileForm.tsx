@@ -1,27 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import { Button, Checkbox, Typography } from '@material-tailwind/react';
+import { Plus } from 'lucide-react';
+import { toast, ToastContainer } from 'react-toastify';
+import { v4 as uuidv4 } from 'uuid';
+import { useParams } from 'react-router-dom';
 import {
   Members,
   BloodGroup,
   Address,
   AddressType,
   FamilyDetails,
-  AddressChangeType,
   typographyProps,
   UserOps,
   toastOptions,
   Coordinates,
   blreCoordinates,
-} from "../types/Users";
+} from '../types/Users.ts';
 
-import AddressForm from "./AddressForm";
-import DropdownSelect from "./common/DropdownSelect";
-import Header from "./common/Header";
-import ProfilePicUploader from "./common/ProfilePicUploader";
-import PopupContainer from "./common/PopupContainer";
-import FamilyDetailsTable from "./FamilyDetailsTable";
-import { memberAddress, memberDetails } from "../types/UsersMock";
-import { useDispatch, useSelector } from "react-redux";
-import { addMember, updateMember } from "../store/MembersSlice";
+import DropdownSelect from './common/DropdownSelect';
+import Header from './common/Header';
+import ProfilePicUploader from './common/ProfilePicUploader';
+import PopupContainer from './common/PopupContainer';
+import FamilyDetailsTable from './FamilyDetailsTable';
+import { memberAddress, memberDetails } from '../types/UsersMock';
+import {
+  addMember,
+  fetchActiveMemberById,
+  updateMember,
+} from '../store/MembersSlice.ts';
 import {
   communicationPreferenceOptions,
   educationLevelOptions,
@@ -31,23 +39,20 @@ import {
   saveMemberDataToFirebase,
   updateMemberToFirebase,
   uploadProfilePicToFirebase,
-} from "../utils/Utility_Functions";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { Button, Checkbox, Typography } from "@material-tailwind/react";
-import { Plus } from "lucide-react";
-import FamilyDetailsForm from "./FamilyDetailsForm";
-import AddressCard from "./common/AddressCard";
-import { toast, ToastContainer } from "react-toastify";
-import { v4 as uuidv4 } from "uuid";
-import { useParams } from "react-router-dom";
-import { useAuth, UserAuthValue } from "../context/AuthProvider";
-import LoaderComponent from "./common/Loader";
+} from '../utils/Utility_Functions';
+
+import FamilyDetailsForm from './FamilyDetailsForm';
+import { useAuth, UserAuthValue } from '../context/AuthProvider';
+import LoaderComponent from './common/Loader';
 import {
   selectMemberById,
   selectMemberIDMobileMap,
-} from "../store/MemberSelector";
-import MapComponent from "./MapComponent";
-import RegistrationInfo from "./RegistrationInfo";
+} from '../store/MemberSelector';
+import MapComponent from './MapComponent';
+import RegistrationInfo from './RegistrationInfo';
+import { sendWhatsAppTextMessage } from '../utils/WhatsAppBusinessAPI';
+import MemberAddress from './MemberAddress.tsx';
+import store from '../store/store.ts';
 
 interface UserProfileFormProps {
   registeredMember?: Members;
@@ -65,49 +70,41 @@ const UserProfileForm: React.FC = ({
     trigger,
     formState: { errors, isValid },
   } = useForm<Members>({
-    mode: "all",
+    mode: 'all',
     defaultValues: registeredMember ?? memberDetails,
   });
   const { userLoggedIn }: UserAuthValue = useAuth();
-  const { memberid } = useParams();
+  const { memberid } = useParams<{ memberid: string }>();
   const [member, setMember] = useState<Members | null>(null);
   const selectedMember = useSelector(selectMemberById(memberid));
   const memberIDMobileMap: { [key: string]: string }[] = useSelector(
-    selectMemberIDMobileMap
+    selectMemberIDMobileMap,
   );
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [openAddFamily, setOpenAddFamily] = useState(false); // Maintains open/close state of Family Details Popup
   const [openRegisterInfoPopUp, setOpenRegisterInfoPopUp] = useState(true);
   const [familyDetails, setFamilyDetails] = useState<FamilyDetails[]>(
-    memberDetails.familyDetails
+    memberDetails.familyDetails,
   );
   const [familyMemberToEdit, setFamilyMemberToEdit] = useState<FamilyDetails>();
   const [presentAddress, setPresentAddress] = useState<Address>(
-    memberDetails.presentAddress
+    memberDetails.presentAddress,
   );
   const [permanentAddress, setPermanentAddress] = useState<Address>(
-    memberDetails.permanentAddress
+    memberDetails.permanentAddress,
   );
   const [officeAddress, setOfficeAddress] = useState<
     Address | null | undefined
   >(memberDetails.officeAddress);
-  const [openAddressDialog, setOpenAddressDialog] = useState(false);
-  const [currentAddressChange, setCurrentAddressChange] =
-    useState<AddressChangeType>({} as AddressChangeType);
   const [memberLocation, setMemberLocation] = useState<Coordinates | null>(
-    null
+    null,
   );
   const [imageString, setImageString] = useState<string | null>(null);
   const handleClose = () => setOpenAddFamily(false); // Callback function to close the Family Details Popup
   const handleAddMember = () => setOpenAddFamily(true); // Callback function to open the Family Details Popup
-  const handleRegisterInfoPopUpClose = () => setOpenRegisterInfoPopUp(false);
-  const handleAddAddress = ({ operation, addressType }: AddressChangeType) => {
-    setCurrentAddressChange({ operation, addressType });
-    setOpenAddressDialog(true);
-  }; // Callback function to open the Address Popup
-  const handleCloseAddress = () => setOpenAddressDialog(false);
-  const dispatch = useDispatch();
+  const handleRegisterInfoPopUpClose = () => setOpenRegisterInfoPopUp(false); // Callback function to open the Address Popup
+  const dispatch = useDispatch<typeof store.dispatch>();
 
   const handleResetForm = () => {
     setPresentAddress(memberAddress);
@@ -119,44 +116,27 @@ const UserProfileForm: React.FC = ({
     reset(memberDetails);
   };
 
-  const handleCopyPresentAddressChange = (value: boolean) => {
-    if (value && presentAddress?.flatNumberName) {
-      setPermanentAddress(presentAddress);
-      clearErrors("permanentAddress");
-    } else {
-      setPermanentAddress(memberAddress);
-    }
-  };
-
-  const handlSaveFamilyDetails = (family_details: FamilyDetails) => {
+  const handleSaveFamilyDetails = (familyDetail: FamilyDetails) => {
     setFamilyDetails((prevDetails) => {
       const updateRecordIndx = prevDetails.findIndex(
-        (detail) => detail.familyMemberId === family_details.familyMemberId
+        (detail) => detail.familyMemberId === familyDetail.familyMemberId,
       );
       if (updateRecordIndx > -1) {
         return prevDetails.map((detail, index) =>
-          index === updateRecordIndx ? family_details : detail
+          index === updateRecordIndx ? familyDetail : detail,
         );
-      } else {
-        return [...prevDetails, family_details];
       }
+      return [...prevDetails, familyDetail];
     });
     setFamilyMemberToEdit(undefined);
     setOpenAddFamily(false);
   };
 
-  const handleAddressChange = (addressType: AddressType, value: Address) => {
-    if (addressType === AddressType.PresentAddress) {
-      clearErrors("presentAddress");
-      setPresentAddress(value);
-    } else if (addressType === AddressType.PermanentAddress) {
-      setPermanentAddress(value);
-      clearErrors("permanentAddress");
-    } else if (addressType === AddressType.OfficeAddress) {
-      setOfficeAddress(value);
+  useEffect(() => {
+    if (!userLoggedIn && !selectedMember) {
+      dispatch(fetchActiveMemberById(memberid as string));
     }
-    handleCloseAddress();
-  };
+  }, [selectedMember, userLoggedIn, dispatch]);
 
   useEffect(() => {
     if (selectedMember) {
@@ -174,20 +154,78 @@ const UserProfileForm: React.FC = ({
     }
   }, [selectedMember, reset]);
 
+  const handleSaveProfilePic = async (
+    memberName: string,
+  ): Promise<string | undefined> => {
+    if (!imageString) return undefined;
+    try {
+      const downloadUrl = await uploadProfilePicToFirebase(
+        imageString,
+        memberName,
+      );
+      return downloadUrl;
+    } catch (err: any) {
+      throw new Error(`Failed to uploaded profile picture: ${err.message}`);
+    }
+  };
+
+  const addNewMemberDataToFirebase = (userObj: Members) => {
+    saveMemberDataToFirebase(userObj)
+      .then(() => {
+        toast.success('Member details saved successfully', toastOptions);
+        dispatch(addMember(userObj));
+        handleResetForm();
+      })
+      .catch((err) => {
+        toast.error(err.message, toastOptions);
+      });
+  };
+
+  const updateMemberDataToFirebase = (userObj: Members) => {
+    if (memberIDMobileMap?.length) {
+      const currentMember = memberIDMobileMap.find(
+        (obj) => obj[userObj.personalDetails.mobileNumber],
+      );
+      if (
+        currentMember &&
+        currentMember[userObj.personalDetails.mobileNumber] !== userObj.memberId
+      ) {
+        throw new Error('This mobile number is already registered.');
+      }
+    }
+
+    updateMemberToFirebase(userObj)
+      .then(() => {
+        toast.success('Member details updated successfully', toastOptions);
+        dispatch(updateMember(userObj));
+        if (userObj?.personalDetails?.mobileNumber) {
+          sendWhatsAppTextMessage(
+            `+91${userObj.personalDetails.mobileNumber}`,
+            `Thank you for registering with Kalakairali. Your account is verified now.
+            You can check your details by going to \n ${window.location.href}`,
+          );
+        }
+        handleResetForm();
+      })
+      .catch((err) => {
+        toast.error(err.message, toastOptions);
+      });
+  };
+
   const onHandleSaveMembersForm: SubmitHandler<Members> = async (data) => {
     clearErrors();
     let error = false;
     if (!presentAddress?.flatNumberName) {
-      setError("presentAddress", {
-        type: "manual",
-        message: "Present Address is required",
+      setError('presentAddress', {
+        type: 'manual',
+        message: 'Present Address is required',
       });
       error = true;
     }
     if (!permanentAddress?.flatNumberName) {
-      setError("permanentAddress", {
-        type: "manual",
-        message: "Permanent Address is required",
+      setError('permanentAddress', {
+        type: 'manual',
+        message: 'Permanent Address is required',
       });
       error = true;
     }
@@ -201,7 +239,7 @@ const UserProfileForm: React.FC = ({
         const ops: UserOps = data.memberId ? UserOps.Edit : UserOps.Add;
         const profilePicUrl = imageString
           ? await handleSaveProfilePic(data.personalDetails.name)
-          : "";
+          : '';
         if (profilePicUrl && data.personalDetails.profilePhotoUrl) {
           removeProfilePicFromFirebase(data.personalDetails.profilePhotoUrl);
         }
@@ -214,8 +252,8 @@ const UserProfileForm: React.FC = ({
           },
           geoLocation: memberLocation ?? blreCoordinates,
           memberId: data.memberId ? data.memberId : uuidv4(),
-          presentAddress: presentAddress,
-          permanentAddress: permanentAddress,
+          presentAddress,
+          permanentAddress,
           officeAddress: officeAddress ?? null,
           familyDetails: familyDetails ?? [],
         };
@@ -232,46 +270,10 @@ const UserProfileForm: React.FC = ({
     }
   };
 
-  const updateMemberDataToFirebase = (userObj: Members) => {
-    if (memberIDMobileMap?.length) {
-      const currentMember = memberIDMobileMap.find(
-        (obj) => obj[userObj.personalDetails.mobileNumber]
-      );
-      if (
-        currentMember &&
-        currentMember[userObj.personalDetails.mobileNumber] !== userObj.memberId
-      ) {
-        throw new Error("This mobile number is already registered.");
-      }
-    }
-
-    updateMemberToFirebase(userObj)
-      .then(() => {
-        toast.success("Member details updated successfully", toastOptions);
-        dispatch(updateMember(userObj));
-        handleResetForm();
-      })
-      .catch((err) => {
-        toast.error(err.message, toastOptions);
-      });
-  };
-
-  const addNewMemberDataToFirebase = (userObj: Members) => {
-    saveMemberDataToFirebase(userObj)
-      .then(() => {
-        toast.success("Member details saved successfully", toastOptions);
-        dispatch(addMember(userObj));
-        handleResetForm();
-      })
-      .catch((err) => {
-        toast.error(err.message, toastOptions);
-      });
-  };
-
   const handleEditFamilyMember = (familyMemberId: string) => {
-    const memberToEdit = familyDetails.find((member) => {
-      return member.familyMemberId === familyMemberId;
-    });
+    const memberToEdit = familyDetails.find(
+      (memb) => memb.familyMemberId === familyMemberId,
+    );
 
     if (memberToEdit) {
       setFamilyMemberToEdit(memberToEdit);
@@ -280,25 +282,25 @@ const UserProfileForm: React.FC = ({
   };
 
   const handleDeleteFamilyMember = (familyMemberId: string) => {
-    const updatedFamilyDetails = familyDetails.filter((member) => {
-      return member.familyMemberId !== familyMemberId;
-    });
+    const updatedFamilyDetails = familyDetails.filter(
+      (memb) => memb.familyMemberId !== familyMemberId,
+    );
     setFamilyDetails(updatedFamilyDetails);
     setFamilyMemberToEdit(undefined);
   };
 
-  const handleSaveProfilePic = async (
-    memberName: string
-  ): Promise<string | undefined> => {
-    if (!imageString) return;
-    try {
-      const downloadUrl = await uploadProfilePicToFirebase(
-        imageString,
-        memberName
-      );
-      return downloadUrl;
-    } catch (err: any) {
-      throw new Error("Failed to uploaded profile picture: " + err.message);
+  const handleMemberAddressChange = (
+    addressType: string,
+    userAddress: Address,
+  ) => {
+    if (addressType === AddressType.PresentAddress) {
+      setPresentAddress(userAddress);
+      clearErrors('presentAddress');
+    } else if (addressType === AddressType.PermanentAddress) {
+      setPermanentAddress(userAddress);
+      clearErrors('permanentAddress');
+    } else if (addressType === AddressType.OfficeAddress) {
+      setOfficeAddress(userAddress);
     }
   };
 
@@ -314,9 +316,9 @@ const UserProfileForm: React.FC = ({
           title={
             userLoggedIn
               ? memberid
-                ? "Edit Member"
-                : "Add Members"
-              : "Register to Kalakairali MMS"
+                ? 'Edit Member'
+                : 'Add Members'
+              : 'Register to Kalakairali MMS'
           }
         />
         <div className="p-4 w-full mt-16 sm:mt-0">
@@ -324,18 +326,21 @@ const UserProfileForm: React.FC = ({
             <div className="p-4 flex flex-col sm:flex-row sm:justify-between items-center border rounded-lg mt-6">
               {/* Member ID Section */}
               <div className="flex items-center mb-4 sm:mb-0 sm:mr-4">
-                <label className="block text-sm font-medium mr-2 text-gray-600">
+                <label
+                  aria-label="displayId"
+                  className="block text-sm font-medium mr-2 text-gray-600"
+                >
                   Member ID:
                 </label>
                 <input
                   {...register(`displayId`, {
-                    required: "Member ID is required",
+                    required: 'Member ID is required',
                   })}
                   type="text"
                   className={`p-2 border rounded text-gray-600 ${
                     errors.displayId
-                      ? "focus:outline-none border-red-500 bg-red-50"
-                      : ""
+                      ? 'focus:outline-none border-red-500 bg-red-50'
+                      : ''
                   }`}
                   placeholder="KK2025XXXX"
                 />
@@ -344,7 +349,7 @@ const UserProfileForm: React.FC = ({
               {/* Checkbox Section */}
               <div className="flex items-center">
                 <Checkbox
-                  {...register("verified")}
+                  {...register('verified')}
                   color="green"
                   label={
                     <Typography
@@ -388,12 +393,12 @@ const UserProfileForm: React.FC = ({
                       placeholder="Name"
                       autoComplete="off"
                       {...register(`personalDetails.name`, {
-                        required: "Name is required",
+                        required: 'Name is required',
                       })}
                       className={`w-full p-2 border rounded mb-4 text-gray-600 ${
                         errors.personalDetails?.name
-                          ? "focus:outline-none border-red-500 bg-red-50"
-                          : ""
+                          ? 'focus:outline-none border-red-500 bg-red-50'
+                          : ''
                       }`}
                     />
                   </div>
@@ -406,14 +411,14 @@ const UserProfileForm: React.FC = ({
                       placeholder="Mobile number"
                       autoComplete="off"
                       {...register(`personalDetails.mobileNumber`, {
-                        required: "Mobile number is required",
+                        required: 'Mobile number is required',
                         minLength: 10,
                         maxLength: 10,
                       })}
                       className={`w-full p-2 border rounded mb-4 text-gray-600 ${
                         errors.personalDetails?.mobileNumber
-                          ? "focus:outline-none border-red-500 bg-red-50"
-                          : ""
+                          ? 'focus:outline-none border-red-500 bg-red-50'
+                          : ''
                       }`}
                     />
                   </div>
@@ -425,15 +430,15 @@ const UserProfileForm: React.FC = ({
                       type="email"
                       autoComplete="off"
                       {...register(`personalDetails.emailId`, {
-                        required: "Email ID is required",
+                        required: 'Email ID is required',
                         pattern:
                           /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i,
                       })}
                       placeholder="Email ID"
                       className={`w-full p-2 border rounded mb-4 text-gray-600 ${
                         errors.personalDetails?.emailId
-                          ? "focus:outline-none border-red-500 bg-red-50"
-                          : ""
+                          ? 'focus:outline-none border-red-500 bg-red-50'
+                          : ''
                       }`}
                     />
                   </div>
@@ -445,7 +450,7 @@ const UserProfileForm: React.FC = ({
                       type="text"
                       autoComplete="off"
                       {...register(`personalDetails.dateOfBirth`, {
-                        required: "Date of birth is required",
+                        required: 'Date of birth is required',
                         pattern:
                           /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19[0-9][0-9]|20[0-9][0-9])$/,
                         validate: (value) => {
@@ -455,8 +460,8 @@ const UserProfileForm: React.FC = ({
                       placeholder="DD/MM/YYYY"
                       className={`w-full block p-2 border rounded mb-4 text-gray-600 ${
                         errors.personalDetails?.dateOfBirth
-                          ? "focus:outline-none border-red-500 bg-red-50"
-                          : ""
+                          ? 'focus:outline-none border-red-500 bg-red-50'
+                          : ''
                       }`}
                     />
                   </div>
@@ -465,9 +470,9 @@ const UserProfileForm: React.FC = ({
                       name="personalDetails.gender"
                       control={control}
                       rules={{
-                        required: "Gender is required",
+                        required: 'Gender is required',
                         validate: (value) =>
-                          value !== "" || "Please select a valid gender",
+                          value !== '' || 'Please select a valid gender',
                       }}
                       render={({
                         field: { value, onChange },
@@ -489,9 +494,9 @@ const UserProfileForm: React.FC = ({
                       name="personalDetails.bloodGroup"
                       control={control}
                       rules={{
-                        required: "Blood Group is required",
+                        required: 'Blood Group is required',
                         validate: (value) =>
-                          value !== "" || "Please select a valid blood group",
+                          value !== '' || 'Please select a valid blood group',
                       }}
                       render={({
                         field: { value, onChange },
@@ -517,12 +522,12 @@ const UserProfileForm: React.FC = ({
                       autoComplete="off"
                       placeholder="Occupation"
                       {...register(`personalDetails.jobTitle`, {
-                        required: "Occupation is required",
+                        required: 'Occupation is required',
                       })}
                       className={`w-full p-2 border rounded mb-4 text-gray-600 ${
                         errors.personalDetails?.jobTitle
-                          ? "focus:outline-none border-red-500 bg-red-50"
-                          : ""
+                          ? 'focus:outline-none border-red-500 bg-red-50'
+                          : ''
                       }`}
                     />
                   </div>
@@ -531,10 +536,10 @@ const UserProfileForm: React.FC = ({
                       name="personalDetails.educationalQualification.educationLevel"
                       control={control}
                       rules={{
-                        required: "Education level is required",
+                        required: 'Education level is required',
                         validate: (value) =>
-                          value !== "" ||
-                          "Please select a valid education level",
+                          value !== '' ||
+                          'Please select a valid education level',
                       }}
                       render={({
                         field: { value, onChange },
@@ -560,7 +565,7 @@ const UserProfileForm: React.FC = ({
                       placeholder="Specialization"
                       className="w-full p-2 border rounded mb-4 text-gray-600"
                       {...register(
-                        `personalDetails.educationalQualification.specialization`
+                        `personalDetails.educationalQualification.specialization`,
                       )}
                     />
                   </div>
@@ -578,35 +583,18 @@ const UserProfileForm: React.FC = ({
                   typeof Typography
                 >)}
               >
-                * Present and Permanent Address are mandatory{" "}
+                * Present and Permanent Address are mandatory{' '}
               </Typography>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-3">
-              <AddressCard
-                address={presentAddress}
-                addressType={AddressType.PresentAddress}
-                onEdit={({ operation, addressType }) =>
-                  handleAddAddress({ operation, addressType })
-                }
-                error={!!errors.presentAddress}
-              />
-              <AddressCard
-                address={permanentAddress}
-                copyAddress={true}
-                addressType={AddressType.PermanentAddress}
-                onEdit={({ operation, addressType }) =>
-                  handleAddAddress({ operation, addressType })
-                }
-                onCopyPresentAddress={handleCopyPresentAddressChange}
-                error={!!errors.permanentAddress}
-              />
-              <AddressCard
-                address={officeAddress}
-                addressType={AddressType.OfficeAddress}
-                onEdit={({ operation, addressType }) =>
-                  handleAddAddress({ operation, addressType })
-                }
-                error={false}
+              <MemberAddress
+                memPresentAddress={presentAddress}
+                memPermanentAddress={permanentAddress}
+                memOfficeAddress={officeAddress}
+                errors={errors}
+                clearErrors={clearErrors}
+                onMemberAddressChange={handleMemberAddressChange}
+                showActionButton={userLoggedIn || (!userLoggedIn && !memberid)}
               />
             </div>
           </div>
@@ -617,22 +605,25 @@ const UserProfileForm: React.FC = ({
                   Add Family Members
                 </h2>
               </div>
-              <div className="flex-1 text-right">
-                <Button
-                  variant="text"
-                  color="blue"
-                  onClick={handleAddMember}
-                  {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
-                  className="cursor-pointer hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                >
-                  <Plus className="inline size-4" /> Add Member
-                </Button>
-              </div>
+              {(userLoggedIn || (!userLoggedIn && !memberid)) && (
+                <div className="flex-1 text-right">
+                  <Button
+                    variant="text"
+                    color="blue"
+                    onClick={handleAddMember}
+                    {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
+                    className="cursor-pointer hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                  >
+                    <Plus className="inline size-4" /> Add Member
+                  </Button>
+                </div>
+              )}
             </div>
             <FamilyDetailsTable
               onEditFamilyMember={handleEditFamilyMember}
               onDeleteFamilyMember={handleDeleteFamilyMember}
               familyMembers={familyDetails}
+              showActionButton={userLoggedIn || (!userLoggedIn && !memberid)}
             />
           </div>
 
@@ -640,6 +631,7 @@ const UserProfileForm: React.FC = ({
             <div className="flex-1 p-4 border rounded">
               {/* <GeoLocationDisplay geoLocation={memberDetails.geoLocation} /> */}
               <MapComponent
+                showActionButton={userLoggedIn || (!userLoggedIn && !memberid)}
                 coordinates={member?.geoLocation}
                 onUpdateLocation={(coordinates: Coordinates) => {
                   setMemberLocation(coordinates);
@@ -657,11 +649,7 @@ const UserProfileForm: React.FC = ({
                 <input
                   {...register(`proposedBy`)}
                   type="text"
-                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                    errors.proposedBy
-                      ? "focus:outline-none border-red-500 bg-red-50"
-                      : ""
-                  }`}
+                  className="w-full p-2 border rounded mb-4 text-gray-600"
                 />
                 <Controller
                   name="communicationPreference"
@@ -683,52 +671,52 @@ const UserProfileForm: React.FC = ({
                   type="text"
                   className="p-2 border mb-3 rounded w-full text-gray-600"
                 />
+                <label className="text-gray-600 text-sm font-medium">
+                  Date of joining *
+                </label>
+                <input
+                  {...register(`dateOfJoining`, {
+                    pattern:
+                      /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19[0-9][0-9]|20[0-9][0-9])$/,
+                    validate: (value) => {
+                      return !value || isValidDate(value);
+                    },
+                  })}
+                  type="text"
+                  placeholder="DD/MM/YYYY"
+                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                    errors.dateOfJoining
+                      ? 'focus:outline-none border-red-500 bg-red-50'
+                      : ''
+                  }`}
+                />
               </div>
             )}
           </div>
         </div>
-        <div className="p-4 w-full bg-gray-50 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center">
-            <Button
-              type="submit"
-              color="blue"
-              className="mb-4 sm:mb-0 order-1 sm:order-2 cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-              {...({} as React.ComponentProps<typeof Button>)}
-            >
-              Save Member Details
-            </Button>
-            <Button
-              type="button"
-              onClick={handleResetForm}
-              className="order-2 sm:order-1 cursor-pointer mr-0 sm:mr-2 text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-              {...({} as React.ComponentProps<typeof Button>)}
-            >
-              Reset
-            </Button>
+        {(userLoggedIn || (!userLoggedIn && !memberid)) && (
+          <div className="p-4 w-full bg-gray-50 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center">
+              <Button
+                type="submit"
+                color="blue"
+                className="mb-4 sm:mb-0 order-1 sm:order-2 cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                {...({} as React.ComponentProps<typeof Button>)}
+              >
+                Save Member Details
+              </Button>
+              <Button
+                type="button"
+                onClick={handleResetForm}
+                className="order-2 sm:order-1 cursor-pointer mr-0 sm:mr-2 text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                {...({} as React.ComponentProps<typeof Button>)}
+              >
+                Reset
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </form>
-      <PopupContainer
-        header={`${currentAddressChange.operation} ${currentAddressChange.addressType}`}
-        open={openAddressDialog}
-        onClose={handleCloseAddress}
-      >
-        <AddressForm
-          addressType={currentAddressChange.addressType}
-          addressInfo={
-            (presentAddress || permanentAddress || officeAddress) &&
-            currentAddressChange.addressType === AddressType.PresentAddress
-              ? presentAddress
-              : currentAddressChange.addressType ===
-                AddressType.PermanentAddress
-              ? permanentAddress
-              : officeAddress
-          }
-          onAddressChange={(addressType, value) =>
-            handleAddressChange(addressType, value)
-          }
-        />
-      </PopupContainer>
       <PopupContainer
         open={openAddFamily}
         header="Add Family Member"
@@ -736,10 +724,10 @@ const UserProfileForm: React.FC = ({
       >
         <FamilyDetailsForm
           familyDetails={familyMemberToEdit}
-          onSaveDetails={handlSaveFamilyDetails}
+          onSaveDetails={handleSaveFamilyDetails}
         />
       </PopupContainer>
-      {!userLoggedIn && (
+      {!memberid && !userLoggedIn && (
         <PopupContainer
           open={openRegisterInfoPopUp}
           header="Kalakairali Member Management System"

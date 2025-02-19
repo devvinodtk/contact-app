@@ -1,7 +1,6 @@
 {
   "projects": {
-    "default": "kk-contact-app",
-    ":q!": "kk-contact-app"
+    "default": "kk-contact-app"
   },
   "targets": {},
   "etags": {}

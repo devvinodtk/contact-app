@@ -87,7 +87,7 @@ const AddressList = () => {
                     activeMembers
                       .filter(
                         (member) =>
-                          member.communicationPreference != "In Person"
+                          member.communicationPreference != 'In Person',
                       )
                       .map((member) => {
                         return (
@@ -102,17 +102,17 @@ const AddressList = () => {
                             <p className="text-black">
                               {member.presentAddress.flatNumberName}
                             </p>
-                            <p className="text-black">
-                              {member.presentAddress.addressLine1},{" "}
+                            <p className="text-gray-600">
+                              {member.presentAddress.addressLine1},{' '}
                               {member.presentAddress.addressLine2}
                             </p>
-                            <p className="text-black">
-                              {member.presentAddress.city},{" "}
-                              {member.presentAddress.state} -{" "}
-                              {member.presentAddress.pincode}{" "}
+                            <p className="text-gray-600">
+                              {member.presentAddress.city},{' '}
+                              {member.presentAddress.state} -{' '}
+                              {member.presentAddress.pincode}{' '}
                             </p>
-                            <p className="text-black">
-                              Phone: {"+91 "}{" "}
+                            <p className="text-gray-600">
+                              Phone: {'+91 - '}{' '}
                               {member.personalDetails.mobileNumber}
                             </p>
                           </div>
@@ -123,7 +123,9 @@ const AddressList = () => {
             </div>
           </div>
 
-          <div className="w-full rounded-lg pl-6" >
+
+
+          <div className="max-w-full mx-auto pl-6">
             <h2 className="text-xl ml-10 sm:ml-0 font-semibold text-black flex justify-left items-center">
               <span>Members list with mobile number</span>
               <span className="text-red-500 cursor-pointer" onClick={downloadNamePhoneList}>
