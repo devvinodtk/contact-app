@@ -38,7 +38,7 @@ export type EducationLevel =
   | 'Bachelors Degree'
   | 'Masters Degree'
   | 'PhD';
-export type RelationshipType = '' | 'Spouse' | 'Child' | 'Father' | 'Mother' | 'Father In Law' | 'Mother In Law';
+export type RelationshipType = '' | 'Spouse' | 'Son' | 'Daughter' | 'Father' | 'Mother' | 'Father In Law' | 'Mother In Law' | 'Son In Law' | 'Daughter In Law';
 export type CommunicationPreference = '' | 'In Person' | 'Postal';
 
 export enum AreaCode {

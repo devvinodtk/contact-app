@@ -284,6 +284,8 @@ export const relationshipOptions = [
   'Mother',
   'Father In Law',
   'Mother In Law',
+  'Son In Law',
+  'Daughter In Law',
 ] as RelationshipType[];
 
 export const postOfficeOptions = [''] as string[];
