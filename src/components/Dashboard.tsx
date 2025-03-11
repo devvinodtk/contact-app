@@ -24,6 +24,7 @@ import {
   MapPin,
   Mail,
   Download,
+  View,
 } from 'lucide-react';
 import Header from './common/Header';
 import {
@@ -50,11 +51,17 @@ import {
 } from '../store/MemberSelector';
 import SearchFilter from './common/SearchFilter';
 import Pagination from './common/Pagination';
+import MemberIdCardView from './MemberIdCardView';
 
 const Dashboard = () => {
   const TABLE_HEAD = ['Member', 'Age', 'Blood Group', 'Occupation', 'Area', ''];
   const PAGE_SIZE = 10;
   const [selectedMemberForDelete, setSelectedMemberForDelete] = useState<{
+    memberId: string;
+    memberName: string;
+  } | null>(null);
+
+  const [selectedMemberIdCardView, setSelectedMemberIdCardView] = useState<{
     memberId: string;
     memberName: string;
   } | null>(null);
@@ -68,6 +75,7 @@ const Dashboard = () => {
     navigate(`/users/${memberId}`);
   };
   const [open, setOpen] = useState(false);
+  const [openIdCarPopup, setOpenIdCarPopup] = useState(false);
   const [showUnverifiedUsers, setShowUnverifiedUsers] = useState(false);
   const [showInactiveUsers, setShowInactiveUsers] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -77,9 +85,15 @@ const Dashboard = () => {
     endIndex: PAGE_SIZE,
   });
   const handleClose = () => setOpen(false);
+  const handleIdCarPopupClose = () => setOpenIdCarPopup(false);
   const onDeleteMember = (memberId: string, memberName: string) => {
     setSelectedMemberForDelete({ memberId, memberName });
     setOpen(true);
+  };
+
+  const onViewMemberIdCard = (memberId: string, memberName: string) => {
+    setSelectedMemberIdCardView({ memberId, memberName });
+    setOpenIdCarPopup(true);
   };
 
   const handleConfirmDelete = (
@@ -446,19 +460,6 @@ const Dashboard = () => {
                                       <PencilIcon className="h-4 w-4" />
                                     </IconButton>
                                   </Tooltip>
-                                  <Tooltip content="Download Membership Card">
-                                    <IconButton
-                                      variant="text"
-                                      // eslint-disable-next-line react/jsx-props-no-spreading
-                                      {...({
-                                        variant: 'text',
-                                      } as React.ComponentProps<
-                                        typeof IconButton
-                                      >)}
-                                    >
-                                      <Download className="h-4 w-4" />
-                                    </IconButton>
-                                  </Tooltip>
                                   <Tooltip content="Delete User">
                                     <IconButton
                                       variant="text"
@@ -474,6 +475,24 @@ const Dashboard = () => {
                                       >)}
                                     >
                                       <Trash2 className="h-4 w-4" />
+                                    </IconButton>
+                                  </Tooltip>
+
+                                  <Tooltip content="View ID Card">
+                                    <IconButton
+                                      variant="text"
+                                      onClick={() => {
+                                        onViewMemberIdCard(
+                                          member.memberId,
+                                          member.personalDetails.name,
+                                        );
+                                      }}
+                                      // eslint-disable-next-line react/jsx-props-no-spreading
+                                      {...({} as React.ComponentProps<
+                                        typeof IconButton
+                                      >)}
+                                    >
+                                      <View className="h-4 w-4" />
                                     </IconButton>
                                   </Tooltip>
                                   {member?.geoLocation && (
@@ -549,6 +568,16 @@ const Dashboard = () => {
             memberId={selectedMemberForDelete.memberId}
             onConfirmDelete={handleConfirmDelete}
           />
+        </PopupContainer>
+      )}
+
+      {selectedMemberIdCardView && (
+        <PopupContainer
+          header={`Show Id card for ${selectedMemberIdCardView.memberName}`}
+          open={openIdCarPopup}
+          onClose={handleIdCarPopupClose}
+        >
+          <MemberIdCardView memberId={selectedMemberIdCardView.memberId} />
         </PopupContainer>
       )}
       <ToastContainer />

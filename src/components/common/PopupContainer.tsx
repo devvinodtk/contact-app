@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 import {
   Dialog,
   DialogBody,
   DialogFooter,
   DialogHeader,
-} from "@material-tailwind/react";
-import { X } from "lucide-react";
+} from '@material-tailwind/react';
+import { X } from 'lucide-react';
 
 interface PopupContainerProps {
   open: boolean;
