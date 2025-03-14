@@ -61,10 +61,7 @@ const Dashboard = () => {
     memberName: string;
   } | null>(null);
 
-  const [selectedMemberIdCardView, setSelectedMemberIdCardView] = useState<{
-    memberId: string;
-    memberName: string;
-  } | null>(null);
+  const [selectedMemberIdCardView, setSelectedMemberIdCardView] = useState<Members | null>(null);
 
   const activeMembers = useSelector(selectActiveMembers);
   const inActiveMembers = useSelector(selectInActiveMembers);
@@ -91,8 +88,8 @@ const Dashboard = () => {
     setOpen(true);
   };
 
-  const onViewMemberIdCard = (memberId: string, memberName: string) => {
-    setSelectedMemberIdCardView({ memberId, memberName });
+  const onViewMemberIdCard = (member: Members) => {
+    setSelectedMemberIdCardView(member);
     setOpenIdCarPopup(true);
   };
 
@@ -234,9 +231,8 @@ const Dashboard = () => {
                       <Chip
                         variant="ghost"
                         color="blue"
-                        value={`${
-                          filteredResult?.length ? filteredResult.length : 0
-                        } Members`}
+                        value={`${filteredResult?.length ? filteredResult.length : 0
+                          } Members`}
                       />
                     </div>
                   </div>
@@ -314,7 +310,7 @@ const Dashboard = () => {
                                           member.personalDetails
                                             ?.profilePhotoUrl
                                             ? member.personalDetails
-                                                .profilePhotoUrl
+                                              .profilePhotoUrl
                                             : `/assets/member_${member.personalDetails?.gender.toLocaleLowerCase()}.png`
                                         }
                                         alt={member.personalDetails?.name}
@@ -341,7 +337,7 @@ const Dashboard = () => {
                                             `(${member.displayId})`}
                                         </span>
                                         {member.personalDetails?.gender ===
-                                        'Male' ? (
+                                          'Male' ? (
                                           <span className="blue-circle-icon">
                                             M
                                           </span>
@@ -483,8 +479,7 @@ const Dashboard = () => {
                                       variant="text"
                                       onClick={() => {
                                         onViewMemberIdCard(
-                                          member.memberId,
-                                          member.personalDetails.name,
+                                          member
                                         );
                                       }}
                                       // eslint-disable-next-line react/jsx-props-no-spreading
@@ -502,7 +497,7 @@ const Dashboard = () => {
                                         onClick={() => {
                                           handleOpenMap(
                                             member.geoLocation ||
-                                              blreCoordinates,
+                                            blreCoordinates,
                                           );
                                         }}
                                         // eslint-disable-next-line react/jsx-props-no-spreading
@@ -573,11 +568,11 @@ const Dashboard = () => {
 
       {selectedMemberIdCardView && (
         <PopupContainer
-          header={`Show Id card for ${selectedMemberIdCardView.memberName}`}
+          header={`View / Download Id Card`}
           open={openIdCarPopup}
           onClose={handleIdCarPopupClose}
         >
-          <MemberIdCardView memberId={selectedMemberIdCardView.memberId} />
+          <MemberIdCardView {...selectedMemberIdCardView} />
         </PopupContainer>
       )}
       <ToastContainer />
