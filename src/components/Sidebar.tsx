@@ -29,12 +29,12 @@ const SIDEBAR_ITEMS = [
     color: "#00ffff",
     href: "/address",
   },
-  {
-    name: "Membership Card",
-    icon: IdCard,
-    color: "#6EE7B7",
-    href: "/idcards",
-  },
+  // {
+  //   name: "Membership Card",
+  //   icon: IdCard,
+  //   color: "#6EE7B7",
+  //   href: "/idcards",
+  // },
   { name: "Logout", icon: LogIn, color: "#ff7300", href: "/logout" },
 ];
 
@@ -89,9 +89,8 @@ function Sidebar() {
       </div>
       <div className="hidden md:block">
         <motion.div
-          className={`relative z-10 duration-300 transition-all h-screen ease-in-out flex-shrink-0 mobileMenu${
-            isSideBarOpen ? "w-64" : "w-20"
-          }`}
+          className={`relative z-10 duration-300 transition-all h-screen ease-in-out flex-shrink-0 mobileMenu${isSideBarOpen ? "w-64" : "w-20"
+            }`}
           animate={{ width: isSideBarOpen ? 256 : 80 }}
         >
           <div className="h-full bg-sky-700 h-screen backdrop-blur-md p-4 flex flex-col">

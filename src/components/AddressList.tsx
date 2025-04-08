@@ -7,61 +7,69 @@ import jsPDF from "jspdf";
 import React from "react";
 
 const AddressList = () => {
-  const postalAddressRef = React.useRef(null);
-  const namePhoneRef = React.useRef(null);
+  const postalAddressRef = React.useRef<HTMLDivElement>(null);
+  const namePhoneRef = React.useRef<HTMLTableElement>(null);
 
   const downloadPostalAddress = async () => {
     const element = postalAddressRef.current;
-    if (!element) {
-      return;
+    if (!element) return;
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    let yPosition = 10; // Initial Y position
+
+    const elements = Array.from(element.children); // Get all address cards
+
+    for (let i = 0; i < elements.length; i++) {
+      const canvas = await html2canvas(elements[i] as HTMLElement, { scale: 2 });
+      const imgData = canvas.toDataURL("image/png");
+      const imgWidth = pageWidth - 20; // Leave some margin
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      if (yPosition + imgHeight > pageHeight - 20) {
+        pdf.addPage(); // Add new page if content exceeds page height
+        yPosition = 10; // Reset Y position
+      }
+
+      pdf.addImage(imgData, "PNG", 10, yPosition, imgWidth, imgHeight);
+      yPosition += imgHeight + 10; // Move Y position down
     }
 
-    const canvas = await html2canvas(element, {
-      scale: 2,
-    });
-    const data = canvas.toDataURL("image/png");
+    pdf.save("Address_List.pdf");
+  };
 
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "px",
-      format: "a4",
-    });
-
-    const imgProperties = pdf.getImageProperties(data);
-    let pdfWidth = pdf.internal.pageSize.getWidth();
-    const margin = 20;
-    pdfWidth = pdfWidth - 2 * margin;
-    const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
-
-    pdf.addImage(data, "PNG", margin, margin, pdfWidth, pdfHeight);
-    pdf.save("Address List.pdf");
-  }
   const downloadNamePhoneList = async () => {
     const element = namePhoneRef.current;
-    if (!element) {
-      return;
+    if (!element) return;
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    let yPosition = 10; // Initial Y position
+
+    const rows = Array.from(element.querySelectorAll("tr")); // Get all table rows
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const canvas = await html2canvas(row, { scale: 2 });
+      const imgData = canvas.toDataURL("image/png");
+
+      const imgWidth = pageWidth - 20; // Leave some margin
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      if (yPosition + imgHeight > pageHeight - 20) {
+        pdf.addPage(); // Add a new page if content exceeds page height
+        yPosition = 10; // Reset Y position
+      }
+
+      pdf.addImage(imgData, "PNG", 10, yPosition, imgWidth, imgHeight);
+      yPosition += imgHeight + 0; // Move Y position down for the next row
     }
 
-    const canvas = await html2canvas(element, {
-      scale: 2,
-    });
-    const data = canvas.toDataURL("image/png");
-
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "px",
-      format: "a4",
-    });
-
-    const imgProperties = pdf.getImageProperties(data);
-    let pdfWidth = pdf.internal.pageSize.getWidth();
-    const margin = 20;
-    pdfWidth = pdfWidth - 2 * margin;
-    const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
-
-    pdf.addImage(data, "PNG", margin, margin, pdfWidth, pdfHeight);
     pdf.save("Name-Phone-Area.pdf");
-  }
+  };
+
   // return <Header title="Address List" />;
   const activeMembers = useSelector(selectActiveMembers);
 
@@ -79,7 +87,7 @@ const AddressList = () => {
         </div>
         <div className="m-5 mt-0">
           <div className="w-full rounded-lg mb-6" >
-            <div className="overflow-x-auto bg-white text-gray-700  rounded-lg" ref={postalAddressRef}>
+            <div className="overflow-x-auto bg-white text-black-700  rounded-lg" ref={postalAddressRef}>
               <div className="max-w-full p-6">
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" >
@@ -102,16 +110,16 @@ const AddressList = () => {
                             <p className="text-black">
                               {member.presentAddress.flatNumberName}
                             </p>
-                            <p className="text-gray-600">
+                            <p className="text-black">
                               {member.presentAddress.addressLine1},{' '}
                               {member.presentAddress.addressLine2}
                             </p>
-                            <p className="text-gray-600">
+                            <p className="text-black">
                               {member.presentAddress.city},{' '}
                               {member.presentAddress.state} -{' '}
                               {member.presentAddress.pincode}{' '}
                             </p>
-                            <p className="text-gray-600">
+                            <p className="text-black">
                               Phone: {'+91 - '}{' '}
                               {member.personalDetails.mobileNumber}
                             </p>
@@ -137,7 +145,7 @@ const AddressList = () => {
           <div className="w-full mx-auto p-6 mb-6">
             <div className="overflow-x-auto">
               <table className="w-full border-collapse border border-black" ref={namePhoneRef}>
-                <thead className="bg-gray-100">
+                <thead className="bg-black-100">
                   <tr>
                     <th className="border border-black px-4 py-2 text-left text-black">
                       Sl. No.
@@ -157,7 +165,7 @@ const AddressList = () => {
                   {activeMembers?.length > 0 &&
                     activeMembers.map((member, index) => {
                       return (
-                        <tr key={member.memberId} className="hover:bg-gray-50">
+                        <tr key={member.memberId} className="hover:bg-black-50">
                           <td className="border border-black px-4 py-2 text-black">
                             {index + 1}
                           </td>
