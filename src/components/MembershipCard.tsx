@@ -5,6 +5,8 @@ import { selectActiveMembers } from "../store/MemberSelector";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import React from "react";
+import { useReactToPrint } from "react-to-print";
+
 function MembershipCard() {
   const activeMembers = useSelector(selectActiveMembers);
   const memberIdRef = React.useRef(null);
@@ -33,7 +35,20 @@ function MembershipCard() {
     pdfWidth = pdfWidth - 2 * margin;
     const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
 
-    pdf.addImage(data, "PNG", margin, margin, pdfWidth, pdfHeight);
+    let yPosition = 0;
+    let remainingHeight = pdfHeight;
+
+    while (remainingHeight > 0) {
+      pdf.addImage(data, "PNG", margin, margin, pdfWidth, pdfHeight);
+      remainingHeight -= pdf.internal.pageSize.height;
+
+      if (remainingHeight > 0) {
+        pdf.addPage();
+        yPosition = -pdf.internal.pageSize.height; // Reset y position for new page
+      }
+    }
+
+    // pdf.addImage(data, "PNG", margin, margin, pdfWidth, pdfHeight);
     pdf.save("Members-Id-Card.pdf");
   };
   return (
@@ -44,14 +59,12 @@ function MembershipCard() {
           <div className="w-full mx-auto border rounded-lg mb-6">
             <div className="overflow-x-auto bg-white text-gray-700  rounded-lg">
               <div className="max-w-full p-6">
-                <h2 className="mb-2 text-xl ml-10 sm:ml-0 font-semibold text-black flex justify-left items-center">
+                <h2 className="mb-8 text-xl ml-10 sm:ml-0 font-semibold text-black flex justify-left items-center">
                   <span>Download Membership Card</span>
-                  <span onClick={DownloadMmeberId} className="text-red-500 cursor-pointer">
-                    <Download className="h-6 w-6 ml-2 mt-2 text-red-500" />
-                  </span>
+
                 </h2>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" ref={memberIdRef}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" >
                   {activeMembers?.length > 0 &&
                     activeMembers
                       .filter(
@@ -60,51 +73,30 @@ function MembershipCard() {
                       )
                       .map((member) => {
                         return (
-                          <div
-                            key={member.memberId}
-                            className="bg-white shadow-sm rounded-lg border border-gray-200 p-4"
-                          >
-                            {/* Logo */}
-                            <div className="flex justify-start">
+
+
+                          <div className="w-80 h-[500px] bg-gradient-to-b from-purple-500 to-indigo-700 rounded-2xl shadow-2xl p-4 flex flex-col justify-between items-center " ref={memberIdRef}>
+                            <span onClick={DownloadMmeberId} className="text-red-500 cursor-pointer">
+                              <Download className="h-6 w-6 ml-2 mt-2 text-red-500" />
+                            </span>
+                            <h2 className="text-base font-bold text-pink-100">🎉 Sending Joy from Kalakairali 🎉</h2>
+                            <h1 className="text-4xl font-extrabold text-yellow-300 mt-2 drop-shadow-lg text-center">Happy Birthday!</h1>
+                            <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-xl overflow-hidden border-4 border-pink-300 mt-2">
                               <img
-                                className=" h-12 mr-2"
-                                src="/assets/Logo-full.png"
-                                alt="Kalakairali"
+                                src={
+                                  member.personalDetails?.profilePhotoUrl
+                                    ? member.personalDetails.profilePhotoUrl
+                                    : `/assets/member_${member.personalDetails?.gender.toLowerCase()}.png`
+                                }
+                                alt="Birthday"
+                                className="w-full h-full object-cover"
                               />
-
                             </div>
-                            <div className="flex justify-end items-center pt-2 pb-2 mb-2 max-w-md border-b-[3px] border-[#3c3b98]">
-                              <div className="text-right mr-4">
-                                <p className="text-xl font-semibold text-black">{member.personalDetails.name}</p>
-                                <p className="text-black  font-semibold">Member ID: {member.displayId}</p>
-                              </div>
-                              <div>
-                                <img
-                                  className=" h-20 rounded border-2 border-gray-200"
-                                  src={
-                                    member.personalDetails?.profilePhotoUrl
-                                      ? member.personalDetails
-                                        .profilePhotoUrl
-                                      : `/assets/member_${member.personalDetails?.gender.toLocaleLowerCase()}.png`
-                                  }
-                                  alt="Kalakairali"
-                                />
-                              </div>
-                            </div>
-
-                            {/* Card Content */}
-                            <div className="text-center py-2">
-
-                              <div className="flex justify-between text-sm text-black">
-                                <span>
-                                  {member.personalDetails.mobileNumber}
-                                </span>
-                                <span>
-                                  Blood Group: {member.personalDetails.bloodGroup}
-                                </span>
-                              </div>
-                            </div>
-
+                            <h2 className="text-2xl font-semibold text-yellow-300 mt-2">{member.personalDetails.name}</h2>
+                            <p className="text-center text-pink-200 px-4 mt-2 italic">
+                              🎁 Wishing you a year filled with love, laughter, and unforgettable adventures! 🌟
+                            </p>
+                            <footer className="mt-4 text-sm text-pink-300">Kalakairali - Together We Live Better</footer>
                           </div>
                         );
                       })}

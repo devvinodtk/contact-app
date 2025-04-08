@@ -17,7 +17,7 @@ const MemberIdCardView = (member: Members) => {
     }
 
     const canvas = await html2canvas(element, {
-      scale: 2,
+      scale: 5,
       useCORS: true
     });
     const data = canvas.toDataURL("image/png");
