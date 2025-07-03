@@ -12,6 +12,7 @@ import store, { AppDispatch } from './store/store';
 import './App.css';
 import { fetchMembers, resetMember } from './store/MembersSlice';
 import LoaderComponent from './components/common/Loader';
+import PrivacyPolicy from './components/PrivacyPolicy';
 
 const LazyUserProfileForm = lazy(() => import('./components/UserProfileForm'));
 const LazyDashboard = lazy(() => import('./components/Dashboard'));
@@ -87,6 +88,7 @@ const App = () => {
         />
         {/* <Route path="/" element={<LoginPage />} /> */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       </Routes>
     </Provider>
   );
