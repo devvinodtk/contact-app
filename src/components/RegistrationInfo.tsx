@@ -1,5 +1,6 @@
 import { Button, Typography } from "@material-tailwind/react";
 import { typographyProps } from "../types/Users";
+import { Plus } from "lucide-react";
 
 interface interfaceRegistrationInfoProps {
   onAgreeAndConfirm: () => void;
@@ -51,6 +52,18 @@ const RegistrationInfo = ({
         mentioned above you consent to the collection and processing of this
         data.
       </Typography>
+      <div className="flex-1 text-left">
+        <Button
+          variant="text"
+          color="blue"
+          onClick={()=>{ window.open("/privacy-policy", "_blank")}}
+          {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
+          className="cursor-pointer hover:bg-primary-700 focus:outline-none
+           font-medium rounded-lg text-sm px-0 py-2.5 text-center"
+        >
+          Read Privacy Policy
+        </Button>
+      </div>
       <div className="p-4 w-full">
         <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center">
           <Button
