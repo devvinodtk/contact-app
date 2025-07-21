@@ -1,5 +1,6 @@
 import { Button, Typography } from "@material-tailwind/react";
 import { typographyProps } from "../types/Users";
+
 interface interfaceRegistrationInfoProps {
   onAgreeAndConfirm: () => void;
 }
