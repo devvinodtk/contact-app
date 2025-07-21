@@ -5,6 +5,7 @@ import {
   LogIn,
   Menu,
   IdCard,
+  FileLock
 } from "lucide-react";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -34,6 +35,12 @@ const SIDEBAR_ITEMS = [
     icon: IdCard,
     color: "#6EE7B7",
     href: "/idcards",
+  },
+  {
+    name: "Privacy Policy",
+    icon:   FileLock,
+    color: "#E76E8A",
+    href: "/privacy-policy",
   },
   { name: "Logout", icon: LogIn, color: "#ff7300", href: "/logout" },
 ];

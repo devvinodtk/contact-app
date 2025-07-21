@@ -1,6 +1,5 @@
 import { Button, Typography } from "@material-tailwind/react";
 import { typographyProps } from "../types/Users";
-import { Plus } from "lucide-react";
 
 interface interfaceRegistrationInfoProps {
   onAgreeAndConfirm: () => void;

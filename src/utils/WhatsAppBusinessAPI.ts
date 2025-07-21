@@ -34,12 +34,12 @@ export const sendWhatsAppTextMessage = async (phoneNumber: string, message: stri
 
     const data = await response.json();
     if (response.ok) {
-      alert('Message sent successfully!');
+      return ('Successfully notified the member via WhatsApp');
     } else {
-      alert(`Error: ${data.error.message}`);
+       throw Error(`Error: ${data.error.message}`);
     }
   } catch (error) {
     console.error('Failed to send message:', error);
-    alert('Failed to send message. Check console for details.');
+    throw Error(`Failed to send message. Error: ${error}`);
   }
 };
