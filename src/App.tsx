@@ -5,7 +5,6 @@ import LoginPage from './components/LoginPage';
 import Sidebar from './components/Sidebar';
 import LogoutPage from './components/LogoutPage';
 import { useAuth, UserAuthValue } from './context/AuthProvider';
-import Dashboard from './components/Dashboard';
 import AddressList from './components/AddressList';
 import MembershipCard from './components/MembershipCard';
 import store, { AppDispatch } from './store/store';
@@ -37,7 +36,10 @@ const App = () => {
       </div>
       <Sidebar />
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={
+          <Suspense fallback={<LoaderComponent />}>
+            <LazyDashboard />
+          </Suspense>} />
         <Route
           path="/dashboard"
           element={
@@ -65,6 +67,7 @@ const App = () => {
         <Route path="/logout" element={<LogoutPage />} />
         <Route path="/address" element={<AddressList />} />
         <Route path="/idcards" element={<MembershipCard />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       </Routes>
     </div>
   ) : (

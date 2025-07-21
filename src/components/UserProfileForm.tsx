@@ -203,7 +203,11 @@ const UserProfileForm: React.FC = ({
             `+91${userObj.personalDetails.mobileNumber}`,
             `Thank you for registering with Kalakairali. Your account is verified now.
             You can check your details by going to \n ${window.location.href}`,
-          );
+          ).then((statusMsg) => {
+            toast.success(statusMsg, toastOptions);
+          }).catch((errorMsg) => {
+            toast.error(`Failed to send WhatsApp message: ${errorMsg}`, toastOptions);
+          });
         }
         handleResetForm();
       })

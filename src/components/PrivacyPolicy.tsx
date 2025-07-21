@@ -3,17 +3,22 @@ import Header from './common/Header';
 const PrivacyPolicy = () => {
   return (
     <>
-      <div className="flex-1 overflow-auto relative z-10 mt-16 sm:mt-0">
+      <div className="flex-1 overflow-auto relative z-10 mt-16 sm:mt-0 text-gray-700">
         <Header title="Privacy Policy" />
         <div className="p-4 w-full mt-16 sm:mt-0">
-          <p className="mb-2 text-sm text-gray-500">
-            Last updated: July 3, 2025
+          <p className="mb-2 text-sm ">
+            Last updated: July 8, 2025
           </p>
-
+          <div className="flex items-center gap-4 mb-6">
+            <img src="/assets/KKMMS_logo.png" alt="Kalakairali Logo" className="w-12 h-12" />
+            <div>
+              <h1 className="text-2xl font-bold">Kalakairali Member Management System</h1>
+              <p className="text-sm text-gray-600">By Kalakairali Regd.</p>
+            </div>
+          </div>
           <section className="mb-6">
             <h2 className="text-xl font-semibold mb-2">1. Introduction</h2>
-            <p>
-              We (“we”, “us”, “our”) respect your privacy and are committed to
+            <p>We at <strong>Kalakairali</strong> respect your privacy and are committed to
               protecting your personal data. This Privacy Policy explains how we
               collect, use, store, and share personal information when you
               register or log in using Facebook or WhatsApp, manage member
