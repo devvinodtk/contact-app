@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "kalakairali": {
+      "members": {
+        ".read": true,
+        ".write": true,
+        ".indexOn": ["personalDetails/mobileNumber"]
+      }
+    }
+  }
+}
