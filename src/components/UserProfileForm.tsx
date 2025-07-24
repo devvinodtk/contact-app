@@ -50,7 +50,7 @@ import {
 } from '../store/MemberSelector';
 import MapComponent from './MapComponent';
 import RegistrationInfo from './RegistrationInfo';
-import { sendWhatsAppTextMessage } from '../utils/WhatsAppBusinessAPI';
+import { sendMemberVerifiedWhatsAppMessage, sendUserSignUpWhatsAppMessage } from '../utils/WhatsAppBusinessAPI';
 import MemberAddress from './MemberAddress.tsx';
 import store from '../store/store.ts';
 
@@ -173,6 +173,12 @@ const UserProfileForm: React.FC = ({
     saveMemberDataToFirebase(userObj)
       .then(() => {
         toast.success('Member details saved successfully', toastOptions);
+        sendUserSignUpWhatsAppMessage(`+91${userObj.personalDetails.mobileNumber}`,
+            userObj?.personalDetails?.name).then((statusMsg) => {
+              toast.success(statusMsg, toastOptions);
+            }).catch((errorMsg) => {
+              toast.error(`Failed to send WhatsApp message: ${errorMsg}`, toastOptions);
+            });
         dispatch(addMember(userObj));
         handleResetForm();
       })
@@ -199,10 +205,10 @@ const UserProfileForm: React.FC = ({
         toast.success('Member details updated successfully', toastOptions);
         dispatch(updateMember(userObj));
         if (userObj?.personalDetails?.mobileNumber) {
-          sendWhatsAppTextMessage(
+          sendMemberVerifiedWhatsAppMessage(
             `+91${userObj.personalDetails.mobileNumber}`,
-            `Thank you for registering with Kalakairali. Your account is verified now.
-            You can check your details by going to \n ${window.location.href}`,
+            userObj?.personalDetails?.name,
+            window.location.pathname,
           ).then((statusMsg) => {
             toast.success(statusMsg, toastOptions);
           }).catch((errorMsg) => {

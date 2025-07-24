@@ -11,31 +11,21 @@ const AddressList = () => {
   const namePhoneRef = React.useRef(null);
 
   const downloadPostalAddress = async () => {
-    const element = postalAddressRef.current;
-    if (!element) {
-      return;
+    try {
+    const res = await fetch('https://us-central1-kk-contact-app.cloudfunctions.net/api/generate-pdf');
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'records.pdf';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    } catch (err) {
+      console.log("Error downloading the file: ", err);
     }
-
-    const canvas = await html2canvas(element, {
-      scale: 2,
-    });
-    const data = canvas.toDataURL("image/png");
-
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "px",
-      format: "a4",
-    });
-
-    const imgProperties = pdf.getImageProperties(data);
-    let pdfWidth = pdf.internal.pageSize.getWidth();
-    const margin = 20;
-    pdfWidth = pdfWidth - 2 * margin;
-    const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
-
-    pdf.addImage(data, "PNG", margin, margin, pdfWidth, pdfHeight);
-    pdf.save("Address List.pdf");
   }
+
   const downloadNamePhoneList = async () => {
     const element = namePhoneRef.current;
     if (!element) {
