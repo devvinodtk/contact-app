@@ -50,13 +50,18 @@ import {
 } from '../store/MemberSelector';
 import MapComponent from './MapComponent';
 import RegistrationInfo from './RegistrationInfo';
-import { sendMemberVerifiedWhatsAppMessage, sendUserSignUpWhatsAppMessage } from '../utils/WhatsAppBusinessAPI';
+import {getFunctions, httpsCallable} from 'firebase/functions';
 import MemberAddress from './MemberAddress.tsx';
 import store from '../store/store.ts';
 
 interface UserProfileFormProps {
   registeredMember?: Members;
 }
+
+const functions = getFunctions();
+const sendSignUpMsg = httpsCallable(functions, 'sendUserSignUpWhatsAppMessage');
+const sendVerifiedMsg = httpsCallable(functions, 'sendMemberVerifiedWhatsAppMessage');
+
 const UserProfileForm: React.FC = ({
   registeredMember,
 }: UserProfileFormProps) => {
@@ -176,9 +181,9 @@ const UserProfileForm: React.FC = ({
       .then(() => {
         toast.success('Member details saved successfully', toastOptions);
         if (userObj.optedInToWhatsApp && userObj?.personalDetails?.mobileNumber) {
-          sendUserSignUpWhatsAppMessage(`+91${userObj.personalDetails.mobileNumber}`,
-              userObj?.personalDetails?.name).then((statusMsg) => {
-                toast.success(statusMsg, toastOptions);
+          sendSignUpMsg({phoneNumber: `+91${userObj.personalDetails.mobileNumber}`,
+            memberName: userObj?.personalDetails?.name}).then((result) => {
+                toast.success(String(result.data), toastOptions);
               }).catch((errorMsg) => {
                 toast.error(`Failed to send WhatsApp message: ${errorMsg}`, toastOptions);
               });
@@ -209,14 +214,14 @@ const UserProfileForm: React.FC = ({
         toast.success('Member details updated successfully', toastOptions);
         dispatch(updateMember(userObj));
         if (userObj.optedInToWhatsApp && userObj?.personalDetails?.mobileNumber) {
-          sendMemberVerifiedWhatsAppMessage(
-            `+91${userObj.personalDetails.mobileNumber}`,
-            userObj?.personalDetails?.name,
-            window.location.pathname,
-          ).then((statusMsg) => {
-            toast.success(statusMsg, toastOptions);
+          sendVerifiedMsg({phoneNumber: `+91${userObj.personalDetails.mobileNumber}`,
+            memberName: userObj?.personalDetails?.name,
+            profileLink: window.location.pathname})
+          .then((result) => {
+            toast.success(String(result.data), toastOptions);
           }).catch((errorMsg) => {
-            toast.error(`Failed to send WhatsApp message: ${errorMsg}`, toastOptions);
+            console.log(errorMsg)
+            // toast.error(`Failed to send WhatsApp message: ${errorMsg}`, toastOptions);
           });
         }
         handleResetForm();
@@ -261,7 +266,8 @@ const UserProfileForm: React.FC = ({
         if(ops === UserOps.Add){
           data.optedInToWhatsAppChangedAt = waMessageCheckedStatus ? new Date().getTime() : null ;
         } else if(ops === UserOps.Edit) {
-          data.optedInToWhatsAppChangedAt = member?.optedInToWhatsApp !== data.optedInToWhatsApp ? new Date().getTime(): member?.optedInToWhatsAppChangedAt;
+          data.optedInToWhatsAppChangedAt = (member?.optedInToWhatsApp === undefined) ? null :
+           (member?.optedInToWhatsApp !== data.optedInToWhatsApp) ? new Date().getTime(): member?.optedInToWhatsAppChangedAt;
         }
 
         const userObj = {
