@@ -1,13 +1,17 @@
-import { Button, Typography } from "@material-tailwind/react";
+import { Button, Checkbox, Typography } from "@material-tailwind/react";
 import { typographyProps } from "../types/Users";
+import { useState } from "react";
 
 interface interfaceRegistrationInfoProps {
-  onAgreeAndConfirm: () => void;
+  onAgreeAndConfirm: (waMessageChecked: boolean) => void;
 }
 
 const RegistrationInfo = ({
   onAgreeAndConfirm,
 }: interfaceRegistrationInfoProps) => {
+
+  const [waMessageChecked, setWAMessageChecked] = useState(true);
+
   return (
     <main className="text-justify">
       <Typography
@@ -52,6 +56,33 @@ const RegistrationInfo = ({
         data.
       </Typography>
       <div className="flex-1 text-left">
+        <Checkbox
+          onChange={(e)=>{
+            setWAMessageChecked(e.target.checked)
+          }}
+          defaultChecked
+          color="green"
+          containerProps={
+            {className: "px-0"}
+          }
+          labelProps={{
+            className:"ml-2"
+          }}
+          label={
+            <Typography
+              color="blue-gray"
+              className="flex font-medium px-0"
+              {...(typographyProps as React.ComponentProps<
+                typeof Typography
+              >)}
+            >
+              I agree to receive WhatsApp updates.
+            </Typography>
+          }
+          {...({} as React.ComponentProps<typeof Checkbox>)}
+        />
+      </div>
+      <div className="flex-1 text-left">
         <Button
           variant="text"
           color="blue"
@@ -69,7 +100,7 @@ const RegistrationInfo = ({
             type="submit"
             color="blue"
             onClick={() => {
-              onAgreeAndConfirm();
+              onAgreeAndConfirm(waMessageChecked);
             }}
             className="mb-4 sm:mb-0 order-0 cursor-pointer sm:mr-2 text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             {...({} as React.ComponentProps<typeof Button>)}

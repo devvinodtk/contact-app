@@ -9,7 +9,7 @@ import { X } from "lucide-react";
 
 interface PopupContainerProps {
   open: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   header?: string;
   children?: React.ReactNode;
 }
@@ -36,10 +36,10 @@ const PopupContainer: React.FC<PopupContainerProps> = ({
         <h2 className="text-center w-full ml-[10%] sm:text-base md:text-lg">
           {header}
         </h2>
-        <X
+        {onClose && <X
           onClick={onClose}
           className="cursor-pointer text-lg font-semibold w-[10%] mb-4 text-gray-600"
-        />
+        />}
       </DialogHeader>
       <div className="w-full mt-1">
         <DialogBody {...({} as React.ComponentProps<typeof DialogHeader>)}>
