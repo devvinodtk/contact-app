@@ -181,3 +181,4 @@ app.get("/generate-pdf", async (req, res) => {
 
 export { sendMemberVerifiedWhatsAppMessage, sendUserSignUpWhatsAppMessage } from './sendWhatsApp';
 export const api = onRequest(app);
+export { whatsappWebhook } from './webhook';
