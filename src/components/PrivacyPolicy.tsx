@@ -86,7 +86,16 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">5. Data Sharing</h2>
+            <h2 className="text-xl font-semibold mb-2">
+              5. WhatsApp Updates Consent
+            </h2>
+            <p>By registering into the app, you opt-in and agree to receive messages from Kalakairali via WhatsApp
+              regarding updates, membership information, and community activities. You can
+              opt out at any time by messaging "STOP" to our WhatsApp number.</p>
+          </section>
+
+          <section className="mb-6">
+            <h2 className="text-xl font-semibold mb-2">6. Data Sharing</h2>
             <p>
               We do not sell or rent your personal data. We may share data with:
             </p>
@@ -98,7 +107,7 @@ const PrivacyPolicy = () => {
 
           <section className="mb-6">
             <h2 className="text-xl font-semibold mb-2">
-              6. Data Storage & Security
+              7. Data Storage & Security
             </h2>
             <p>
               Data is stored securely with encryption and access controls. We
@@ -108,7 +117,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">7. User Rights</h2>
+            <h2 className="text-xl font-semibold mb-2">8. User Rights</h2>
             <ul className="list-disc list-inside">
               <li>Access, update, or delete your data</li>
               <li>Withdraw consent or object to processing</li>
@@ -117,7 +126,7 @@ const PrivacyPolicy = () => {
           </section>
 
           <section className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">8. Children</h2>
+            <h2 className="text-xl font-semibold mb-2">9. Children</h2>
             <p>
               We do not knowingly collect data from users under 16. If such data
               is identified, it will be deleted.
@@ -126,7 +135,7 @@ const PrivacyPolicy = () => {
 
           <section className="mb-6">
             <h2 className="text-xl font-semibold mb-2">
-              9. Updates to This Policy
+              10. Updates to This Policy
             </h2>
             <p>
               This policy may be updated. Changes will be posted with a new
@@ -136,7 +145,7 @@ const PrivacyPolicy = () => {
 
           <section className="mb-6">
             <h2 className="text-xl font-semibold mb-2">
-              10. Contact Information
+              11. Contact Information
             </h2>
             <p>If you have any questions about this policy, contact us at:</p>
             <ul className="list-disc list-inside">
@@ -147,6 +156,12 @@ const PrivacyPolicy = () => {
                   className="text-blue-600 underline"
                 >
                   kalakairali@kalakairali.com
+                </a>
+              </li>
+              <li>
+                Mobile:{' '}
+                <a href={`tel:+919620649197`}>
+                +91 96206 49197
                 </a>
               </li>
               <li>

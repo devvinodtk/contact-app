@@ -1,10 +1,11 @@
-import { Button, Switch, SwitchProps } from '@material-tailwind/react';
+import { Button, Switch, SwitchProps, Typography } from '@material-tailwind/react';
 import { Plus, Pencil } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import {
   Address,
   AddressChangeType,
   AddressType,
+  typographyProps,
   UserOps,
 } from '../../types/Users';
 
@@ -62,10 +63,25 @@ const AddressCard = ({
         <div className="font10 ml-2">
           {showActionButton && copyAddress && (
             <Switch
+              color='blue'
               checked={isCopyAddressChecked}
               onChange={handleCopyAddressCheckedChange}
-              label="Copy Present Address"
-              className="border bg-gray-100 z-0"
+              containerProps={
+                {
+                  className: "bg-gray-100",
+                }
+              }
+              label={
+                      <Typography
+                      className='font-small px-1'
+                      {...(typographyProps as React.ComponentProps<
+                        typeof Typography
+                      >)}
+                      >
+                        Copy Present Address
+                      </Typography>
+
+                  }
               {...({} as React.ComponentProps<typeof Switch>)}
             />
           )}

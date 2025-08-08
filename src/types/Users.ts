@@ -81,6 +81,9 @@ export type Members = {
   geoLocation?: Coordinates;
   comments?: string;
   verified: boolean;
+  verifiedAt: number | null;
+  optedInToWhatsApp: boolean;
+  optedInToWhatsAppChangedAt: number | null;
 };
 
 export type FamilyDetails = {

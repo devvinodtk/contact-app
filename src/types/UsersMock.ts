@@ -67,4 +67,7 @@ export const memberDetails: Members = {
   geoLocation,
   comments: '',
   verified: false,
+  verifiedAt: null,
+  optedInToWhatsApp: true,
+  optedInToWhatsAppChangedAt: null
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Button, Checkbox, Typography } from '@material-tailwind/react';
@@ -50,13 +50,18 @@ import {
 } from '../store/MemberSelector';
 import MapComponent from './MapComponent';
 import RegistrationInfo from './RegistrationInfo';
-import { sendMemberVerifiedWhatsAppMessage, sendUserSignUpWhatsAppMessage } from '../utils/WhatsAppBusinessAPI';
+import {getFunctions, httpsCallable} from 'firebase/functions';
 import MemberAddress from './MemberAddress.tsx';
 import store from '../store/store.ts';
 
 interface UserProfileFormProps {
   registeredMember?: Members;
 }
+
+const functions = getFunctions();
+const sendSignUpMsg = httpsCallable(functions, 'sendUserSignUpWhatsAppMessage');
+const sendVerifiedMsg = httpsCallable(functions, 'sendMemberVerifiedWhatsAppMessage');
+
 const UserProfileForm: React.FC = ({
   registeredMember,
 }: UserProfileFormProps) => {
@@ -101,6 +106,8 @@ const UserProfileForm: React.FC = ({
     null,
   );
   const [imageString, setImageString] = useState<string | null>(null);
+
+  const waMessageCheckedStatus = useRef(true);
   const handleClose = () => setOpenAddFamily(false); // Callback function to close the Family Details Popup
   const handleAddMember = () => setOpenAddFamily(true); // Callback function to open the Family Details Popup
   const handleRegisterInfoPopUpClose = () => setOpenRegisterInfoPopUp(false); // Callback function to open the Address Popup
@@ -173,12 +180,14 @@ const UserProfileForm: React.FC = ({
     saveMemberDataToFirebase(userObj)
       .then(() => {
         toast.success('Member details saved successfully', toastOptions);
-        sendUserSignUpWhatsAppMessage(`+91${userObj.personalDetails.mobileNumber}`,
-            userObj?.personalDetails?.name).then((statusMsg) => {
-              toast.success(statusMsg, toastOptions);
-            }).catch((errorMsg) => {
-              toast.error(`Failed to send WhatsApp message: ${errorMsg}`, toastOptions);
-            });
+        if (userObj.optedInToWhatsApp && userObj?.personalDetails?.mobileNumber) {
+          sendSignUpMsg({phoneNumber: `+91${userObj.personalDetails.mobileNumber}`,
+            memberName: userObj?.personalDetails?.name}).then((result) => {
+                toast.success(String(result.data), toastOptions);
+              }).catch((errorMsg) => {
+                toast.error(`Failed to send WhatsApp message: ${errorMsg}`, toastOptions);
+              });
+        }
         dispatch(addMember(userObj));
         handleResetForm();
       })
@@ -204,15 +213,15 @@ const UserProfileForm: React.FC = ({
       .then(() => {
         toast.success('Member details updated successfully', toastOptions);
         dispatch(updateMember(userObj));
-        if (userObj?.personalDetails?.mobileNumber) {
-          sendMemberVerifiedWhatsAppMessage(
-            `+91${userObj.personalDetails.mobileNumber}`,
-            userObj?.personalDetails?.name,
-            window.location.pathname,
-          ).then((statusMsg) => {
-            toast.success(statusMsg, toastOptions);
+        if (userObj.optedInToWhatsApp && userObj?.personalDetails?.mobileNumber) {
+          sendVerifiedMsg({phoneNumber: `+91${userObj.personalDetails.mobileNumber}`,
+            memberName: userObj?.personalDetails?.name,
+            profileLink: window.location.pathname})
+          .then((result) => {
+            toast.success(String(result.data), toastOptions);
           }).catch((errorMsg) => {
-            toast.error(`Failed to send WhatsApp message: ${errorMsg}`, toastOptions);
+            console.log(errorMsg)
+            // toast.error(`Failed to send WhatsApp message: ${errorMsg}`, toastOptions);
           });
         }
         handleResetForm();
@@ -253,6 +262,14 @@ const UserProfileForm: React.FC = ({
         if (profilePicUrl && data.personalDetails.profilePhotoUrl) {
           removeProfilePicFromFirebase(data.personalDetails.profilePhotoUrl);
         }
+
+        if(ops === UserOps.Add){
+          data.optedInToWhatsAppChangedAt = waMessageCheckedStatus ? new Date().getTime() : null ;
+        } else if(ops === UserOps.Edit) {
+          data.optedInToWhatsAppChangedAt = (member?.optedInToWhatsApp === undefined) ? null :
+           (member?.optedInToWhatsApp !== data.optedInToWhatsApp) ? new Date().getTime(): member?.optedInToWhatsAppChangedAt;
+        }
+
         const userObj = {
           ...data,
           personalDetails: {
@@ -266,6 +283,7 @@ const UserProfileForm: React.FC = ({
           permanentAddress,
           officeAddress: officeAddress ?? null,
           familyDetails: familyDetails ?? [],
+          optedInToWhatsApp: ops === UserOps.Edit ? !!data?.optedInToWhatsApp : waMessageCheckedStatus.current
         };
         if (ops === UserOps.Add) {
           addNewMemberDataToFirebase(userObj);
@@ -332,7 +350,7 @@ const UserProfileForm: React.FC = ({
           }
         />
         <div className="p-4 w-full mt-16 sm:mt-0">
-          {userLoggedIn && !member?.verified && (
+          {userLoggedIn && (
             <div className="p-4 flex flex-col sm:flex-row sm:justify-between items-center border rounded-lg mt-6">
               {/* Member ID Section */}
               <div className="flex items-center mb-4 sm:mb-0 sm:mr-4">
@@ -352,6 +370,7 @@ const UserProfileForm: React.FC = ({
                       ? 'focus:outline-none border-red-500 bg-red-50'
                       : ''
                   }`}
+                  disabled = {member?.verified}
                   placeholder="KK2025XXXX"
                 />
               </div>
@@ -359,6 +378,7 @@ const UserProfileForm: React.FC = ({
               {/* Checkbox Section */}
               <div className="flex items-center">
                 <Checkbox
+                  disabled = {member?.verified}
                   {...register('verified')}
                   color="green"
                   label={
@@ -369,7 +389,26 @@ const UserProfileForm: React.FC = ({
                         typeof Typography
                       >)}
                     >
-                      Mark this member verified.
+                     { member?.verified ? "Verified member" : "Mark this member verified"}
+                    </Typography>
+                  }
+                  {...({} as React.ComponentProps<typeof Checkbox>)}
+                />
+              </div>
+
+              <div className="flex items-center">
+                <Checkbox
+                  {...register('optedInToWhatsApp')}
+                  color="green"
+                  label={
+                    <Typography
+                      color="blue-gray"
+                      className="flex font-medium"
+                      {...(typographyProps as React.ComponentProps<
+                        typeof Typography
+                      >)}
+                    >
+                     WhatsApp Message Consent
                     </Typography>
                   }
                   {...({} as React.ComponentProps<typeof Checkbox>)}
@@ -741,9 +780,12 @@ const UserProfileForm: React.FC = ({
         <PopupContainer
           open={openRegisterInfoPopUp}
           header="Kalakairali Member Management System"
-          onClose={handleRegisterInfoPopUpClose}
         >
-          <RegistrationInfo onAgreeAndConfirm={handleRegisterInfoPopUpClose} />
+          <RegistrationInfo onAgreeAndConfirm={(waMessageChecked)=> {
+            waMessageCheckedStatus.current = waMessageChecked;
+            console.log("Checked status ",waMessageCheckedStatus);
+            handleRegisterInfoPopUpClose ()
+            }} />
         </PopupContainer>
       )}
 

@@ -9,8 +9,8 @@ import cors from 'cors';
 admin.initializeApp();
 const db = admin.database();
 const app = express();
-//app.use(cors({ origin: ["http://localhost:5173", "https://kk-contact-app.web.app"] }));
-app.use(cors({ origin: ["https://kk-contact-app.web.app"] }));
+app.use(cors({ origin: ["http://localhost:5173", "https://kk-contact-app.web.app"] }));
+// app.use(cors({ origin: ["https://kk-contact-app.web.app"] }));
 //app.use(cors({ origin: ["https://kalakairali-mms.web.app"] }));
 
 setGlobalOptions({
@@ -19,6 +19,7 @@ setGlobalOptions({
   timeoutSeconds: 120,
   region: 'us-central1'
 });
+
 
 function generateHTML(members: any[]): string {
   // Group members into rows of 3
@@ -178,4 +179,6 @@ app.get("/generate-pdf", async (req, res) => {
   }
 });
 
+export { sendMemberVerifiedWhatsAppMessage, sendUserSignUpWhatsAppMessage } from './sendWhatsApp';
 export const api = onRequest(app);
+export { whatsappWebhook } from './webhook';
