@@ -132,9 +132,10 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!showInactiveUsers && activeMembers?.length) {
-      const result = activeMembers.filter((member) =>
-        showUnverifiedUsers ? member.verified === false : member,
-      );
+      // const result = activeMembers.filter((member) =>
+      //   showUnverifiedUsers ? member.verified === false : member,
+      // );
+      const result = activeMembers.filter((member) => (showUnverifiedUsers ? member.verified === false : member));
       const filteredMembers = searchText
         ? searchFilterData(searchText, result)
         : result;
@@ -144,9 +145,10 @@ const Dashboard = () => {
         setFilteredResult(null);
         return;
       }
-      const result = inActiveMembers.filter((member) =>
-        showUnverifiedUsers ? member.verified === false : member,
-      );
+      // const result = inActiveMembers.filter((member) =>
+      //   showUnverifiedUsers ? member.verified === false : member,
+      // );
+      const result = inActiveMembers.filter((member) => (showUnverifiedUsers ? member.verified === false : member));
       const filteredMembers = searchText
         ? searchFilterData(searchText, result)
         : result;
@@ -274,7 +276,7 @@ const Dashboard = () => {
                               : 'p-4 border-b border-blue-gray-100';
 
                             return (
-                              <tr key={index} className="hover:bg-sky-50">
+                              <tr key={member.memberId} className="hover:bg-sky-50">
                                 <td className={classes}>
                                   <div className="flex items-center gap-3">
                                     <Badge
@@ -300,7 +302,7 @@ const Dashboard = () => {
                                           member.personalDetails
                                             ?.profilePhotoUrl
                                             ? member.personalDetails
-                                                .profilePhotoUrl
+                                              .profilePhotoUrl
                                             : `/assets/member_${member.personalDetails?.gender.toLocaleLowerCase()}.png`
                                         }
                                         alt={member.personalDetails?.name}
@@ -323,19 +325,19 @@ const Dashboard = () => {
                                         </span>
                                         <span className="text-gray">
                                           {' '}
-                                          {member.displayId &&
-                                            `(${member.displayId})`}
+                                          {member.displayId
+                                            && `(${member.displayId})`}
                                         </span>
-                                        {member.personalDetails?.gender ===
-                                        'Male' ? (
+                                        {member.personalDetails?.gender
+                                        === 'Male' ? (
                                           <span className="blue-circle-icon">
                                             M
                                           </span>
-                                        ) : (
-                                          <span className="rose-circle-icon">
-                                            F
-                                          </span>
-                                        )}
+                                          ) : (
+                                            <span className="rose-circle-icon">
+                                              F
+                                            </span>
+                                          )}
                                       </Typography>
                                       <Typography
                                         // eslint-disable-next-line react/jsx-props-no-spreading
@@ -347,7 +349,9 @@ const Dashboard = () => {
                                         className="font-normal opacity-70"
                                       >
                                         <Mail className="inline size-5 pr-2" />
-                                        {member.personalDetails?.emailId}|{' '}
+                                        {member.personalDetails?.emailId}
+                                        |
+                                        {' '}
                                         <Phone className="inline size-5 pr-2" />
                                         <a
                                           href={`tel:${member.personalDetails?.mobileNumber}`}
@@ -371,7 +375,8 @@ const Dashboard = () => {
                                     >
                                       {getAge(
                                         member.personalDetails?.dateOfBirth,
-                                      )}{' '}
+                                      )}
+                                      {' '}
                                       Years
                                     </Typography>
                                     <Typography
@@ -482,8 +487,8 @@ const Dashboard = () => {
                                         variant="text"
                                         onClick={() => {
                                           handleOpenMap(
-                                            member.geoLocation ||
-                                              blreCoordinates,
+                                            member.geoLocation
+                                              || blreCoordinates,
                                           );
                                         }}
                                         // eslint-disable-next-line react/jsx-props-no-spreading
@@ -522,8 +527,8 @@ const Dashboard = () => {
                   {...({} as React.ComponentProps<typeof CardFooter>)}
                 >
                   <div>
-                    {filteredResult?.length &&
-                      filteredResult?.length > PAGE_SIZE && (
+                    {filteredResult?.length
+                      && filteredResult?.length > PAGE_SIZE && (
                         <Pagination
                           onPageChange={(startIndex, endIndex) => {
                             setPageIndex({ startIndex, endIndex });
@@ -531,7 +536,7 @@ const Dashboard = () => {
                           pageSize={PAGE_SIZE}
                           totalCount={filteredResult.length}
                         />
-                      )}
+                    )}
                   </div>
                 </CardFooter>
               </Card>

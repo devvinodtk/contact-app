@@ -10,22 +10,21 @@ export const whatsappWebhook = onRequest((req, res) => {
     const challenge = req.query['hub.challenge'];
 
     if (mode === 'subscribe' && token === WA_VERIFY_TOKEN) {
-      console.log('WEBHOOK_VERIFIED');
       res.status(200).send(challenge);
     } else {
       res.sendStatus(403);
     }
   }
 
-  if(req.method === 'POST') {
-    const body = req.body;
+  if (req.method === 'POST') {
+    const { body } = req;
 
-    if(body.object === 'whatsapp_business_account') {
+    if (body.object === 'whatsapp_business_account') {
       body.entry.forEach((entry:any) => {
-        const changes = entry.changes;
+        const { changes } = entry;
         changes.forEach(async (change: any) => {
           if (change.field === 'messages' || change.field === 'message_status') {
-            const value = change.value;
+            const { value } = change;
 
             // Log or store the message status (e.g., delivered, failed)
             console.log('Received status update:', JSON.stringify(value, null, 2));
