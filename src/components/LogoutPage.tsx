@@ -1,14 +1,14 @@
-import { Link, useNavigate } from "react-router-dom";
-import Header from "./common/Header";
-import { useEffect } from "react";
-import { doSignOut } from "../firebase/auth";
+import { Link, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import Header from './common/Header';
+import { doSignOut } from '../firebase/auth';
 
-function LogoutPage() {
+const LogoutPage = () => {
   const navigate = useNavigate();
   useEffect(() => {
     try {
       doSignOut().then(() => {
-        navigate("/login");
+        navigate('/login');
       });
     } catch (err: any) {
       console.log(err);
@@ -26,6 +26,6 @@ function LogoutPage() {
       </p>
     </div>
   );
-}
+};
 
 export default LogoutPage;
