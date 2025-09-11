@@ -6,13 +6,11 @@ module.exports = {
   extends: [
     'airbnb',
     'airbnb/hooks',
-    'react-app',
     'eslint:recommended',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
     'plugin:jsx-a11y/recommended',
     'plugin:@typescript-eslint/recommended',
-    'eslint:recommended',
   ],
   parserOptions: {
     ecmaFeatures: {

@@ -11,8 +11,8 @@ import {
 } from './Users.ts';
 
 export const geoLocation: Coordinates = {
-  lat: 12.9716,
-  lng: 77.5946,
+  lat: 13.042291,
+  lng: 77.5694418,
 };
 
 export const memberAddress: Address = {
@@ -69,5 +69,5 @@ export const memberDetails: Members = {
   verified: false,
   verifiedAt: null,
   optedInToWhatsApp: true,
-  optedInToWhatsAppChangedAt: null
+  optedInToWhatsAppChangedAt: null,
 };

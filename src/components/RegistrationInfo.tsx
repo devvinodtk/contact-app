@@ -1,6 +1,7 @@
-import { Button, Checkbox, Typography } from "@material-tailwind/react";
-import { typographyProps } from "../types/Users";
-import { useState } from "react";
+/* eslint-disable react/jsx-props-no-spreading */
+import { Button, Checkbox, Typography } from '@material-tailwind/react';
+import { useState } from 'react';
+import { typographyProps } from '../types/Users';
 
 interface interfaceRegistrationInfoProps {
   onAgreeAndConfirm: (waMessageChecked: boolean) => void;
@@ -9,7 +10,6 @@ interface interfaceRegistrationInfoProps {
 const RegistrationInfo = ({
   onAgreeAndConfirm,
 }: interfaceRegistrationInfoProps) => {
-
   const [waMessageChecked, setWAMessageChecked] = useState(true);
 
   return (
@@ -25,7 +25,8 @@ const RegistrationInfo = ({
         {...(typographyProps as React.ComponentProps<typeof Typography>)}
       >
         Please ensure that you complete all the available information,
-        including:{" "}
+        including:
+        {' '}
         <strong>
           Profile Picture, Personal Details, Address Details, Family Details and
           Location
@@ -36,15 +37,19 @@ const RegistrationInfo = ({
         className="leading-relaxed pb-1"
         {...(typographyProps as React.ComponentProps<typeof Typography>)}
       >
-        <strong>Note:</strong> Once the details are saved, you will not be able
+        <strong>Note:</strong>
+        {' '}
+        Once the details are saved, you will not be able
         to modify them yourself.
       </Typography>
       <Typography
         className="leading-relaxed pb-1"
         {...(typographyProps as React.ComponentProps<typeof Typography>)}
       >
-        For any changes or updates, please contact the admin team at{" "}
-        <strong>+91-8792527628</strong>. Thank you
+        For any changes or updates, please contact the admin team at
+        {' '}
+        <strong>+91-8792527628</strong>
+        . Thank you
       </Typography>
       <Typography
         className="leading-relaxed pb-1 italic"
@@ -57,18 +62,18 @@ const RegistrationInfo = ({
       </Typography>
       <div className="flex-1 text-left">
         <Checkbox
-          onChange={(e)=>{
-            setWAMessageChecked(e.target.checked)
+          onChange={(e) => {
+            setWAMessageChecked(e.target.checked);
           }}
           defaultChecked
           color="green"
           containerProps={
-            {className: "px-0"}
+            { className: 'px-0' }
           }
           labelProps={{
-            className:"ml-2"
+            className: 'ml-2',
           }}
-          label={
+          label={(
             <Typography
               color="blue-gray"
               className="flex font-medium px-0"
@@ -78,7 +83,7 @@ const RegistrationInfo = ({
             >
               I agree to receive WhatsApp updates.
             </Typography>
-          }
+          )}
           {...({} as React.ComponentProps<typeof Checkbox>)}
         />
       </div>
@@ -86,7 +91,7 @@ const RegistrationInfo = ({
         <Button
           variant="text"
           color="blue"
-          onClick={()=>{ window.open("/privacy-policy", "_blank")}}
+          onClick={() => { window.open('/privacy-policy', '_blank'); }}
           {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
           className="cursor-pointer hover:bg-primary-700 focus:outline-none
            font-medium rounded-lg text-sm px-0 py-2.5 text-center"
@@ -102,7 +107,9 @@ const RegistrationInfo = ({
             onClick={() => {
               onAgreeAndConfirm(waMessageChecked);
             }}
-            className="mb-4 sm:mb-0 order-0 cursor-pointer sm:mr-2 text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            className="mb-4 sm:mb-0 order-0 cursor-pointer sm:mr-2 text-white
+            hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300
+            font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             {...({} as React.ComponentProps<typeof Button>)}
           >
             Agree and Continue

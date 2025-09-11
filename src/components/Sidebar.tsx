@@ -5,49 +5,65 @@ import {
   LogIn,
   Menu,
   IdCard,
-  FileLock
-} from "lucide-react";
-import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Link } from "react-router-dom";
+  FileLock,
+} from 'lucide-react';
+import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
+import PopupContainer from './common/PopupContainer';
+import ConfirmLogout from './ConfirmLogout';
 
-const SIDEBAR_ITEMS = [
-  {
-    name: "Dashboard",
-    icon: LayoutDashboard,
-    color: "#ff3aac",
-    href: "/dashboard",
-  },
-  {
-    name: "Add Member",
-    icon: UserPlus,
-    color: "#f1bf00",
-    href: "/users",
-  },
-  {
-    name: "Address List",
-    icon: NotebookTabs,
-    color: "#00ffff",
-    href: "/address",
-  },
-  {
-    name: "Membership Card",
-    icon: IdCard,
-    color: "#6EE7B7",
-    href: "/idcards",
-  },
-  {
-    name: "Privacy Policy",
-    icon:   FileLock,
-    color: "#E76E8A",
-    href: "/privacy-policy",
-  },
-  { name: "Logout", icon: LogIn, color: "#ff7300", href: "/logout" },
-];
-
-function Sidebar() {
+const Sidebar = () => {
+  const [open, setOpen] = useState(false);
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
   const [isMobileSideBarOpen, setMobileIsSideBarOpen] = useState(false);
+  const handleClose = () => setOpen(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setOpen(true);
+  };
+
+  const SIDEBAR_ITEMS = [
+    {
+      name: 'Dashboard',
+      icon: LayoutDashboard,
+      color: '#ff3aac',
+      href: '/dashboard',
+    },
+    {
+      name: 'Add Member',
+      icon: UserPlus,
+      color: '#f1bf00',
+      href: '/users',
+    },
+    {
+      name: 'Address List',
+      icon: NotebookTabs,
+      color: '#00ffff',
+      href: '/address',
+    },
+    {
+      name: 'Membership Card',
+      icon: IdCard,
+      color: '#6EE7B7',
+      href: '/idcards',
+    },
+    {
+      name: 'Privacy Policy',
+      icon: FileLock,
+      color: '#E76E8A',
+      href: '/privacy-policy',
+    },
+    {
+      name: 'Logout',
+      icon: LogIn,
+      color: '#ff7300',
+      action: handleLogout,
+      href: '/logout',
+    },
+  ];
+
   return (
     <>
       <div className="block sm:hidden relative">
@@ -63,30 +79,39 @@ function Sidebar() {
             <nav className="mt-16 flex-grow">
               {SIDEBAR_ITEMS.map((item) => (
                 <Link
-                  key={item.href}
+                  key={item.name}
                   to={item.href}
                   onClick={() => {
+                    if (item.href) {
+                      navigate(`${item.href}`);
+                    }
                     setMobileIsSideBarOpen(false);
                   }}
                 >
                   {isMobileSideBarOpen && (
-                    <motion.div className="flex items-center p-4 text-sm font-medium rounded-lg hover:bg-sky-600 transition-colors mb-2">
-                      <item.icon
-                        size={20}
-                        style={{ color: item.color, minWidth: "20px" }}
-                      />
-                      <AnimatePresence>
-                        <motion.span
-                          className="ml-4 whitespace-nowrap"
-                          initial={{ opacity: 0, width: 0 }}
-                          animate={{ opacity: 1, width: "auto" }}
-                          exit={{ opacity: 0, width: 0 }}
-                          transition={{ duration: 0.2, delay: 0.3 }}
-                        >
-                          {item.name}
-                        </motion.span>
-                      </AnimatePresence>
-                    </motion.div>
+                  <motion.div
+                    className="flex
+                    items-center
+                    p-4 text-sm
+                    font-medium
+                    rounded-lg hover:bg-sky-600 transition-colors mb-2"
+                  >
+                    <item.icon
+                      size={20}
+                      style={{ color: item.color, minWidth: '20px' }}
+                    />
+                    <AnimatePresence>
+                      <motion.span
+                        className="ml-4 whitespace-nowrap"
+                        initial={{ opacity: 0, width: 0 }}
+                        animate={{ opacity: 1, width: 'auto' }}
+                        exit={{ opacity: 0, width: 0 }}
+                        transition={{ duration: 0.2, delay: 0.3 }}
+                      >
+                        {item.name}
+                      </motion.span>
+                    </AnimatePresence>
+                  </motion.div>
                   )}
                 </Link>
               ))}
@@ -97,7 +122,7 @@ function Sidebar() {
       <div className="hidden md:block">
         <motion.div
           className={`relative z-10 duration-300 transition-all h-screen ease-in-out flex-shrink-0 mobileMenu${
-            isSideBarOpen ? "w-64" : "w-20"
+            isSideBarOpen ? 'w-64' : 'w-20'
           }`}
           animate={{ width: isSideBarOpen ? 256 : 80 }}
         >
@@ -113,23 +138,38 @@ function Sidebar() {
 
             <nav className="mt-8 flex-grow">
               {SIDEBAR_ITEMS.map((item) => (
-                <Link key={item.href} to={item.href}>
-                  <motion.div className="flex items-center p-4 text-sm font-medium rounded-lg hover:bg-sky-600 transition-colors mb-2">
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  onClick={(e) => {
+                    if (item.action) {
+                      e.preventDefault();
+                      item.action();
+                    }
+                  }}
+                >
+                  <motion.div
+                    className="flex
+                    items-center
+                    p-4 text-sm
+                    font-medium
+                    rounded-lg hover:bg-sky-600 transition-colors mb-2"
+                  >
                     <item.icon
                       size={20}
-                      style={{ color: item.color, minWidth: "20px" }}
+                      style={{ color: item.color, minWidth: '20px' }}
                     />
                     <AnimatePresence>
                       {isSideBarOpen && (
-                        <motion.span
-                          className="ml-4 whitespace-nowrap"
-                          initial={{ opacity: 0, width: 0 }}
-                          animate={{ opacity: 1, width: "auto" }}
-                          exit={{ opacity: 0, width: 0 }}
-                          transition={{ duration: 0.2, delay: 0.3 }}
-                        >
-                          {item.name}
-                        </motion.span>
+                      <motion.span
+                        className="ml-4 whitespace-nowrap"
+                        initial={{ opacity: 0, width: 0 }}
+                        animate={{ opacity: 1, width: 'auto' }}
+                        exit={{ opacity: 0, width: 0 }}
+                        transition={{ duration: 0.2, delay: 0.3 }}
+                      >
+                        {item.name}
+                      </motion.span>
                       )}
                     </AnimatePresence>
                   </motion.div>
@@ -139,8 +179,18 @@ function Sidebar() {
           </div>
         </motion.div>
       </div>
+      <PopupContainer
+        header="Logout"
+        open={open}
+        onClose={handleClose}
+      >
+        <ConfirmLogout
+          onCancelLogout={() => setOpen(false)}
+          onConfirmLogout={() => navigate('/logout')}
+        />
+      </PopupContainer>
     </>
   );
-}
+};
 
 export default Sidebar;

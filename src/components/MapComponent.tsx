@@ -1,18 +1,20 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { GoogleMap, Marker, Autocomplete } from '@react-google-maps/api';
-import { blreCoordinates, Coordinates } from '../types/Users';
 import { LocateFixed } from 'lucide-react';
+import { blreCoordinates, Coordinates } from '../types/Users';
 
 interface MapComponentProps {
   coordinates?: Coordinates;
   onUpdateLocation: (coordinates: Coordinates) => void;
   showActionButton: boolean;
+  resetMap?:boolean;
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({
   coordinates,
   onUpdateLocation,
   showActionButton,
+  resetMap,
 }) => {
   const [center, setCenter] = useState<Coordinates>(
     coordinates ?? blreCoordinates,
@@ -20,8 +22,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const [markerPosition, setMarkerPosition] = useState<Coordinates | null>(
     null,
   );
-  const [autocomplete, setAutocomplete] =
-    useState<google.maps.places.Autocomplete | null>(null);
+  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
 
   const mapStyles: React.CSSProperties = { height: '250px', width: '100%' };
 
@@ -52,7 +53,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
       setCenter(coordinates);
       setMarkerPosition(coordinates);
     }
-  }, [coordinates]);
+  }, [coordinates, resetMap]);
 
   const handleMapClick = (event: google.maps.MapMouseEvent) => {
     if (event.latLng) {
@@ -101,12 +102,16 @@ const MapComponent: React.FC<MapComponentProps> = ({
                 onClick={locateUser}
                 className="px-4 py-2 text-white bg-blue-500 rounded"
               >
-                <LocateFixed className="inline h-4 w-4" /> Use Current Location
+                <LocateFixed className="inline h-4 w-4" />
+                {' '}
+                Use Current Location
               </button>
             </div>
           </div>
           <div className="w-full mx-auto mb-2 text-gray-600 text-sm font-medium">
-            <span className="font-bold">Or</span> search/locate your location on
+            <span className="font-bold">Or</span>
+            {' '}
+            search/locate your location on
             the map
           </div>
           <div className="mb-4">

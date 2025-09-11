@@ -29,16 +29,28 @@ export type Gender = '' | 'Male' | 'Female' | 'Other' | 'Prefer Not To Say';
 
 export type DeleteAction = 'soft_delete' | 'hard_delete';
 export type EducationLevel =
-  | ''
-  | 'Nursery'
-  | 'Kindergarten'
-  | 'Primary School'
-  | 'High School'
-  | 'Higher Secondary'
-  | 'Bachelors Degree'
-  | 'Masters Degree'
-  | 'PhD';
-export type RelationshipType = '' | 'Spouse' | 'Son' | 'Daughter' | 'Father' | 'Mother' | 'Father In Law' | 'Mother In Law' | 'Son In Law' | 'Daughter In Law';
+            | ''
+            | 'Nursery'
+            | 'Kindergarten'
+            | 'Primary School'
+            | 'High School'
+            | 'Higher Secondary'
+            | 'Bachelors Degree'
+            | 'Masters Degree'
+            | 'PhD';
+
+export type RelationshipType =
+            '' |
+            'Spouse' |
+            'Son' |
+            'Daughter' |
+            'Father' |
+            'Mother' |
+            'Father In Law' |
+            'Mother In Law' |
+            'Son In Law' |
+            'Daughter In Law';
+
 export type CommunicationPreference = '' | 'In Person' | 'Postal';
 
 export enum AreaCode {
@@ -51,6 +63,11 @@ export enum AreaCode {
   RTN = 'RT Nagar',
 }
 
+export type EducationalQualification = {
+  educationLevel: EducationLevel;
+  specialization?: string;
+};
+
 export type PersonalDetails = {
   name: string;
   profilePhotoUrl?: string;
@@ -61,6 +78,29 @@ export type PersonalDetails = {
   gender: Gender;
   educationalQualification: EducationalQualification;
   jobTitle?: string;
+};
+
+export type Address = {
+  flatNumberName: string;
+  addressLine1: string;
+  addressLine2: string;
+  postOffice: string;
+  city: string;
+  state: string;
+  country: string;
+  pincode: string;
+  contactNumber: string;
+};
+
+export interface Coordinates {
+  lat: number;
+  lng: number;
+}
+
+export type FamilyDetails = {
+  familyMemberId: string;
+  memberPersonalDetails: PersonalDetails;
+  relationship: RelationshipType;
 };
 
 export type Members = {
@@ -86,38 +126,10 @@ export type Members = {
   optedInToWhatsAppChangedAt: number | null;
 };
 
-export type FamilyDetails = {
-  familyMemberId: string;
-  memberPersonalDetails: PersonalDetails;
-  relationship: RelationshipType;
-};
-
-export type Address = {
-  flatNumberName: string;
-  addressLine1: string;
-  addressLine2: string;
-  postOffice: string;
-  city: string;
-  state: string;
-  country: string;
-  pincode: string;
-  contactNumber: string;
-};
-
-export type EducationalQualification = {
-  educationLevel: EducationLevel;
-  specialization?: string;
-};
-
 export type GeoLocation = {
   latitude: number;
   longitude: number;
 };
-
-export interface Coordinates {
-  lat: number;
-  lng: number;
-}
 
 export type AddressChangeType = {
   addressType: AddressType;
@@ -130,8 +142,8 @@ export const typographyProps = {
 };
 
 export const blreCoordinates = {
-  lat: 12.9716,
-  lng: 77.5946,
+  lat: 13.042291,
+  lng: 77.5694418,
 };
 export const toastOptions: ToastOptions<unknown> = {
   position: 'top-right',
