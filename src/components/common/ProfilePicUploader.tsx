@@ -1,24 +1,33 @@
-import React, { useRef, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import Cropper, { ReactCropperElement } from "react-cropper";
-import "cropperjs/dist/cropper.css";
-import ProfilePicEditor from "./ProfilePicEditor";
-import { Crop, Upload } from "lucide-react";
-import { Button, Typography } from "@material-tailwind/react";
-import { typographyProps } from "../../types/Users";
+import React, { useEffect, useRef, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import Cropper, { ReactCropperElement } from 'react-cropper';
+import 'cropperjs/dist/cropper.css';
+import { Crop, Upload } from 'lucide-react';
+import { Button, Typography } from '@material-tailwind/react';
+import ProfilePicEditor from './ProfilePicEditor';
+import { typographyProps } from '../../types/Users';
 
 interface ProfilePicUploaderProps {
   profilePicUrl?: string;
+  resetProfilePic?:boolean;
   onCropProfilePic: (imageStr: string) => void;
 }
 
 const ProfilePicUploader: React.FC<ProfilePicUploaderProps> = ({
   profilePicUrl,
+  resetProfilePic,
   onCropProfilePic,
 }) => {
   const [image, setImage] = useState(null);
   const [croppedImage, setCroppedImage] = useState<any>(null);
   const imageRef = useRef<ReactCropperElement>(null);
+
+  useEffect(() => {
+    if (resetProfilePic) {
+      setCroppedImage(null);
+      setImage(null);
+    }
+  }, [resetProfilePic]);
 
   const onDrop = (acceptedFiles: any) => {
     setCroppedImage(null);
@@ -59,10 +68,10 @@ const ProfilePicUploader: React.FC<ProfilePicUploaderProps> = ({
             initialAspectRatio={1}
             aspectRatio={1}
             guides={false}
-            scalable={true}
+            scalable
             background={false}
-            responsive={true}
-            checkOrientation={true}
+            responsive
+            checkOrientation
             className="flex justify-center"
           />
           <Typography
@@ -70,7 +79,8 @@ const ProfilePicUploader: React.FC<ProfilePicUploaderProps> = ({
             {...(typographyProps as React.ComponentProps<typeof Typography>)}
           >
             Please select the desired area and crop the image using crop (
-            <Crop className="inline h-4"></Crop>) button.
+            <Crop className="inline h-4" />
+            ) button.
           </Typography>
         </>
       )}
@@ -92,7 +102,9 @@ const ProfilePicUploader: React.FC<ProfilePicUploaderProps> = ({
         <Button
           {...({} as React.ComponentProps<typeof Button>)}
           color="blue"
-          className="cursor-pointer mr-3 text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg text-xs px-2 py-1 text-center"
+          className="cursor-pointer mr-3 text-white hover:bg-primary-700
+          focus:ring-4 focus:outline-none focus:ring-primary-300
+          rounded-lg text-xs px-2 py-1 text-center"
         >
           <div {...getRootProps()}>
             <input {...getInputProps()} />
@@ -103,11 +115,13 @@ const ProfilePicUploader: React.FC<ProfilePicUploaderProps> = ({
           disabled={!image}
           color="blue"
           {...({} as React.ComponentProps<typeof Button>)}
-          className="cursor-pointertext-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg text-xs px-2 py-1 text-center"
+          className="cursor-pointertext-white hover:bg-primary-700
+          focus:ring-4 focus:outline-none focus:ring-primary-300
+          rounded-lg text-xs px-2 py-1 text-center"
         >
           <div>
             <Crop
-              className={image ? "cursor-pointer " : ""}
+              className={image ? 'cursor-pointer ' : ''}
               onClick={handleCrop}
             />
           </div>

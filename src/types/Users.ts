@@ -142,8 +142,8 @@ export const typographyProps = {
 };
 
 export const blreCoordinates = {
-  lat: 12.9716,
-  lng: 77.5946,
+  lat: 13.042291,
+  lng: 77.5694418,
 };
 export const toastOptions: ToastOptions<unknown> = {
   position: 'top-right',

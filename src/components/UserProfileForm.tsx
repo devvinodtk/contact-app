@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
@@ -6,6 +7,7 @@ import { Plus } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams } from 'react-router-dom';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import {
   Members,
   BloodGroup,
@@ -50,9 +52,9 @@ import {
 } from '../store/MemberSelector';
 import MapComponent from './MapComponent';
 import RegistrationInfo from './RegistrationInfo';
-import {getFunctions, httpsCallable} from 'firebase/functions';
 import MemberAddress from './MemberAddress.tsx';
 import store from '../store/store.ts';
+import RegistrationConfirmation from './RegistrationConfirmation.tsx';
 
 interface UserProfileFormProps {
   registeredMember?: Members;
@@ -89,6 +91,9 @@ const UserProfileForm: React.FC = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [openAddFamily, setOpenAddFamily] = useState(false); // Maintains open/close state of Family Details Popup
   const [openRegisterInfoPopUp, setOpenRegisterInfoPopUp] = useState(true);
+  const [openInitWhatsAppPopUp, setOpenInitWhatsAppPopUp] = useState(false);
+  const [initMapLocation, setInitMapLocation] = useState(false);
+  const [initProfilePic, setInitProfilePic] = useState(false);
   const [familyDetails, setFamilyDetails] = useState<FamilyDetails[]>(
     memberDetails.familyDetails,
   );
@@ -102,15 +107,15 @@ const UserProfileForm: React.FC = ({
   const [officeAddress, setOfficeAddress] = useState<
     Address | null | undefined
   >(memberDetails.officeAddress);
-  const [memberLocation, setMemberLocation] = useState<Coordinates | null>(
-    null,
-  );
-  const [imageString, setImageString] = useState<string | null>(null);
 
   const waMessageCheckedStatus = useRef(true);
+  const memberLocation = useRef<Coordinates>();
+  const imageString = useRef<string>('');
+
   const handleClose = () => setOpenAddFamily(false); // Callback function to close the Family Details Popup
   const handleAddMember = () => setOpenAddFamily(true); // Callback function to open the Family Details Popup
   const handleRegisterInfoPopUpClose = () => setOpenRegisterInfoPopUp(false); // Callback function to open the Address Popup
+  const handleInitWhatsAppPopUpClose = () => setOpenInitWhatsAppPopUp(false);
   const dispatch = useDispatch<typeof store.dispatch>();
 
   const handleResetForm = () => {
@@ -119,8 +124,11 @@ const UserProfileForm: React.FC = ({
     setOfficeAddress(null);
     setFamilyDetails([]);
     setFamilyMemberToEdit(undefined);
+    imageString.current = '';
     setMember(memberDetails);
     reset(memberDetails);
+    memberLocation.current = blreCoordinates;
+    setInitMapLocation(true);
   };
 
   const handleSaveFamilyDetails = (familyDetail: FamilyDetails) => {
@@ -129,9 +137,7 @@ const UserProfileForm: React.FC = ({
         (detail) => detail.familyMemberId === familyDetail.familyMemberId,
       );
       if (updateRecordIndx > -1) {
-        return prevDetails.map((detail, index) =>
-          index === updateRecordIndx ? familyDetail : detail,
-        );
+        return prevDetails.map((detail, index) => (index === updateRecordIndx ? familyDetail : detail));
       }
       return [...prevDetails, familyDetail];
     });
@@ -153,9 +159,7 @@ const UserProfileForm: React.FC = ({
       setPermanentAddress(selectedMember.permanentAddress);
       setOfficeAddress(selectedMember.officeAddress);
       setFamilyDetails(selectedMember.familyDetails);
-      if (selectedMember.geoLocation) {
-        setMemberLocation(selectedMember.geoLocation);
-      }
+      memberLocation.current = selectedMember.geoLocation;
     } else {
       handleResetForm();
     }
@@ -164,10 +168,10 @@ const UserProfileForm: React.FC = ({
   const handleSaveProfilePic = async (
     memberName: string,
   ): Promise<string | undefined> => {
-    if (!imageString) return undefined;
+    if (!imageString.current) return undefined;
     try {
       const downloadUrl = await uploadProfilePicToFirebase(
-        imageString,
+        imageString.current,
         memberName,
       );
       return downloadUrl;
@@ -181,15 +185,18 @@ const UserProfileForm: React.FC = ({
       .then(() => {
         toast.success('Member details saved successfully', toastOptions);
         if (userObj.optedInToWhatsApp && userObj?.personalDetails?.mobileNumber) {
-          sendSignUpMsg({phoneNumber: `+91${userObj.personalDetails.mobileNumber}`,
-            memberName: userObj?.personalDetails?.name}).then((result) => {
-                toast.success(String(result.data), toastOptions);
-              }).catch((errorMsg) => {
-                toast.error(`Failed to send WhatsApp message: ${errorMsg}`, toastOptions);
-              });
+          sendSignUpMsg({
+            phoneNumber: `+91${userObj.personalDetails.mobileNumber}`,
+            memberName: userObj?.personalDetails?.name,
+          }).then((result) => {
+            toast.success(String(result.data), toastOptions);
+          }).catch((errorMsg) => {
+            toast.error(`Failed to send WhatsApp message: ${errorMsg}`, toastOptions);
+          });
         }
         dispatch(addMember(userObj));
         handleResetForm();
+        setInitProfilePic(true);
       })
       .catch((err) => {
         toast.error(err.message, toastOptions);
@@ -202,8 +209,8 @@ const UserProfileForm: React.FC = ({
         (obj) => obj[userObj.personalDetails.mobileNumber],
       );
       if (
-        currentMember &&
-        currentMember[userObj.personalDetails.mobileNumber] !== userObj.memberId
+        currentMember
+        && currentMember[userObj.personalDetails.mobileNumber] !== userObj.memberId
       ) {
         throw new Error('This mobile number is already registered.');
       }
@@ -214,15 +221,17 @@ const UserProfileForm: React.FC = ({
         toast.success('Member details updated successfully', toastOptions);
         dispatch(updateMember(userObj));
         if (userObj.optedInToWhatsApp && userObj?.personalDetails?.mobileNumber) {
-          sendVerifiedMsg({phoneNumber: `+91${userObj.personalDetails.mobileNumber}`,
+          sendVerifiedMsg({
+            phoneNumber: `+91${userObj.personalDetails.mobileNumber}`,
             memberName: userObj?.personalDetails?.name,
-            profileLink: window.location.pathname})
-          .then((result) => {
-            toast.success(String(result.data), toastOptions);
-          }).catch((errorMsg) => {
-            console.log(errorMsg)
+            profileLink: window.location.pathname,
+          })
+            .then((result) => {
+              toast.success(String(result.data), toastOptions);
+            }).catch((errorMsg) => {
+              console.log(errorMsg);
             // toast.error(`Failed to send WhatsApp message: ${errorMsg}`, toastOptions);
-          });
+            });
         }
         handleResetForm();
       })
@@ -256,18 +265,18 @@ const UserProfileForm: React.FC = ({
       try {
         setIsLoading(true);
         const ops: UserOps = data.memberId ? UserOps.Edit : UserOps.Add;
-        const profilePicUrl = imageString
+        const profilePicUrl = imageString.current
           ? await handleSaveProfilePic(data.personalDetails.name)
           : '';
         if (profilePicUrl && data.personalDetails.profilePhotoUrl) {
           removeProfilePicFromFirebase(data.personalDetails.profilePhotoUrl);
         }
 
-        if(ops === UserOps.Add){
-          data.optedInToWhatsAppChangedAt = waMessageCheckedStatus ? new Date().getTime() : null ;
-        } else if(ops === UserOps.Edit) {
-          data.optedInToWhatsAppChangedAt = (member?.optedInToWhatsApp === undefined) ? null :
-           (member?.optedInToWhatsApp !== data.optedInToWhatsApp) ? new Date().getTime(): member?.optedInToWhatsAppChangedAt;
+        if (ops === UserOps.Add) {
+          data.optedInToWhatsAppChangedAt = waMessageCheckedStatus ? new Date().getTime() : null;
+        } else if (ops === UserOps.Edit) {
+          data.optedInToWhatsAppChangedAt = (member?.optedInToWhatsApp === undefined) ? null
+            : (member?.optedInToWhatsApp !== data.optedInToWhatsApp) ? new Date().getTime() : member?.optedInToWhatsAppChangedAt;
         }
 
         const userObj = {
@@ -277,13 +286,13 @@ const UserProfileForm: React.FC = ({
             profilePhotoUrl:
               profilePicUrl || data.personalDetails.profilePhotoUrl,
           },
-          geoLocation: memberLocation ?? blreCoordinates,
+          geoLocation: memberLocation.current ?? blreCoordinates,
           memberId: data.memberId ? data.memberId : uuidv4(),
           presentAddress,
           permanentAddress,
           officeAddress: officeAddress ?? null,
           familyDetails: familyDetails ?? [],
-          optedInToWhatsApp: ops === UserOps.Edit ? !!data?.optedInToWhatsApp : waMessageCheckedStatus.current
+          optedInToWhatsApp: ops === UserOps.Edit ? !!data?.optedInToWhatsApp : waMessageCheckedStatus.current,
         };
         if (ops === UserOps.Add) {
           addNewMemberDataToFirebase(userObj);
@@ -361,7 +370,7 @@ const UserProfileForm: React.FC = ({
                   Member ID:
                 </label>
                 <input
-                  {...register(`displayId`, {
+                  {...register('displayId', {
                     required: 'Member ID is required',
                   })}
                   type="text"
@@ -370,7 +379,7 @@ const UserProfileForm: React.FC = ({
                       ? 'focus:outline-none border-red-500 bg-red-50'
                       : ''
                   }`}
-                  disabled = {member?.verified}
+                  disabled={member?.verified}
                   placeholder="KK2025XXXX"
                 />
               </div>
@@ -378,10 +387,10 @@ const UserProfileForm: React.FC = ({
               {/* Checkbox Section */}
               <div className="flex items-center">
                 <Checkbox
-                  disabled = {member?.verified}
+                  disabled={member?.verified}
                   {...register('verified')}
                   color="green"
-                  label={
+                  label={(
                     <Typography
                       color="blue-gray"
                       className="flex font-medium"
@@ -389,9 +398,9 @@ const UserProfileForm: React.FC = ({
                         typeof Typography
                       >)}
                     >
-                     { member?.verified ? "Verified member" : "Mark this member verified"}
+                      { member?.verified ? 'Verified member' : 'Mark this member verified'}
                     </Typography>
-                  }
+                  )}
                   {...({} as React.ComponentProps<typeof Checkbox>)}
                 />
               </div>
@@ -400,7 +409,7 @@ const UserProfileForm: React.FC = ({
                 <Checkbox
                   {...register('optedInToWhatsApp')}
                   color="green"
-                  label={
+                  label={(
                     <Typography
                       color="blue-gray"
                       className="flex font-medium"
@@ -408,9 +417,9 @@ const UserProfileForm: React.FC = ({
                         typeof Typography
                       >)}
                     >
-                     WhatsApp Message Consent
+                      WhatsApp Message Consent
                     </Typography>
-                  }
+                  )}
                   {...({} as React.ComponentProps<typeof Checkbox>)}
                 />
               </div>
@@ -424,8 +433,9 @@ const UserProfileForm: React.FC = ({
                   <div className="bg-gray-50 min-h-56 flex w-full mt-1 border items-center rounded">
                     <ProfilePicUploader
                       profilePicUrl={member?.personalDetails.profilePhotoUrl}
+                      resetProfilePic={initProfilePic}
                       onCropProfilePic={(imgString) => {
-                        setImageString(imgString);
+                        imageString.current = imgString;
                       }}
                     />
                   </div>
@@ -441,7 +451,7 @@ const UserProfileForm: React.FC = ({
                       type="text"
                       placeholder="Name"
                       autoComplete="off"
-                      {...register(`personalDetails.name`, {
+                      {...register('personalDetails.name', {
                         required: 'Name is required',
                       })}
                       className={`w-full p-2 border rounded mb-4 text-gray-600 ${
@@ -459,7 +469,7 @@ const UserProfileForm: React.FC = ({
                       type="number"
                       placeholder="Mobile number"
                       autoComplete="off"
-                      {...register(`personalDetails.mobileNumber`, {
+                      {...register('personalDetails.mobileNumber', {
                         required: 'Mobile number is required',
                         minLength: 10,
                         maxLength: 10,
@@ -478,7 +488,7 @@ const UserProfileForm: React.FC = ({
                     <input
                       type="email"
                       autoComplete="off"
-                      {...register(`personalDetails.emailId`, {
+                      {...register('personalDetails.emailId', {
                         required: 'Email ID is required',
                         pattern:
                           /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i,
@@ -498,13 +508,11 @@ const UserProfileForm: React.FC = ({
                     <input
                       type="text"
                       autoComplete="off"
-                      {...register(`personalDetails.dateOfBirth`, {
+                      {...register('personalDetails.dateOfBirth', {
                         required: 'Date of birth is required',
                         pattern:
                           /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19[0-9][0-9]|20[0-9][0-9])$/,
-                        validate: (value) => {
-                          return isValidDate(value, true);
-                        },
+                        validate: (value) => isValidDate(value, true),
                       })}
                       placeholder="DD/MM/YYYY"
                       className={`w-full block p-2 border rounded mb-4 text-gray-600 ${
@@ -520,8 +528,7 @@ const UserProfileForm: React.FC = ({
                       control={control}
                       rules={{
                         required: 'Gender is required',
-                        validate: (value) =>
-                          value !== '' || 'Please select a valid gender',
+                        validate: (value) => value !== '' || 'Please select a valid gender',
                       }}
                       render={({
                         field: { value, onChange },
@@ -529,7 +536,7 @@ const UserProfileForm: React.FC = ({
                       }) => (
                         <DropdownSelect
                           label="Gender"
-                          mandatory={true}
+                          mandatory
                           value={value}
                           error={error}
                           onChange={onChange}
@@ -544,8 +551,7 @@ const UserProfileForm: React.FC = ({
                       control={control}
                       rules={{
                         required: 'Blood Group is required',
-                        validate: (value) =>
-                          value !== '' || 'Please select a valid blood group',
+                        validate: (value) => value !== '' || 'Please select a valid blood group',
                       }}
                       render={({
                         field: { value, onChange },
@@ -553,7 +559,7 @@ const UserProfileForm: React.FC = ({
                       }) => (
                         <DropdownSelect
                           label="Blood Group"
-                          mandatory={true}
+                          mandatory
                           value={value}
                           error={error}
                           onChange={onChange}
@@ -570,7 +576,7 @@ const UserProfileForm: React.FC = ({
                       type="text"
                       autoComplete="off"
                       placeholder="Occupation"
-                      {...register(`personalDetails.jobTitle`, {
+                      {...register('personalDetails.jobTitle', {
                         required: 'Occupation is required',
                       })}
                       className={`w-full p-2 border rounded mb-4 text-gray-600 ${
@@ -586,9 +592,8 @@ const UserProfileForm: React.FC = ({
                       control={control}
                       rules={{
                         required: 'Education level is required',
-                        validate: (value) =>
-                          value !== '' ||
-                          'Please select a valid education level',
+                        validate: (value) => value !== ''
+                          || 'Please select a valid education level',
                       }}
                       render={({
                         field: { value, onChange },
@@ -596,7 +601,7 @@ const UserProfileForm: React.FC = ({
                       }) => (
                         <DropdownSelect
                           label="Educational Qualification"
-                          mandatory={true}
+                          mandatory
                           value={value}
                           error={error}
                           onChange={onChange}
@@ -614,7 +619,7 @@ const UserProfileForm: React.FC = ({
                       placeholder="Specialization"
                       className="w-full p-2 border rounded mb-4 text-gray-600"
                       {...register(
-                        `personalDetails.educationalQualification.specialization`,
+                        'personalDetails.educationalQualification.specialization',
                       )}
                     />
                   </div>
@@ -632,7 +637,8 @@ const UserProfileForm: React.FC = ({
                   typeof Typography
                 >)}
               >
-                * Present and Permanent Address are mandatory{' '}
+                * Present and Permanent Address are mandatory
+                {' '}
               </Typography>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-3">
@@ -661,9 +667,12 @@ const UserProfileForm: React.FC = ({
                     color="blue"
                     onClick={handleAddMember}
                     {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
-                    className="cursor-pointer hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                    className="cursor-pointer hover:bg-primary-700 focus:ring-4
+                    focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                   >
-                    <Plus className="inline size-4" /> Add Member
+                    <Plus className="inline size-4" />
+                    {' '}
+                    Add Member
                   </Button>
                 </div>
               )}
@@ -678,12 +687,13 @@ const UserProfileForm: React.FC = ({
 
           <div className="flex flex-col mt-6 gap-4 md:flex-row">
             <div className="flex-1 p-4 border rounded">
-              {/* <GeoLocationDisplay geoLocation={memberDetails.geoLocation} /> */}
               <MapComponent
                 showActionButton={userLoggedIn || (!userLoggedIn && !memberid)}
-                coordinates={member?.geoLocation}
+                coordinates={memberLocation.current || blreCoordinates}
+                resetMap={initMapLocation}
                 onUpdateLocation={(coordinates: Coordinates) => {
-                  setMemberLocation(coordinates);
+                  memberLocation.current = coordinates;
+                  setInitMapLocation(false);
                 }}
               />
             </div>
@@ -696,7 +706,7 @@ const UserProfileForm: React.FC = ({
                   Proposed by
                 </label>
                 <input
-                  {...register(`proposedBy`)}
+                  {...register('proposedBy')}
                   type="text"
                   className="w-full p-2 border rounded mb-4 text-gray-600"
                 />
@@ -716,7 +726,7 @@ const UserProfileForm: React.FC = ({
                   Comments
                 </label>
                 <input
-                  {...register(`comments`)}
+                  {...register('comments')}
                   type="text"
                   className="p-2 border mb-3 rounded w-full text-gray-600"
                 />
@@ -724,12 +734,10 @@ const UserProfileForm: React.FC = ({
                   Date of joining *
                 </label>
                 <input
-                  {...register(`dateOfJoining`, {
+                  {...register('dateOfJoining', {
                     pattern:
                       /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19[0-9][0-9]|20[0-9][0-9])$/,
-                    validate: (value) => {
-                      return !value || isValidDate(value);
-                    },
+                    validate: (value) => !value || isValidDate(value),
                   })}
                   type="text"
                   placeholder="DD/MM/YYYY"
@@ -749,15 +757,19 @@ const UserProfileForm: React.FC = ({
               <Button
                 type="submit"
                 color="blue"
-                className="mb-4 sm:mb-0 order-1 sm:order-2 cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                className="mb-4 sm:mb-0 order-1 sm:order-2 cursor-pointer text-white
+                hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300
+                font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                 {...({} as React.ComponentProps<typeof Button>)}
               >
                 Save Member Details
               </Button>
               <Button
                 type="button"
-                onClick={handleResetForm}
-                className="order-2 sm:order-1 cursor-pointer mr-0 sm:mr-2 text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                onClick={() => { handleResetForm(); setInitProfilePic(true); }}
+                className="order-2 sm:order-1 cursor-pointer mr-0 sm:mr-2 text-white
+                hover:bg-primary-700 focus:ring-4 focus:outline-none
+                focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                 {...({} as React.ComponentProps<typeof Button>)}
               >
                 Reset
@@ -781,14 +793,23 @@ const UserProfileForm: React.FC = ({
           open={openRegisterInfoPopUp}
           header="Kalakairali Member Management System"
         >
-          <RegistrationInfo onAgreeAndConfirm={(waMessageChecked)=> {
+          <RegistrationInfo onAgreeAndConfirm={(waMessageChecked) => {
             waMessageCheckedStatus.current = waMessageChecked;
-            console.log("Checked status ",waMessageCheckedStatus);
-            handleRegisterInfoPopUpClose ()
-            }} />
+            console.log('Checked status ', waMessageCheckedStatus);
+            handleRegisterInfoPopUpClose();
+          }}
+          />
         </PopupContainer>
       )}
-
+      {!memberid && !userLoggedIn && (
+        <PopupContainer
+          open={openInitWhatsAppPopUp}
+          header="Welcome to the Kalakairali"
+          onClose={handleInitWhatsAppPopUpClose}
+        >
+          <RegistrationConfirmation />
+        </PopupContainer>
+      )}
       <ToastContainer />
     </>
   );
