@@ -1,4 +1,8 @@
-import { Button, Switch, SwitchProps, Typography } from '@material-tailwind/react';
+/* eslint-disable react/require-default-props */
+/* eslint-disable react/jsx-props-no-spreading */
+import {
+  Button, Switch, SwitchProps, Typography,
+} from '@material-tailwind/react';
 import { Plus, Pencil } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import {
@@ -17,6 +21,7 @@ interface AddressCardProps {
   onCopyPresentAddress?: (status: boolean) => void;
   error: boolean;
   showActionButton: boolean;
+  resetCopyAddressCheckStatus?:boolean;
 }
 
 const AddressCard = ({
@@ -27,6 +32,7 @@ const AddressCard = ({
   error,
   onCopyPresentAddress,
   showActionButton,
+  resetCopyAddressCheckStatus,
 }: AddressCardProps) => {
   const handleAddAddress = () => {
     const operation: UserOps = address?.flatNumberName
@@ -63,25 +69,24 @@ const AddressCard = ({
         <div className="font10 ml-2">
           {showActionButton && copyAddress && (
             <Switch
-              color='blue'
-              checked={isCopyAddressChecked}
+              color="blue"
+              checked={!resetCopyAddressCheckStatus && isCopyAddressChecked}
               onChange={handleCopyAddressCheckedChange}
               containerProps={
                 {
-                  className: "bg-gray-100",
+                  className: 'bg-gray-100',
                 }
               }
-              label={
-                      <Typography
-                      className='font-small px-1'
-                      {...(typographyProps as React.ComponentProps<
+              label={(
+                <Typography
+                  className="font-small px-1"
+                  {...(typographyProps as React.ComponentProps<
                         typeof Typography
                       >)}
-                      >
-                        Copy Present Address
-                      </Typography>
-
-                  }
+                >
+                  Copy Present Address
+                </Typography>
+                    )}
               {...({} as React.ComponentProps<typeof Switch>)}
             />
           )}
@@ -93,7 +98,9 @@ const AddressCard = ({
               color="blue"
               onClick={handleAddAddress}
               {...({} as React.ComponentProps<typeof Button>)} // Typecasting to avoid type error
-              className="cursor-pointer text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg text-xs px-2 py-1 text-center"
+              className="cursor-pointer text-white hover:bg-primary-700
+              focus:ring-4 focus:outline-none focus:ring-primary-300
+              rounded-lg text-xs px-2 py-1 text-center"
             >
               {address?.flatNumberName ? (
                 <Pencil className="inline size-4" />
@@ -107,20 +114,35 @@ const AddressCard = ({
       <div className="block w-full mt-2 text-gray-600">
         {address?.flatNumberName && (
           <>
-            <p className="block w-full">{address?.flatNumberName},</p>
+            <p className="block w-full">
+              {address?.flatNumberName}
+              ,
+            </p>
             <p className="block">
-              {address?.addressLine1}, {address?.addressLine2}
+              {address?.addressLine1}
+              ,
+              {address?.addressLine2}
               {address?.addressLine2 ? ',' : ''}
             </p>
             <p className="block">
               {' '}
-              {address?.postOffice}(PO), {address?.city} (Dist.)
+              {address?.postOffice}
+              (PO),
+              {address?.city}
+              {' '}
+              (Dist.)
             </p>
             <p className="block">
               {' '}
-              {address?.state} - {address?.pincode}
+              {address?.state}
+              {' '}
+              -
+              {address?.pincode}
             </p>
-            <p className="block"> {address?.contactNumber}</p>
+            <p className="block">
+              {' '}
+              {address?.contactNumber}
+            </p>
           </>
         )}
       </div>

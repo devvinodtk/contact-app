@@ -1,5 +1,9 @@
+/* eslint-disable react/require-default-props */
+/* eslint-disable react/jsx-props-no-spreading */
 import { Button } from '@material-tailwind/react';
-import { useForm, SubmitHandler, Controller, useWatch } from 'react-hook-form';
+import {
+  useForm, SubmitHandler, Controller, useWatch,
+} from 'react-hook-form';
 import React, { useEffect, useState } from 'react';
 import { Address, AddressType, PostOfficesInfo } from '../types/Users.ts';
 import DropdownSelect from './common/DropdownSelect.tsx';
@@ -39,8 +43,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
       if (pincode?.length === 6) {
         try {
           setIsLoading(true);
-          const postalInfo: PostOfficesInfo | undefined =
-            await pincodeLookup(pincode);
+          const postalInfo: PostOfficesInfo | undefined = await pincodeLookup(pincode);
           if (postalInfo) {
             setPostOfficeNames(postalInfo.postOffices);
             setValue('city', postalInfo.district);
@@ -90,7 +93,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             <input
               type="text"
               placeholder="Flat Number/Name"
-              {...register(`flatNumberName`, {
+              {...register('flatNumberName', {
                 required: 'Flat Number / Name',
               })}
               className={`w-full p-2 mb-4 border rounded text-gray-600 ${
@@ -149,7 +152,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             render={({ field: { value, onChange }, fieldState }) => (
               <DropdownSelect
                 label="Post Office"
-                mandatory={true}
+                mandatory
                 value={value}
                 error={fieldState.error}
                 options={postOfficeNames}

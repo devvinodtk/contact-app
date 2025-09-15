@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -94,6 +95,7 @@ const UserProfileForm: React.FC = ({
   const [openInitWhatsAppPopUp, setOpenInitWhatsAppPopUp] = useState(false);
   const [initMapLocation, setInitMapLocation] = useState(false);
   const [initProfilePic, setInitProfilePic] = useState(false);
+  const [initCopyAddressCheckStatus, setInitCopyAddressCheckStatus] = useState(false);
   const [familyDetails, setFamilyDetails] = useState<FamilyDetails[]>(
     memberDetails.familyDetails,
   );
@@ -197,6 +199,7 @@ const UserProfileForm: React.FC = ({
         dispatch(addMember(userObj));
         handleResetForm();
         setInitProfilePic(true);
+        setInitCopyAddressCheckStatus(true);
       })
       .catch((err) => {
         toast.error(err.message, toastOptions);
@@ -240,6 +243,17 @@ const UserProfileForm: React.FC = ({
       });
   };
 
+  const setWhatOptedInAtTime = (data: Members, ops: UserOps) => {
+    if (ops === UserOps.Add) {
+      return waMessageCheckedStatus ? new Date().getTime() : null;
+    } if (ops === UserOps.Edit && member) {
+      if (member.optedInToWhatsApp === undefined) return null;
+      if (member.optedInToWhatsApp !== data.optedInToWhatsApp) return new Date().getTime();
+      return member.optedInToWhatsAppChangedAt;
+    }
+    return null;
+  };
+
   const onHandleSaveMembersForm: SubmitHandler<Members> = async (data) => {
     clearErrors();
     let error = false;
@@ -272,12 +286,13 @@ const UserProfileForm: React.FC = ({
           removeProfilePicFromFirebase(data.personalDetails.profilePhotoUrl);
         }
 
-        if (ops === UserOps.Add) {
-          data.optedInToWhatsAppChangedAt = waMessageCheckedStatus ? new Date().getTime() : null;
-        } else if (ops === UserOps.Edit) {
-          data.optedInToWhatsAppChangedAt = (member?.optedInToWhatsApp === undefined) ? null
-            : (member?.optedInToWhatsApp !== data.optedInToWhatsApp) ? new Date().getTime() : member?.optedInToWhatsAppChangedAt;
-        }
+        // if (ops === UserOps.Add) {
+        //   data.optedInToWhatsAppChangedAt = waMessageCheckedStatus ? new Date().getTime() : null;
+        // } else if (ops === UserOps.Edit) {
+        //   data.optedInToWhatsAppChangedAt = (member?.optedInToWhatsApp === undefined) ? null
+        //     : (member?.optedInToWhatsApp !== data.optedInToWhatsApp)
+        // ? new Date().getTime() : member?.optedInToWhatsAppChangedAt;
+        // }
 
         const userObj = {
           ...data,
@@ -293,6 +308,7 @@ const UserProfileForm: React.FC = ({
           officeAddress: officeAddress ?? null,
           familyDetails: familyDetails ?? [],
           optedInToWhatsApp: ops === UserOps.Edit ? !!data?.optedInToWhatsApp : waMessageCheckedStatus.current,
+          optedInToWhatsAppChangedAt: setWhatOptedInAtTime(data, ops),
         };
         if (ops === UserOps.Add) {
           addNewMemberDataToFirebase(userObj);
@@ -341,6 +357,11 @@ const UserProfileForm: React.FC = ({
     }
   };
 
+  const setPageHeader = () => {
+    if (userLoggedIn) return memberid ? 'Edit Member' : 'Add Member';
+    return 'Register to Kalakairali';
+  };
+
   return (
     <>
       {isLoading && <LoaderComponent />}
@@ -350,13 +371,7 @@ const UserProfileForm: React.FC = ({
         onSubmit={handleSubmit(onHandleSaveMembersForm)}
       >
         <Header
-          title={
-            userLoggedIn
-              ? memberid
-                ? 'Edit Member'
-                : 'Add Members'
-              : 'Register to Kalakairali MMS'
-          }
+          title={setPageHeader()}
         />
         <div className="p-4 w-full mt-16 sm:mt-0">
           {userLoggedIn && (
@@ -364,24 +379,25 @@ const UserProfileForm: React.FC = ({
               {/* Member ID Section */}
               <div className="flex items-center mb-4 sm:mb-0 sm:mr-4">
                 <label
+                  htmlFor="displayId"
                   aria-label="displayId"
                   className="block text-sm font-medium mr-2 text-gray-600"
                 >
                   Member ID:
+                  <input
+                    {...register('displayId', {
+                      required: 'Member ID is required',
+                    })}
+                    type="text"
+                    className={`p-2 border rounded text-gray-600 ${
+                      errors.displayId
+                        ? 'focus:outline-none border-red-500 bg-red-50'
+                        : ''
+                    }`}
+                    disabled={member?.verified}
+                    placeholder="KK2025XXXX"
+                  />
                 </label>
-                <input
-                  {...register('displayId', {
-                    required: 'Member ID is required',
-                  })}
-                  type="text"
-                  className={`p-2 border rounded text-gray-600 ${
-                    errors.displayId
-                      ? 'focus:outline-none border-red-500 bg-red-50'
-                      : ''
-                  }`}
-                  disabled={member?.verified}
-                  placeholder="KK2025XXXX"
-                />
               </div>
 
               {/* Checkbox Section */}
@@ -444,83 +460,92 @@ const UserProfileForm: React.FC = ({
               <div className="w-full sm:w-3/4 ">
                 <div className="flex flex-wrap">
                   <div className="w-full sm:w-1/3">
-                    <label className="block text-sm font-medium mb-1 text-gray-600">
+                    <label htmlFor="personalDetails.name" className="block text-sm font-medium mb-1 text-gray-600">
                       Name *
+                      <input
+                        type="text"
+                        placeholder="Name"
+                        autoComplete="off"
+                        {...register('personalDetails.name', {
+                          required: 'Name is required',
+                        })}
+                        className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                          errors.personalDetails?.name
+                            ? 'focus:outline-none border-red-500 bg-red-50'
+                            : ''
+                        }`}
+                      />
                     </label>
-                    <input
-                      type="text"
-                      placeholder="Name"
-                      autoComplete="off"
-                      {...register('personalDetails.name', {
-                        required: 'Name is required',
-                      })}
-                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                        errors.personalDetails?.name
-                          ? 'focus:outline-none border-red-500 bg-red-50'
-                          : ''
-                      }`}
-                    />
                   </div>
                   <div className="w-full sm:w-1/3 sm:pl-4">
-                    <label className="block text-sm font-medium mb-1 text-gray-600">
+                    <label
+                      htmlFor="personalDetails.mobileNumber"
+                      className="block text-sm font-medium mb-1 text-gray-600"
+                    >
                       Mobile Number *
+                      <input
+                        type="number"
+                        placeholder="Mobile number"
+                        autoComplete="off"
+                        {...register('personalDetails.mobileNumber', {
+                          required: 'Mobile number is required',
+                          minLength: 10,
+                          maxLength: 10,
+                        })}
+                        className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                          errors.personalDetails?.mobileNumber
+                            ? 'focus:outline-none border-red-500 bg-red-50'
+                            : ''
+                        }`}
+                      />
                     </label>
-                    <input
-                      type="number"
-                      placeholder="Mobile number"
-                      autoComplete="off"
-                      {...register('personalDetails.mobileNumber', {
-                        required: 'Mobile number is required',
-                        minLength: 10,
-                        maxLength: 10,
-                      })}
-                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                        errors.personalDetails?.mobileNumber
-                          ? 'focus:outline-none border-red-500 bg-red-50'
-                          : ''
-                      }`}
-                    />
                   </div>
                   <div className="w-full sm:w-1/3 sm:pl-4">
-                    <label className="block text-sm font-medium mb-1 text-gray-600">
+                    <label
+                      htmlFor="personalDetails.emailId"
+                      className="block text-sm font-medium mb-1 text-gray-600"
+                    >
                       Email ID *
-                    </label>
-                    <input
-                      type="email"
-                      autoComplete="off"
-                      {...register('personalDetails.emailId', {
-                        required: 'Email ID is required',
-                        pattern:
+                      <input
+                        type="email"
+                        autoComplete="off"
+                        {...register('personalDetails.emailId', {
+                          required: 'Email ID is required',
+                          pattern:
                           /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i,
-                      })}
-                      placeholder="Email ID"
-                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                        errors.personalDetails?.emailId
-                          ? 'focus:outline-none border-red-500 bg-red-50'
-                          : ''
-                      }`}
-                    />
+                        })}
+                        placeholder="Email ID"
+                        className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                          errors.personalDetails?.emailId
+                            ? 'focus:outline-none border-red-500 bg-red-50'
+                            : ''
+                        }`}
+                      />
+                    </label>
                   </div>
                   <div className="w-full sm:w-1/3">
-                    <label className="block text-sm font-medium mb-1 text-gray-600">
+                    <label
+                      htmlFor="personalDetails.dateOfBirth"
+                      className="block text-sm font-medium mb-1 text-gray-600"
+                    >
                       Date of Birth *
-                    </label>
-                    <input
-                      type="text"
-                      autoComplete="off"
-                      {...register('personalDetails.dateOfBirth', {
-                        required: 'Date of birth is required',
-                        pattern:
+                      <input
+                        type="text"
+                        autoComplete="off"
+                        {...register('personalDetails.dateOfBirth', {
+                          required: 'Date of birth is required',
+                          pattern:
                           /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19[0-9][0-9]|20[0-9][0-9])$/,
-                        validate: (value) => isValidDate(value, true),
-                      })}
-                      placeholder="DD/MM/YYYY"
-                      className={`w-full block p-2 border rounded mb-4 text-gray-600 ${
-                        errors.personalDetails?.dateOfBirth
-                          ? 'focus:outline-none border-red-500 bg-red-50'
-                          : ''
-                      }`}
-                    />
+                          validate: (value) => isValidDate(value, true),
+                        })}
+                        placeholder="DD/MM/YYYY"
+                        className={`w-full block p-2 border rounded mb-4 text-gray-600 ${
+                          errors.personalDetails?.dateOfBirth
+                            ? 'focus:outline-none border-red-500 bg-red-50'
+                            : ''
+                        }`}
+                      />
+                    </label>
                   </div>
                   <div className="w-full sm:w-1/3 sm:pl-4">
                     <Controller
@@ -569,22 +594,25 @@ const UserProfileForm: React.FC = ({
                     />
                   </div>
                   <div className="w-full sm:w-1/3">
-                    <label className="block text-sm font-medium mb-1 text-gray-600">
+                    <label
+                      htmlFor="personalDetails.jobTitle"
+                      className="block text-sm font-medium mb-1 text-gray-600"
+                    >
                       Occupation *
+                      <input
+                        type="text"
+                        autoComplete="off"
+                        placeholder="Occupation"
+                        {...register('personalDetails.jobTitle', {
+                          required: 'Occupation is required',
+                        })}
+                        className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                          errors.personalDetails?.jobTitle
+                            ? 'focus:outline-none border-red-500 bg-red-50'
+                            : ''
+                        }`}
+                      />
                     </label>
-                    <input
-                      type="text"
-                      autoComplete="off"
-                      placeholder="Occupation"
-                      {...register('personalDetails.jobTitle', {
-                        required: 'Occupation is required',
-                      })}
-                      className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                        errors.personalDetails?.jobTitle
-                          ? 'focus:outline-none border-red-500 bg-red-50'
-                          : ''
-                      }`}
-                    />
                   </div>
                   <div className="w-full sm:w-1/3 sm:pl-4">
                     <Controller
@@ -611,17 +639,20 @@ const UserProfileForm: React.FC = ({
                     />
                   </div>
                   <div className="w-full sm:w-1/3 sm:pl-4">
-                    <label className="block text-sm font-medium mb-1 text-gray-600">
+                    <label
+                      htmlFor="personalDetails.educationalQualification.specialization"
+                      className="block text-sm font-medium mb-1 text-gray-600"
+                    >
                       Course / Specialization
+                      <input
+                        type="text"
+                        placeholder="Specialization"
+                        className="w-full p-2 border rounded mb-4 text-gray-600"
+                        {...register(
+                          'personalDetails.educationalQualification.specialization',
+                        )}
+                      />
                     </label>
-                    <input
-                      type="text"
-                      placeholder="Specialization"
-                      className="w-full p-2 border rounded mb-4 text-gray-600"
-                      {...register(
-                        'personalDetails.educationalQualification.specialization',
-                      )}
-                    />
                   </div>
                 </div>
               </div>
@@ -650,6 +681,7 @@ const UserProfileForm: React.FC = ({
                 clearErrors={clearErrors}
                 onMemberAddressChange={handleMemberAddressChange}
                 showActionButton={userLoggedIn || (!userLoggedIn && !memberid)}
+                resetCopyAddressCheck={initCopyAddressCheckStatus}
               />
             </div>
           </div>
@@ -702,14 +734,14 @@ const UserProfileForm: React.FC = ({
                 <h2 className="text-lg font-semibold mb-4 text-gray-600">
                   Office Use
                 </h2>
-                <label className="text-gray-600 text-sm font-medium">
+                <label htmlFor="proposedBy" className="text-gray-600 text-sm font-medium">
                   Proposed by
+                  <input
+                    {...register('proposedBy')}
+                    type="text"
+                    className="w-full p-2 border rounded mb-4 text-gray-600"
+                  />
                 </label>
-                <input
-                  {...register('proposedBy')}
-                  type="text"
-                  className="w-full p-2 border rounded mb-4 text-gray-600"
-                />
                 <Controller
                   name="communicationPreference"
                   control={control}
@@ -722,31 +754,31 @@ const UserProfileForm: React.FC = ({
                     />
                   )}
                 />
-                <label className="text-gray-600 text-sm font-medium">
+                <label htmlFor="comments" className="text-gray-600 text-sm font-medium">
                   Comments
+                  <input
+                    {...register('comments')}
+                    type="text"
+                    className="p-2 border mb-3 rounded w-full text-gray-600"
+                  />
                 </label>
-                <input
-                  {...register('comments')}
-                  type="text"
-                  className="p-2 border mb-3 rounded w-full text-gray-600"
-                />
-                <label className="text-gray-600 text-sm font-medium">
+                <label htmlFor="dateOfJoining" className="text-gray-600 text-sm font-medium">
                   Date of joining *
-                </label>
-                <input
-                  {...register('dateOfJoining', {
-                    pattern:
+                  <input
+                    {...register('dateOfJoining', {
+                      pattern:
                       /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19[0-9][0-9]|20[0-9][0-9])$/,
-                    validate: (value) => !value || isValidDate(value),
-                  })}
-                  type="text"
-                  placeholder="DD/MM/YYYY"
-                  className={`w-full p-2 border rounded mb-4 text-gray-600 ${
-                    errors.dateOfJoining
-                      ? 'focus:outline-none border-red-500 bg-red-50'
-                      : ''
-                  }`}
-                />
+                      validate: (value) => !value || isValidDate(value),
+                    })}
+                    type="text"
+                    placeholder="DD/MM/YYYY"
+                    className={`w-full p-2 border rounded mb-4 text-gray-600 ${
+                      errors.dateOfJoining
+                        ? 'focus:outline-none border-red-500 bg-red-50'
+                        : ''
+                    }`}
+                  />
+                </label>
               </div>
             )}
           </div>
@@ -766,7 +798,11 @@ const UserProfileForm: React.FC = ({
               </Button>
               <Button
                 type="button"
-                onClick={() => { handleResetForm(); setInitProfilePic(true); }}
+                onClick={() => {
+                  handleResetForm();
+                  setInitProfilePic(true);
+                  setInitCopyAddressCheckStatus(true);
+                }}
                 className="order-2 sm:order-1 cursor-pointer mr-0 sm:mr-2 text-white
                 hover:bg-primary-700 focus:ring-4 focus:outline-none
                 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
@@ -795,7 +831,6 @@ const UserProfileForm: React.FC = ({
         >
           <RegistrationInfo onAgreeAndConfirm={(waMessageChecked) => {
             waMessageCheckedStatus.current = waMessageChecked;
-            console.log('Checked status ', waMessageCheckedStatus);
             handleRegisterInfoPopUpClose();
           }}
           />

@@ -46,7 +46,10 @@ const RegistrationConfirmation = () => {
           {/* QR Code Section */}
           <div className="flex flex-col items-center pr-4">
             <QRCode value={waLink} size={90} />
-            <Typography className="mt-2 text-sm text-gray-600">
+            <Typography
+              {...(typographyProps as React.ComponentProps<typeof Typography>)}
+              className="mt-2 text-sm text-gray-600"
+            >
               Scan to chat
             </Typography>
           </div>

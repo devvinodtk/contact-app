@@ -1,3 +1,5 @@
+/* eslint-disable react/require-default-props */
+/* eslint-disable react/jsx-props-no-spreading */
 import { useEffect, useState } from 'react';
 import { FieldErrors, UseFormClearErrors } from 'react-hook-form';
 import AddressCard from './common/AddressCard';
@@ -19,6 +21,7 @@ interface MemberAddressProps {
   clearErrors: UseFormClearErrors<Members>;
   onMemberAddressChange: (type: string, address: Address) => void;
   showActionButton: boolean;
+  resetCopyAddressCheck?:boolean;
 }
 
 const MemberAddress = ({
@@ -29,17 +32,15 @@ const MemberAddress = ({
   errors,
   clearErrors,
   showActionButton,
+  resetCopyAddressCheck,
 }: MemberAddressProps) => {
-  const [presentAddress, setPresentAddress] =
-    useState<Address>(memPresentAddress);
-  const [permanentAddress, setPermanentAddress] =
-    useState<Address>(memPermanentAddress);
+  const [presentAddress, setPresentAddress] = useState<Address>(memPresentAddress);
+  const [permanentAddress, setPermanentAddress] = useState<Address>(memPermanentAddress);
   const [officeAddress, setOfficeAddress] = useState<
     Address | null | undefined
   >(memOfficeAddress);
 
-  const [currentAddressChange, setCurrentAddressChange] =
-    useState<AddressChangeType>({} as AddressChangeType);
+  const [currentAddressChange, setCurrentAddressChange] = useState<AddressChangeType>({} as AddressChangeType);
 
   const [openAddressDialog, setOpenAddressDialog] = useState(false);
 
@@ -75,9 +76,9 @@ const MemberAddress = ({
       setOfficeAddress(memOfficeAddress);
     }
     if (
-      !memPresentAddress.flatNumberName &&
-      !memPermanentAddress.flatNumberName &&
-      !memOfficeAddress?.flatNumberName
+      !memPresentAddress.flatNumberName
+      && !memPermanentAddress.flatNumberName
+      && !memOfficeAddress?.flatNumberName
     ) {
       setPresentAddress(memberAddress);
       setPermanentAddress(memberAddress);
@@ -95,34 +96,43 @@ const MemberAddress = ({
     }
   };
 
+  const currentAddressType = () => {
+    if (presentAddress || permanentAddress || officeAddress) {
+      switch (currentAddressChange.addressType) {
+        case AddressType.PresentAddress:
+          return presentAddress;
+        case AddressType.PermanentAddress:
+          return permanentAddress;
+        default:
+          return officeAddress;
+      }
+    }
+    return null;
+  };
+
   return (
     <>
       <AddressCard
         address={presentAddress}
         addressType={AddressType.PresentAddress}
-        onEdit={({ operation, addressType }) =>
-          handleAddAddress({ operation, addressType })
-        }
+        onEdit={({ operation, addressType }) => handleAddAddress({ operation, addressType })}
         error={!!errors?.presentAddress}
         showActionButton={showActionButton}
       />
       <AddressCard
         address={permanentAddress}
-        copyAddress={true}
+        copyAddress
         addressType={AddressType.PermanentAddress}
-        onEdit={({ operation, addressType }) =>
-          handleAddAddress({ operation, addressType })
-        }
+        onEdit={({ operation, addressType }) => handleAddAddress({ operation, addressType })}
         onCopyPresentAddress={handleCopyPresentAddressChange}
         error={!!errors?.permanentAddress}
         showActionButton={showActionButton}
+        resetCopyAddressCheckStatus={resetCopyAddressCheck}
       />
       <AddressCard
         address={officeAddress}
         addressType={AddressType.OfficeAddress}
-        onEdit={({ operation, addressType }) =>
-          handleAddAddress({ operation, addressType })
-        }
+        onEdit={({ operation, addressType }) => handleAddAddress({ operation, addressType })}
         error={false}
         showActionButton={showActionButton}
       />
@@ -134,17 +144,9 @@ const MemberAddress = ({
         <AddressForm
           addressType={currentAddressChange.addressType}
           addressInfo={
-            (presentAddress || permanentAddress || officeAddress) &&
-            currentAddressChange.addressType === AddressType.PresentAddress
-              ? presentAddress
-              : currentAddressChange.addressType ===
-                  AddressType.PermanentAddress
-                ? permanentAddress
-                : officeAddress
+            currentAddressType()
           }
-          onAddressChange={(addressType, value) =>
-            handleAddressChange(addressType, value)
-          }
+          onAddressChange={(addressType, value) => handleAddressChange(addressType, value)}
         />
       </PopupContainer>
     </>
