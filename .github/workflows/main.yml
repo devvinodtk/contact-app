@@ -50,7 +50,7 @@ jobs:
       # 6. Deploy to Firebase
       - name: Deploy to Firebase Dev
         if: github.ref_name == 'dev'
-        uses: w9jds/firebase-action@v13
+        uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting,functions --project ${{ secrets.PROJECT_ID_DEV }}
         env:
@@ -58,7 +58,7 @@ jobs:
 
       - name: Deploy to Firebase Prod
         if: github.ref_name == 'main'
-        uses: w9jds/firebase-action@v13
+        uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting,functions --project ${{ secrets.PROJECT_ID_PROD }}
         env:
