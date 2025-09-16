@@ -1,10 +1,10 @@
-name: Deploy `Kalakairali Member Management System` app to Firebase
+name: Deploy to Firebase
 
 on:
   push:
     branches:
-      - dev   # Deploys to Dev Firebase (kk-contact-app)
-      - main  # Deploys to Prod Firebase
+      - dev     # Deploys to Firebase Dev project
+      - main    # Deploys to Firebase Prod project
 
 jobs:
   build-and-deploy:
@@ -30,42 +30,34 @@ jobs:
           cd ..
 
       # 4. Inject .env from GitHub Secrets
-      # Create .env file for Dev
       - name: Create .env for Dev
         if: github.ref_name == 'dev'
-        run: |
-          echo "${{ secrets.ENV_FILE_DEV }}" > .env
+        run: echo "${{ secrets.ENV_FILE_DEV }}" > .env
 
-      # Create .env file for Prod
       - name: Create .env for Prod
         if: github.ref_name == 'main'
-        run: |
-          echo "${{ secrets.ENV_FILE_PROD }}" > .env
+        run: echo "${{ secrets.ENV_FILE_PROD }}" > .env
 
       # 5. Build React App with correct mode
-      # Build React App Dev
-      - name: Build React App Dev
+      - name: Build React App (Dev)
         if: github.ref_name == 'dev'
         run: npm run build -- --mode development
 
-      # Build React App Prod
-      - name: Build React App Prod
+      - name: Build React App (Prod)
         if: github.ref_name == 'main'
         run: npm run build -- --mode production
 
       # 6. Deploy to Firebase
-      # Deploy to Firebase Dev
       - name: Deploy to Firebase Dev
-        if: github.ref == 'refs/heads/dev' # or if: github.ref_name == 'dev'
+        if: github.ref_name == 'dev'
         uses: w9jds/firebase-action@v13
         with:
           args: deploy --only hosting,functions --project ${{ secrets.PROJECT_ID_DEV }}
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_DEV }}
 
-      # Deploy to Firebase Prod
       - name: Deploy to Firebase Prod
-        if: github.ref == 'refs/heads/main' # or if: github.ref_name == 'main'
+        if: github.ref_name == 'main'
         uses: w9jds/firebase-action@v13
         with:
           args: deploy --only hosting,functions --project ${{ secrets.PROJECT_ID_PROD }}
