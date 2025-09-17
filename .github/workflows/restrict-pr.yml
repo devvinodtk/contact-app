@@ -1,5 +1,5 @@
 name: Restrict PRs to main
-on: 
+on:
   pull_request:
     breanches:
       - main
@@ -7,11 +7,25 @@ on:
 jobs:
   check-pr-branch:
     runs-on: ubuntu-latest
-    steps: 
+    steps:
       - name: Ensure PR comes from dev
         run: |
           if [[ "${{ github.event.pull_request.head.ref }}" != "dev" ]]; then
             echo "❌ Only PRs from dev are allowed into main."
             exit 1
           fi
-          
+
+  close-invalid-pr:
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close the PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              state: "closed"
+            })
