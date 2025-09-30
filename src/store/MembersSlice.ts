@@ -18,7 +18,7 @@ const initialState: MembersState = {
 };
 
 export const fetchActiveMemberById = createAsyncThunk(
-  'kalakairali/members/fetchActiveMemberById',
+  'members/fetchActiveMemberById',
   async (memberId: string, { rejectWithValue }) => {
     try {
       const getDocRef = ref(db, `kalakairali/members/${memberId}`);
@@ -33,7 +33,7 @@ export const fetchActiveMemberById = createAsyncThunk(
   },
 );
 
-export const fetchMembers = createAsyncThunk('kalakairali/members', async () => {
+export const fetchMembers = createAsyncThunk('members/fetchMembers', async () => {
   try {
     const getDocRef = ref(db, 'kalakairali/members');
     const snapshot = await getDoc(getDocRef);
