@@ -1,7 +1,8 @@
-import { Input } from "@material-tailwind/react";
-import { Search } from "lucide-react";
-import React from "react";
-import debounce from "lodash/debounce";
+/* eslint-disable react/jsx-props-no-spreading */
+import { Input } from '@material-tailwind/react';
+import { Search } from 'lucide-react';
+import React from 'react';
+import debounce from 'lodash/debounce';
 
 interface searchFilterProps {
   onChangeSearchText: (value: string) => void;

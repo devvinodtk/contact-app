@@ -131,6 +131,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+    setPageIndex({ startIndex: 0, endIndex: PAGE_SIZE });
     if (!showInactiveUsers && activeMembers?.length) {
       // const result = activeMembers.filter((member) =>
       //   showUnverifiedUsers ? member.verified === false : member,
@@ -526,18 +527,16 @@ const Dashboard = () => {
                   // eslint-disable-next-line react/jsx-props-no-spreading
                   {...({} as React.ComponentProps<typeof CardFooter>)}
                 >
-                  <div>
-                    {filteredResult?.length
-                      && filteredResult?.length > PAGE_SIZE && (
-                        <Pagination
-                          onPageChange={(startIndex, endIndex) => {
-                            setPageIndex({ startIndex, endIndex });
-                          }}
-                          pageSize={PAGE_SIZE}
-                          totalCount={filteredResult.length}
-                        />
-                    )}
-                  </div>
+                  {filteredResult && filteredResult.length
+                    ? (filteredResult?.length > PAGE_SIZE && (
+                    <Pagination
+                      onPageChange={(startIndex, endIndex) => {
+                        setPageIndex({ startIndex, endIndex });
+                      }}
+                      pageSize={PAGE_SIZE}
+                      totalCount={filteredResult.length}
+                    />
+                    )) : null}
                 </CardFooter>
               </Card>
             </div>

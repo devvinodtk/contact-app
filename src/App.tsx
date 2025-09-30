@@ -35,64 +35,29 @@ const App = () => {
         <div className="absolute inset-0 backdrop-blur-sm" />
       </div>
       <Sidebar />
-      <Routes>
-        <Route path="/" element={
-          <Suspense fallback={<LoaderComponent />}>
-            <LazyDashboard />
-          </Suspense>} />
-        <Route
-          path="/dashboard"
-          element={
-            <Suspense fallback={<LoaderComponent />}>
-              <LazyDashboard />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/users"
-          element={
-            <Suspense fallback={<LoaderComponent />}>
-              <LazyUserProfileForm />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/users/:memberid"
-          element={
-            <Suspense fallback={<LoaderComponent />}>
-              <LazyUserProfileForm />
-            </Suspense>
-          }
-        />
-        <Route path="/logout" element={<LogoutPage />} />
-        <Route path="/address" element={<AddressList />} />
-        <Route path="/idcards" element={<MembershipCard />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-      </Routes>
+      <Suspense fallback={<LoaderComponent />}>
+        <Routes>
+          <Route path="/" element={<LazyDashboard />} />
+          <Route path="/dashboard" element={<LazyDashboard />} />
+          <Route path="/users" element={<LazyUserProfileForm />} />
+          <Route path="/users/:memberid" element={<LazyUserProfileForm />} />
+          <Route path="/logout" element={<LogoutPage />} />
+          <Route path="/address" element={<AddressList />} />
+          <Route path="/idcards" element={<MembershipCard />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        </Routes>
+      </Suspense>
     </div>
   ) : (
     <Provider store={store}>
-      <Routes>
-        <Route
-          path="/users/:memberid"
-          element={
-            <Suspense fallback={<LoaderComponent />}>
-              <LazyUserProfileForm />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/"
-          element={
-            <Suspense fallback={<LoaderComponent />}>
-              <LazyUserProfileForm />
-            </Suspense>
-          }
-        />
-        {/* <Route path="/" element={<LoginPage />} /> */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-      </Routes>
+      <Suspense fallback={<LoaderComponent />}>
+        <Routes>
+          <Route path="/users/:memberid" element={<LazyUserProfileForm />} />
+          <Route path="/" element={<LazyUserProfileForm />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        </Routes>
+      </Suspense>
     </Provider>
   );
 };
