@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
 import { Button, IconButton, Typography } from '@material-tailwind/react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -18,13 +19,12 @@ const Pagination = ({
   const startIndex = active * pageSize;
   const endIndex = startIndex + pageSize;
 
-  const getItemProps = (index: number) =>
-    ({
-      variant: active === index ? 'filled' : 'text',
-      color: 'gray',
-      onClick: () => setActive(index),
-      className: 'rounded-full',
-    }) as any;
+  const getItemProps = (index: number) => ({
+    variant: active === index ? 'filled' : 'text',
+    color: 'gray',
+    onClick: () => setActive(index),
+    className: 'rounded-full',
+  }) as any;
 
   const next = () => {
     if (active === numberOfPages - 1) return;
@@ -49,7 +49,9 @@ const Pagination = ({
         disabled={active === 0}
         onClick={prev}
       >
-        <ArrowLeft strokeWidth={2} className="h-4 w-4" /> Previous
+        <ArrowLeft strokeWidth={2} className="h-4 w-4" />
+        {' '}
+        Previous
       </Button>
       <div className="flex items-center gap-2 hidden sm:block">
         {[...Array(numberOfPages).keys()].map((n) => (
@@ -63,7 +65,12 @@ const Pagination = ({
         color="gray"
         className="font-normal block sm:hidden"
       >
-        Page <strong className="text-gray-900">{active + 1}</strong> of{' '}
+        Page
+        {' '}
+        <strong className="text-gray-900">{active + 1}</strong>
+        {' '}
+        of
+        {' '}
         <strong className="text-gray-900">{numberOfPages}</strong>
       </Typography>
       <Button
@@ -73,7 +80,9 @@ const Pagination = ({
         disabled={active === numberOfPages - 1}
         onClick={next}
       >
-        <ArrowRight strokeWidth={2} className="h-4 w-4" /> Next
+        <ArrowRight strokeWidth={2} className="h-4 w-4" />
+        {' '}
+        Next
       </Button>
     </div>
   );

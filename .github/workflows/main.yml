@@ -1,0 +1,65 @@
+name: Deploy to Firebase
+
+on:
+  push:
+    branches:
+      - dev     # Deploys to Firebase Dev project
+      - main    # Deploys to Firebase Prod project
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repo
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      # 2. Setup Node
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 3. Install deps (root + functions)
+      - name: Install dependencies
+        run: |
+          npm install
+          cd functions
+          npm install
+          cd ..
+
+      # 4. Inject .env from GitHub Secrets
+      - name: Create .env for Dev
+        if: github.ref_name == 'dev'
+        run: echo "${{ secrets.ENV_FILE_DEV }}" > .env
+
+      - name: Create .env for Prod
+        if: github.ref_name == 'main'
+        run: echo "${{ secrets.ENV_FILE_PROD }}" > .env
+
+      # 5. Build React App with correct mode
+      - name: Build React App (Dev)
+        if: github.ref_name == 'dev'
+        run: npm run build -- --mode development
+
+      - name: Build React App (Prod)
+        if: github.ref_name == 'main'
+        run: npm run build -- --mode production
+
+      # 6. Deploy to Firebase
+      - name: Deploy to Firebase Dev
+        if: github.ref_name == 'dev'
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting,functions --project ${{ secrets.PROJECT_ID_DEV }}
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_DEV }}
+
+      - name: Deploy to Firebase Prod
+        if: github.ref_name == 'main'
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting,functions --project ${{ secrets.PROJECT_ID_PROD }}
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_PROD }}
