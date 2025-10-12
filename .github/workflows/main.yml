@@ -63,3 +63,11 @@ jobs:
           args: deploy --only hosting,functions --project ${{ secrets.PROJECT_ID_PROD }}
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_PROD }}
+
+      # 7️⃣ (Optional but recommended) Ensure cleanup policy is set
+      # This step prevents Firebase warnings and keeps your Artifact Registry clean
+      - name: Set Artifact cleanup Policy
+        if: always()
+        run: firebase functions:artifacts:setpolicy us-central1 --force
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_PROD }}
