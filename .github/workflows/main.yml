@@ -76,7 +76,7 @@ jobs:
 
       - name: Set Artifact cleanup Policy
         if: always()
-        run: firebase functions:artifacts:setpolicy
+        run: firebase functions:artifacts:setpolicy || echo "Skipping artifact policy setup"
         env:
           FIREBASE_TOKEN: ${{ github.ref_name == 'main' && secrets.FIREBASE_TOKEN_PROD || secrets.FIREBASE_TOKEN_DEV }}
 
