@@ -63,3 +63,20 @@ jobs:
           args: deploy --only hosting,functions --project ${{ secrets.PROJECT_ID_PROD }}
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_PROD }}
+
+      # 7️⃣ (Optional but recommended) Ensure cleanup policy is set
+      # This step prevents Firebase warnings and keeps your Artifact Registry clean
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@latest
+
+      # - name: Authenticate Firebase
+      #   run: firebase login:ci --token $FIREBASE_TOKEN
+      #   env:
+      #     FIREBASE_TOKEN: ${{ github.ref_name == 'main' && secrets.FIREBASE_TOKEN_PROD || secrets.FIREBASE_TOKEN_DEV }}
+
+      - name: Set Artifact cleanup Policy
+        if: always()
+        run: firebase functions:artifacts:setpolicy || echo "Skipping artifact policy setup"
+        env:
+          FIREBASE_TOKEN: ${{ github.ref_name == 'main' && secrets.FIREBASE_TOKEN_PROD || secrets.FIREBASE_TOKEN_DEV }}
+

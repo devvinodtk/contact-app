@@ -12,7 +12,7 @@ import { Members } from './types/Members';
 admin.initializeApp();
 const db = admin.database();
 const app = express();
-app.use(cors({ origin: ['http://localhost:5173', 'https://kk-contact-app.web.app'] }));
+app.use(cors({ origin: ['http://localhost:5173', 'https://kk-contact-app.web.app', 'https://members.kalakairali.com/', 'https://kalakairali-mms.web.app'] }));
 // app.use(cors({ origin: ["https://kk-contact-app.web.app"] }));
 // app.use(cors({ origin: ["https://kalakairali-mms.web.app"] }));
 

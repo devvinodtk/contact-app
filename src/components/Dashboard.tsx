@@ -528,7 +528,7 @@ const Dashboard = () => {
                   {...({} as React.ComponentProps<typeof CardFooter>)}
                 >
                   {filteredResult && filteredResult.length
-                    ? (filteredResult?.length > PAGE_SIZE && (
+                    ? (filteredResult.length > PAGE_SIZE && (
                     <Pagination
                       onPageChange={(startIndex, endIndex) => {
                         setPageIndex({ startIndex, endIndex });
