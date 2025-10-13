@@ -74,4 +74,4 @@ jobs:
         run: firebase functions:artifacts:setpolicy us-central1 --project $FIREBASE_PROJECT --force
         env:
           FIREBASE_TOKEN: ${{ github.ref_name == 'main' && secrets.FIREBASE_TOKEN_PROD || secrets.FIREBASE_TOKEN_DEV }}
-          FIREBASE_PROJECT: ${{ github.ref_name == 'main' && secrets.FIREBASE_PROJECT_PROD || secrets.FIREBASE_PROJECT_DEV }}
+          FIREBASE_PROJECT: ${{ github.ref_name == 'main' && secrets.PROJECT_ID_PROD || secrets.PROJECT_ID_DEV }}
