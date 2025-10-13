@@ -10,6 +10,7 @@ import Header from './common/Header';
 import LoaderComponent from './common/Loader.tsx';
 
 const AddressList = () => {
+  const baseUrl = import.meta.env.VITE_FIREBASE_API;
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const postalAddressRef = useRef(null);
   const namePhoneRef = useRef(null);
@@ -17,7 +18,7 @@ const AddressList = () => {
   const downloadPostalAddress = async () => {
     try {
       setIsLoading(true);
-      const res = await fetch('https://us-central1-kk-contact-app.cloudfunctions.net/api/generate-pdf');
+      const res = await fetch(`${baseUrl}/generate-pdf`);
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -36,7 +37,7 @@ const AddressList = () => {
   const downloadNamePhoneList = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('https://us-central1-kk-contact-app.cloudfunctions.net/api/generate-phone-list');
+      const response = await fetch(`${baseUrl}/generate-phone-list`);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
 
