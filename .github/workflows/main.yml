@@ -29,8 +29,14 @@ jobs:
           npm install
           cd ..
 
+      - name: Check Firebase CLI version
+        run: firebase --version
+
       - name: Install Firebase CLI
-        run: npm install -g firebase-tools
+        run: npm install -g firebase-tools@latest
+
+      - name: Check Firebase CLI version after install
+        run: firebase --version
 
       # 4. Inject .env from GitHub Secrets
       - name: Create .env for Dev
