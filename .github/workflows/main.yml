@@ -79,3 +79,4 @@ jobs:
         run: firebase functions:artifacts:setpolicy
         env:
           FIREBASE_TOKEN: ${{ github.ref_name == 'main' && secrets.FIREBASE_TOKEN_PROD || secrets.FIREBASE_TOKEN_DEV }}
+
