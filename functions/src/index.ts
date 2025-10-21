@@ -12,9 +12,21 @@ import { Members } from './types/Members';
 admin.initializeApp();
 const db = admin.database();
 const app = express();
-app.use(cors({ origin: ['http://localhost:5173', 'https://kk-contact-app.web.app', 'https://members.kalakairali.com/', 'https://kalakairali-mms.web.app'] }));
-// app.use(cors({ origin: ["https://kk-contact-app.web.app"] }));
-// app.use(cors({ origin: ["https://kalakairali-mms.web.app"] }));
+const allowedOrigins = ['http://localhost:5173',
+  'https://kk-contact-app.web.app',
+  'https://members.kalakairali.com',
+  'https://kalakairali-mms.web.app'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
 
 setGlobalOptions({
   memory: '1GiB',
